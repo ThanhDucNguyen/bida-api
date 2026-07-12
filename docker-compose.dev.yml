@@ -1,0 +1,26 @@
+version: "3.9"
+
+# Docker Compose chỉ chạy PostgreSQL để dev local
+# Go server chạy trực tiếp bằng: go run .
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bida-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bida
+      POSTGRES_USER: bida
+      POSTGRES_PASSWORD: localpass
+    ports:
+      - "5432:5432"        # expose ra localhost:5432
+    volumes:
+      - pgdata-dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bida -d bida"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata-dev:

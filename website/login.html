@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bida Manager — Đăng nhập</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#16a34a;--green-d:#15803d;--green-bg:#f0fdf4;--green-border:#bbf7d0;--green-light:#dcfce7;
+  --yellow:#ca8a04;--yellow-bg:#fefce8;--yellow-border:#fef08a;--yellow-mid:#eab308;
+  --text:#111827;--muted:#6b7280;--faint:#9ca3af;--border:#e5e7eb;--border2:#d1d5db;
+  --bg:#f9fafb;--surface:#ffffff;--surface2:#f3f4f6;
+  --red:#dc2626;--red-bg:#fef2f2;
+}
+html,body{height:100%;font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg);color:var(--text)}
+
+/* BACKGROUND PATTERN */
+body{background:linear-gradient(135deg,#f0fdf4 0%,#fefce8 50%,#f0fdf4 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+
+.logo-area{text-align:center;margin-bottom:32px;display:flex;flex-direction:column;align-items:center}
+.logo-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--green),#22c55e);border-radius:18px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 4px 16px rgba(22,163,74,.3);flex-shrink:0}
+.logo-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.logo-sub{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:400px;max-width:100%;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+
+/* STEP 1 — LOGIN */
+#step-login{}
+#step-branch{display:none}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.inp{width:100%;padding:10px 13px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border .15s,box-shadow .15s}
+.inp:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+
+.btn-login{width:100%;padding:11px;background:linear-gradient(135deg,var(--green),#22c55e);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.02em;transition:all .15s;margin-top:6px;box-shadow:0 2px 8px rgba(22,163,74,.3)}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(22,163,74,.4)}
+.btn-login:active{transform:translateY(0)}
+
+.err{color:var(--red);font-size:12px;min-height:18px;margin:6px 0;text-align:center;font-weight:500}
+
+/* BRANCH GRID */
+.branch-greeting{font-size:14px;color:var(--muted);margin-bottom:20px;text-align:center}
+.branch-greeting strong{color:var(--text)}
+.branches{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.branch-card{border:2px solid var(--border);border-radius:12px;padding:18px 14px;cursor:pointer;transition:all .15s;text-align:center;background:var(--surface)}
+.branch-card:hover{border-color:var(--green);background:var(--green-bg);transform:translateY(-1px)}
+.branch-card.selected{border-color:var(--green);background:var(--green-bg);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+.bc-icon{font-size:26px;margin-bottom:8px}
+.bc-name{font-size:13px;font-weight:600;color:var(--text)}
+.bc-addr{font-size:11px;color:var(--muted);margin-top:2px}
+
+.btn-enter{width:100%;padding:11px;background:linear-gradient(135deg,var(--green),#22c55e);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 8px rgba(22,163,74,.3);opacity:.5;pointer-events:none}
+.btn-enter.active{opacity:1;pointer-events:auto}
+.btn-enter.active:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(22,163,74,.4)}
+
+.btn-back{width:100%;padding:9px;background:none;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:8px}
+.btn-back:hover{border-color:var(--border2);color:var(--text)}
+
+.divider{display:flex;align-items:center;gap:10px;margin:8px 0 16px;color:var(--faint);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* FOOTER */
+.footer{margin-top:24px;text-align:center;font-size:11px;color:var(--faint)}
+
+@media(max-width:480px){
+  body{padding:16px;align-items:flex-start;padding-top:40px}
+  .card{padding:24px 18px}
+  .logo-icon{width:52px;height:52px;font-size:24px}
+  .logo-title{font-size:18px}
+  .branches{grid-template-columns:1fr 1fr}
+  .branch-card{padding:14px 10px}
+  .bc-icon{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<div class="logo-area">
+  <div class="logo-icon">🎱</div>
+  <div class="logo-title">Bida Manager</div>
+  <div class="logo-sub">Hệ thống quản lý câu lạc bộ bida</div>
+</div>
+
+<div class="card">
+
+  <!-- STEP 1: LOGIN -->
+  <div id="step-login">
+    <div class="field">
+      <label>Tên đăng nhập</label>
+      <input class="inp" type="text" id="username" placeholder="Nhập tên đăng nhập..." autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Mật khẩu</label>
+      <input class="inp" type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="err" id="login-err"></div>
+    <button class="btn-login" onclick="doLogin()">Đăng nhập</button>
+  </div>
+
+  <!-- STEP 2: BRANCH SELECT -->
+  <div id="step-branch">
+    <div class="branch-greeting">Xin chào, <strong id="greet-name">Minh</strong>! Chọn cơ sở làm việc hôm nay:</div>
+    <div class="branches" id="branch-list">
+      <div class="branch-card" onclick="selectBranch(this,'1')" data-id="1">
+        <div class="bc-icon">🏢</div>
+        <div class="bc-name">Cơ sở 1</div>
+        <div class="bc-addr">Rùa Bida - Thái Lai</div>
+      </div>
+      <!-- <div class="branch-card" onclick="selectBranch(this,'2')" data-id="2">
+        <div class="bc-icon">🏬</div>
+        <div class="bc-name">Cơ sở 2</div>
+        <div class="bc-addr">456 Nguyễn Hữu Thọ, Q.7</div>
+      </div>
+      <div class="branch-card" onclick="selectBranch(this,'3')" data-id="3">
+        <div class="bc-icon">🏪</div>
+        <div class="bc-name">Cơ sở 3</div>
+        <div class="bc-addr">789 Huỳnh Tấn Phát, Q.7</div>
+      </div> -->
+    </div>
+    <button class="btn-enter" id="btn-enter" onclick="enterBranch()">Vào hệ thống →</button>
+    <button class="btn-back" onclick="goBack()">← Đăng xuất</button>
+  </div>
+
+</div>
+
+<div class="footer">Bida Manager v1.0 · © 2025</div>
+
+<script>
+let currentUser = null;
+let selectedBranch = null;
+
+// Nếu đã đăng nhập → tự chuyển trang
+(function(){
+  const token = localStorage.getItem('bida_token');
+  const me = localStorage.getItem('bida_me');
+  if(token && me){
+    const user = JSON.parse(me);
+    currentUser = user;
+    document.getElementById('greet-name').textContent = user.name;
+    document.getElementById('step-login').style.display = 'none';
+    document.getElementById('step-branch').style.display = 'block';
+  }
+})();
+
+async function doLogin(){
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  const errEl = document.getElementById('login-err');
+  const btn   = document.querySelector('.btn-login');
+
+  if(!u || !p){ errEl.textContent = 'Vui lòng nhập đủ thông tin'; return; }
+
+  btn.textContent = 'Đang đăng nhập...';
+  btn.disabled = true;
+  errEl.textContent = '';
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username: u, password: p})
+    });
+    const data = await res.json();
+    if(!res.ok){
+      errEl.textContent = data.error || 'Đăng nhập thất bại';
+      return;
+    }
+    localStorage.setItem('bida_token', data.token);
+    localStorage.setItem('bida_me', JSON.stringify(data.user));
+    currentUser = data.user;
+    document.getElementById('greet-name').textContent = data.user.name;
+    document.getElementById('step-login').style.display = 'none';
+    document.getElementById('step-branch').style.display = 'block';
+  } catch(e) {
+    errEl.textContent = 'Lỗi kết nối server. Vui lòng thử lại.';
+  } finally {
+    btn.textContent = 'Đăng nhập';
+    btn.disabled = false;
+  }
+}
+
+function selectBranch(el, id){
+  document.querySelectorAll('.branch-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedBranch = id;
+  document.getElementById('btn-enter').classList.add('active');
+}
+
+function enterBranch(){
+  if(!selectedBranch || !currentUser) return;
+  if(currentUser.role === 'admin'){
+    window.location.href = 'owner.html?branch=' + selectedBranch;
+  } else {
+    window.location.href = 'staff.html?branch=' + selectedBranch;
+  }
+}
+
+function goBack(){
+  localStorage.removeItem('bida_token');
+  localStorage.removeItem('bida_me');
+  currentUser = null;
+  selectedBranch = null;
+  document.getElementById('step-branch').style.display = 'none';
+  document.getElementById('step-login').style.display = 'block';
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter'){
+    const loginStep = document.getElementById('step-login');
+    if(loginStep.style.display !== 'none') doLogin();
+    else if(selectedBranch) enterBranch();
+  }
+});
+</script>
+</body>
+</html>

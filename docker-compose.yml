@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bida-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bida
+      POSTGRES_USER: bida
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD chưa được đặt trong .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"          # expose để SSH tunnel + Navicat kết nối
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bida -d bida"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - bida-net
+
+  app:
+    build: .
+    container_name: bida-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://bida:${POSTGRES_PASSWORD}@postgres:5432/bida?sslmode=disable
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret-in-production}
+      FRONTEND_DIR: ./frontend
+    volumes:
+      # Phục vụ frontend trực tiếp từ host → build lại KHÔNG revert frontend nữa.
+      # Cập nhật giao diện: scp file vào /opt/bida/website rồi reload trình duyệt.
+      - ./website:/app/frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - bida-net
+
+volumes:
+  pgdata:
+
+networks:
+  bida-net:
+    driver: bridge

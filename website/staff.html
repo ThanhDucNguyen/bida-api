@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bida Manager — Nhân viên</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#16a34a;--gd:#15803d;--gbg:#f0fdf4;--gbr:#bbf7d0;
+  --y:#ca8a04;--ybg:#fefce8;--ybr:#fef08a;--ym:#eab308;
+  --r:#dc2626;--rbg:#fef2f2;--rbr:#fecaca;
+  --b:#2563eb;--bbg:#eff6ff;--bbr:#bfdbfe;
+  --tx:#111827;--mu:#6b7280;--fa:#9ca3af;--bd:#e5e7eb;--bd2:#d1d5db;
+  --bg:#f9fafb;--sf:#fff;--sf2:#f3f4f6;
+  --sw:220px;--th:56px;
+}
+html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;background:var(--bg);color:var(--tx);line-height:1.5}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:var(--sw);background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.s-logo{padding:14px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:9px}
+.s-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--g),#22c55e);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.s-name{font-size:13px;font-weight:700;letter-spacing:-.2px}
+.s-branch{font-size:10px;color:var(--g);font-weight:600;background:var(--gbg);padding:1px 5px;border-radius:3px}
+.s-nav{flex:1;padding:8px 6px;overflow-y:auto}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;color:var(--mu);font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;margin-bottom:1px;transition:all .12s}
+.ni:hover{background:var(--gbg);color:var(--gd)}
+.ni.on{background:linear-gradient(135deg,var(--g),#22c55e);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.3)}
+.ni-ic{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.s-foot{padding:10px 6px;border-top:1px solid var(--bd)}
+.u-pill{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:var(--bg)}
+.u-av{width:28px;height:28px;background:linear-gradient(135deg,var(--g),#22c55e);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.u-info{flex:1;min-width:0}
+.u-nm{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-rl{font-size:10px;color:var(--mu)}
+.btn-out{background:none;border:none;color:var(--fa);font-size:16px;cursor:pointer;padding:2px;transition:color .12s}
+.btn-out:hover{color:var(--r)}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:var(--th);background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50}
+.tb-l{display:flex;align-items:center;gap:8px}
+.pg-title{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.tb-r{display:flex;align-items:center;gap:8px}
+.clock{background:var(--gbg);color:var(--gd);border:1px solid var(--gbr);border-radius:7px;padding:4px 10px;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.content{padding:16px;flex:1}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid;cursor:pointer;transition:all .12s;white-space:nowrap;font-family:inherit}
+.btn-p{background:linear-gradient(135deg,var(--g),#22c55e);color:#fff;border-color:var(--g);box-shadow:0 2px 6px rgba(22,163,74,.25)}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(22,163,74,.35)}
+.btn-s{background:var(--sf);color:var(--tx);border-color:var(--bd)}
+.btn-s:hover{border-color:var(--bd2)}
+.btn-y{background:var(--ybg);color:var(--y);border-color:var(--ybr)}
+.btn-y:hover{background:var(--ybr)}
+.btn-r{background:var(--rbg);color:var(--r);border-color:var(--rbr)}
+.btn-b{background:var(--bbg);color:var(--b);border-color:var(--bbr)}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.btn-xs{padding:3px 8px;font-size:11px;border-radius:6px}
+
+/* CARDS */
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-t{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.bg-g{background:var(--gbg);color:var(--gd);border:1px solid var(--gbr)}
+.bg-y{background:var(--ybg);color:var(--y);border:1px solid var(--ybr)}
+.bg-r{background:var(--rbg);color:var(--r);border:1px solid var(--rbr)}
+.bg-b{background:var(--bbg);color:var(--b);border:1px solid var(--bbr)}
+.bg-n{background:var(--sf2);color:var(--mu);border:1px solid var(--bd)}
+
+/* FORMS */
+.fg{margin-bottom:12px}
+.fl{display:block;font-size:11px;font-weight:600;color:var(--mu);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.fi{width:100%;padding:8px 11px;background:var(--bg);border:1.5px solid var(--bd);border-radius:8px;color:var(--tx);font-size:13px;font-family:inherit;outline:none;transition:border .15s}
+.fi:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(22,163,74,.1)}
+.frow{display:grid;gap:12px}
+.fr2{grid-template-columns:1fr 1fr}
+.fr3{grid-template-columns:1fr 1fr 1fr}
+select.fi{cursor:pointer}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;padding:7px 12px;font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--bd);background:var(--bg)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--bd);font-size:13px}
+.tbl tbody tr:hover td{background:var(--gbg)}
+.tbl tr:last-child td{border-bottom:none}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+.sx{overflow-x:auto}
+
+/* MODAL */
+.ov{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.3);backdrop-filter:blur(3px);align-items:center;justify-content:center}
+.ov.open{display:flex}
+.mbox{background:var(--sf);border:1px solid var(--bd);border-radius:16px;width:480px;max-width:94vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+.mbox.wide{width:580px}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.mh h2{font-size:15px;font-weight:700}
+.mcl{width:27px;height:27px;background:var(--bg);border:1px solid var(--bd);border-radius:7px;color:var(--mu);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.mcl:hover{background:var(--rbg);color:var(--r);border-color:var(--rbr)}
+.mb{padding:20px;overflow-y:auto;flex:1}
+.mf{padding:12px 20px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--tx);color:#fff;border-radius:10px;padding:11px 16px;font-size:13px;font-weight:500;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none;max-width:300px;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.tg{background:var(--g)}
+.toast.tr{background:var(--r)}
+
+/* METRIC */
+.mrow{display:grid;gap:10px;margin-bottom:16px}
+.m3{grid-template-columns:repeat(3,1fr)}
+.m4{grid-template-columns:repeat(4,1fr)}
+.mc{background:var(--sf);border:1px solid var(--bd);border-radius:11px;padding:14px 16px}
+.mc.gl{border-left:3px solid var(--g)}
+.mc.rl{border-left:3px solid var(--r)}
+.mc.yl{border-left:3px solid var(--ym)}
+.mlb{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.mv{font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:600;color:var(--tx)}
+.mv.g{color:var(--g)}.mv.r{color:var(--r)}.mv.y{color:var(--y)}
+.ms{font-size:11px;color:var(--fa);margin-top:4px}
+
+/* ============ PAGE: TAB KHÁCH ============ */
+.tab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.tab-card{background:var(--sf);border:1.5px solid var(--bd);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;position:relative}
+.tab-card:hover{border-color:var(--g);box-shadow:0 3px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.tab-card.has-bida{border-color:var(--ybr);background:var(--ybg)}
+.tc-name{font-size:14px;font-weight:700;margin-bottom:6px}
+.tc-time{font-size:11px;color:var(--mu);margin-bottom:8px}
+.tc-items{font-size:12px;color:var(--mu);margin-bottom:10px;min-height:18px}
+.tc-total{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--g)}
+.tc-actions{display:flex;gap:6px;margin-top:10px}
+.add-tab-btn{border:2px dashed var(--bd2);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .15s;color:var(--fa);background:none;font-family:inherit;min-height:120px;width:100%}
+.add-tab-btn:hover{border-color:var(--g);color:var(--g);background:var(--gbg)}
+
+/* ============ PAGE: BIDA ============ */
+.bida-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:16px}
+.bida-card{background:var(--sf);border:2px solid var(--bd);border-radius:14px;padding:16px;transition:all .15s}
+.bida-card.free{border-color:var(--gbr);background:var(--gbg)}
+.bida-card.busy{border-color:var(--ybr);background:var(--ybg)}
+.bida-card.paused{border-color:var(--bbr);background:var(--bbg)}
+.bc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.bc-name{font-size:15px;font-weight:700}
+.bc-status{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+.bc-status.free{background:var(--gbg);color:var(--g)}
+.bc-status.busy{background:var(--ybg);color:var(--y)}
+.bc-status.paused{background:var(--bbg);color:var(--b)}
+.bc-price{font-size:11px;color:var(--mu);margin-bottom:12px}
+.bc-timer{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:var(--tx);text-align:center;margin:10px 0;letter-spacing:2px}
+.bc-cost{font-size:14px;font-weight:600;color:var(--g);text-align:center;margin-bottom:12px}
+.bc-actions{display:flex;flex-direction:column;gap:6px}
+.bc-cart{font-size:11px;color:var(--mu);margin-bottom:8px;min-height:16px}
+
+/* ============ PAGE: NHẬPhàng ============ */
+.inv-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.inv-cat-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);cursor:pointer;font-family:inherit;transition:all .12s}
+.inv-cat-btn.on{background:var(--g);color:#fff;border-color:var(--g)}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.inv-item{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;text-align:center}
+.inv-item.low{border-color:var(--rbr);background:var(--rbg)}
+.ii-name{font-size:12px;font-weight:600;margin-bottom:4px}
+.ii-stock{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;margin:4px 0}
+.ii-stock.ok{color:var(--g)}.ii-stock.low{color:var(--r)}
+.ii-unit{font-size:10px;color:var(--mu)}
+
+/* ============ PAGE: TỔNG KẾT ============ */
+.sum-box{border-radius:12px;overflow:hidden;margin-bottom:14px}
+.sum-hd{padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.sum-hd.inc{background:var(--gbg);color:var(--gd);border-bottom:1px solid var(--gbr)}
+.sum-hd.exp{background:var(--rbg);color:var(--r);border-bottom:1px solid var(--rbr)}
+.sum-hd.itm{background:var(--ybg);color:var(--y);border-bottom:1px solid var(--ybr)}
+.sum-row{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--bd);font-size:13px;background:var(--sf)}
+.sum-row:last-child{border-bottom:none}
+.sum-row.tot{font-weight:700;background:var(--sf2)}
+.sum-v{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
+.sum-v.p{color:var(--g)}.sum-v.m{color:var(--r)}
+
+/* ============ PAGE: NỢ ============ */
+.debt-card{background:var(--sf);border:1px solid var(--bd);border-radius:11px;padding:14px;margin-bottom:10px}
+.dc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dc-name{font-size:14px;font-weight:700}
+.dc-orig{font-size:12px;color:var(--mu);margin-bottom:4px}
+.dc-remain{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--r)}
+.dc-actions{display:flex;gap:6px;margin-top:10px}
+
+/* ============ PAGE: ĐIỀU CHỈNH ============ */
+.adj-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd)}
+.adj-row:last-child{border-bottom:none}
+.adj-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.adj-main{flex:1;min-width:0}
+.adj-title{font-size:13px;font-weight:500}
+.adj-sub{font-size:11px;color:var(--mu);margin-top:1px}
+.adj-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;white-space:nowrap}
+
+/* ============ PRODUCT PICKER ============ */
+.prod-cats{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.pcat-btn{padding:4px 11px;border-radius:16px;font-size:12px;font-weight:600;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);cursor:pointer;font-family:inherit;transition:all .12s}
+.pcat-btn.on{background:var(--g);color:#fff;border-color:var(--g)}
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;max-height:240px;overflow-y:auto;margin-bottom:12px}
+.prod-btn{background:var(--sf);border:1.5px solid var(--bd);border-radius:9px;padding:10px 8px;cursor:pointer;font-family:inherit;transition:all .12s;text-align:center}
+.prod-btn:hover{border-color:var(--g);background:var(--gbg)}
+.pb-name{font-size:12px;font-weight:600;margin-bottom:3px}
+.pb-price{font-size:11px;color:var(--g);font-family:'JetBrains Mono',monospace}
+
+/* ============ CART ============ */
+.cart-area{background:var(--sf2);border-radius:10px;padding:12px;margin-top:10px;min-height:60px}
+.cart-title{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.cart-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd)}
+.cart-row:last-child{border-bottom:none}
+.cr-name{flex:1;font-size:13px}
+.cr-qty-ctrl{display:flex;align-items:center;gap:6px}
+.qty-btn{width:24px;height:24px;border-radius:6px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all .12s}
+.qty-btn:hover{border-color:var(--g);color:var(--g)}
+.cr-qty{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;min-width:20px;text-align:center}
+.cr-price{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mu);min-width:60px;text-align:right}
+.cr-del{background:none;border:none;color:var(--fa);cursor:pointer;font-size:14px;padding:2px}
+.cr-del:hover{color:var(--r)}
+.cart-total{display:flex;justify-content:space-between;padding-top:10px;margin-top:4px;font-size:13px;font-weight:700}
+
+/* ============ MOBILE NAV — luôn hiển thị ============ */
+.mob-nav{
+  display:block;           /* luôn visible */
+  position:fixed;
+  bottom:0;left:0;right:0;
+  z-index:200;
+  background:var(--sf);
+  border-top:1px solid var(--bd);
+  box-shadow:0 -2px 10px rgba(0,0,0,.07);
+}
+.mob-nav-inner{display:flex}
+.mn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 2px 9px;border:none;background:none;color:var(--mu);cursor:pointer;font-family:inherit;gap:2px;position:relative;transition:color .12s}
+.mn-item.on{color:var(--g)}
+.mn-item.on::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:var(--g);border-radius:0 0 3px 3px}
+.mn-ic{font-size:18px;line-height:1}
+.mn-lb{font-size:9px;font-weight:600}
+
+/* Trên desktop: sidebar vẫn hiện, bottom nav vẫn hiện — content thêm padding bottom */
+.content{padding:16px 16px 80px}
+
+/* ============ MODAL TAB SWITCHER ============ */
+.mtabs{display:flex;gap:2px;background:var(--sf2);border-radius:8px;padding:3px;margin-bottom:14px}
+.mtab{flex:1;padding:6px;border-radius:6px;font-size:12px;font-weight:600;border:none;background:none;color:var(--mu);cursor:pointer;font-family:inherit;transition:all .12s;text-align:center}
+.mtab.on{background:var(--sf);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.mtab-pane{display:none}
+.mtab-pane.on{display:block}
+
+/* Return cart items */
+.ret-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--sf2);margin-bottom:6px}
+/* LỊCH SỬ CARDS */
+.hist-card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:background .12s}
+.hist-card:active{background:var(--sf2)}
+.hc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.hc-left{display:flex;align-items:baseline;gap:10px;min-width:0}
+.hc-time{font-size:12px;color:var(--mu);flex-shrink:0}
+.hc-tab{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc-total{font-size:15px;font-weight:700;color:var(--g);flex-shrink:0;margin-left:8px}
+.hc-bot{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.hc-staff{font-size:11px;color:var(--mu);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc-chip{font-size:11px;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.chip-g{background:var(--gbg);color:var(--gd)}
+.chip-b{background:#eff6ff;color:#1d4ed8}
+.ret-name{flex:1;font-size:13px;font-weight:500}
+.ret-avail{font-size:11px;color:var(--mu);margin-right:4px}
+.ret-ctrl{display:flex;align-items:center;gap:6px}
+.ret-qty{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;min-width:20px;text-align:center;color:var(--r)}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .content{padding:12px 12px 80px}
+  .topbar{padding:0 12px}
+  .mrow.m3,.mrow.m4{grid-template-columns:1fr 1fr}
+  .tab-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .bida-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .inv-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+  .card{padding:12px}
+}
+@media(max-width:480px){
+  .mrow.m3,.mrow.m4{grid-template-columns:1fr 1fr}
+  .fr2,.fr3{grid-template-columns:1fr}
+  .mbox{width:96vw}
+  .topbar{height:50px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="s-logo">
+    <div class="s-icon">🎱</div>
+    <div>
+      <div class="s-name">Rùa Bida</div>
+      <div class="s-branch">Thái Lai</div>
+    </div>
+  </div>
+  <nav class="s-nav">
+    <button class="ni on" onclick="nav('tabs',this)"><span class="ni-ic">🎯</span>Tab khách</button>
+    <button class="ni" onclick="nav('bida',this)"><span class="ni-ic">🎱</span>Bida</button>
+    <button class="ni" onclick="nav('inv',this)"><span class="ni-ic">📦</span>Nhập hàng</button>
+    <button class="ni" onclick="nav('hist',this)"><span class="ni-ic">📜</span>Lịch sử</button>
+    <button class="ni" onclick="nav('sum',this)"><span class="ni-ic">📋</span>Tổng kết</button>
+    <button class="ni" onclick="nav('debt',this)"><span class="ni-ic">💳</span>Nợ</button>
+    <button class="ni" onclick="nav('adj',this)"><span class="ni-ic">📝</span>Điều chỉnh</button>
+  </nav>
+  <div class="s-foot">
+    <div class="u-pill">
+      <div class="u-av" id="s-uav">MT</div>
+      <div class="u-info">
+        <div class="u-nm" id="s-uname">Đang tải...</div>
+        <div class="u-rl" id="s-urole">Nhân viên</div>
+      </div>
+      <button class="btn-out" onclick="if(confirm('Đăng xuất?'))doLogout()">Logout</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="topbar">
+  <div class="tb-l">
+    <span class="pg-title" id="pg-title">Tab khách</span>
+  </div>
+  <div class="tb-r">
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</div>
+<div class="content">
+
+<!-- ======== TAB KHÁCH ======== -->
+<div id="p-tabs">
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn btn-p" onclick="openNewTab()">+ Tạo tab mới</button>
+    <button class="btn btn-y" onclick="openQuickOrder()">⚡ Order nhanh</button>
+  </div>
+
+  <div class="tab-grid" id="tab-grid">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- ======== BIDA ======== -->
+<div id="p-bida" style="display:none">
+  <div class="mrow m3" style="margin-bottom:14px">
+    <div class="mc gl">
+      <div class="mlb">Bàn trống</div>
+      <div class="mv g" id="bd-free">1</div>
+    </div>
+    <div class="mc yl">
+      <div class="mlb">Đang chạy</div>
+      <div class="mv y" id="bd-busy">2</div>
+    </div>
+    <div class="mc gl">
+      <div class="mlb">Thu bida hôm nay</div>
+      <div class="mv g" id="bd-today">0đ</div>
+    </div>
+  </div>
+  <div class="bida-grid" id="bida-grid"></div>
+</div>
+
+<!-- ======== NHẬP HÀNG ======== -->
+<div id="p-inv" style="display:none">
+  <div class="card">
+    <div class="card-h">
+      <span class="card-t">Tồn kho</span>
+      <div style="display:flex;gap:6px">
+        <div class="inv-cats" id="inv-cat-btns" style="margin:0"></div>
+        <button class="btn btn-p btn-sm" onclick="openModal('mo-inv')">+ Nhập hàng</button>
+      </div>
+    </div>
+    <div class="inv-grid" id="inv-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><span class="card-t">Lịch sử nhập hàng</span></div>
+    <div class="sx">
+      <table class="tbl" id="inv-hist-tbl">
+        <thead><tr><th>Thời gian</th><th>Mặt hàng</th><th>SL</th><th>Tiền</th><th>Ghi chú</th></tr></thead>
+        <tbody id="inv-hist-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======== LỊCH SỬ ======== -->
+<div id="p-hist" style="display:none">
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+      <div class="fg" style="margin:0;flex:0 0 auto">
+        <label class="fl">Từ ngày</label>
+        <input class="fi" type="date" id="hist-from" style="width:150px">
+      </div>
+      <div class="fg" style="margin:0;flex:0 0 auto">
+        <label class="fl">Đến ngày</label>
+        <input class="fi" type="date" id="hist-to" style="width:150px">
+      </div>
+      <button class="btn btn-p btn-sm" onclick="renderHist()">Lọc</button>
+      <span class="badge bg-n">🔒 Chỉ xem</span>
+    </div>
+  </div>
+  <div id="hist-list"></div>
+</div>
+
+<!-- ======== TỔNG KẾT NGÀY ======== -->
+<div id="p-sum" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+    <div style="display:flex;gap:8px;align-items:center">
+      <input class="fi" type="date" id="sum-date" style="width:160px">
+      <button class="btn btn-s btn-sm" onclick="renderSum()">Xem</button>
+    </div>
+    <button class="btn btn-s btn-sm" onclick="toast('Chức năng xuất báo cáo sẽ có ở phiên bản tiếp theo')">⬇ Xuất PDF</button>
+  </div>
+
+  <div class="mrow m3" style="margin-bottom:14px">
+    <div class="mc gl"><div class="mlb">Tổng thu</div><div class="mv g" id="s-thu">0đ</div></div>
+    <div class="mc rl"><div class="mlb">Tổng chi</div><div class="mv r" id="s-chi">0đ</div></div>
+    <div class="mc gl"><div class="mlb">Doanh thu ngày</div><div class="mv g" id="s-dt">0đ</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div class="sum-box">
+        <div class="sum-hd inc">💰 Thu nhập</div>
+        <div class="sum-row"><span>🎱 Tiền bida</span><span class="sum-v p" id="s-bida">0đ</span></div>
+        <div class="sum-row"><span>🛒 Tiền vật phẩm</span><span class="sum-v p" id="s-sp">0đ</span></div>
+        <div class="sum-row"><span>➕ Điều chỉnh (+)</span><span class="sum-v p" id="s-adj-p">0đ</span></div>
+        <div class="sum-row tot"><span>Tổng thu</span><span class="sum-v p" id="s-thu2">0đ</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sum-box">
+        <div class="sum-hd exp">📤 Chi</div>
+        <div class="sum-row"><span>📦 Nhập hàng</span><span class="sum-v m" id="s-nhap">0đ</span></div>
+        <div class="sum-row"><span>➖ Điều chỉnh (−)</span><span class="sum-v m" id="s-adj-m">0đ</span></div>
+        <div class="sum-row tot"><span>Tổng chi</span><span class="sum-v m" id="s-chi2">0đ</span></div>
+      </div>
+    </div>
+    <div style="grid-column:1/-1">
+      <div class="sum-box" id="sum-items-box">
+        <div class="sum-hd itm">📦 Vật phẩm hôm nay</div>
+        <div id="sum-items-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== NỢ ======== -->
+<div id="p-debt" style="display:none">
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+    <input class="fi" type="text" id="debt-search" placeholder="Tìm theo tên..." style="width:200px" oninput="renderDebts()">
+    <div style="display:flex;gap:4px">
+      <button class="btn btn-sm btn-s" id="df-all" onclick="setDebtFilter('all')">Tất cả</button>
+      <button class="btn btn-sm btn-y" id="df-pending" onclick="setDebtFilter('pending')">Chưa trả</button>
+      <button class="btn btn-sm btn-g" id="df-paid" onclick="setDebtFilter('paid')">Đã trả</button>
+    </div>
+  </div>
+  <div id="debt-list"></div>
+</div>
+
+<!-- ======== ĐIỀU CHỈNH ======== -->
+<div id="p-adj" style="display:none">
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="btn btn-p" onclick="openAdj(1)">➕ Cộng tiền</button>
+    <button class="btn btn-r" onclick="openAdj(-1)">➖ Chi phí vận hành</button>
+  </div>
+  <div class="card">
+    <div class="card-h"><span class="card-t">Điều chỉnh hôm nay</span></div>
+    <div id="adj-today-list"><div style="color:var(--fa);font-size:13px;padding:16px 0">Chưa có điều chỉnh hôm nay</div></div>
+  </div>
+  <div class="card">
+    <div class="card-h"><span class="card-t">Toàn bộ lịch sử</span></div>
+    <div id="adj-all-list"></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</main>
+</div><!-- /layout -->
+
+<!-- MOBILE NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-inner">
+    <button class="mn-item on" id="mn-tabs" onclick="nav('tabs',null,'tabs')"><span class="mn-ic">🎯</span><span class="mn-lb">Tab</span></button>
+    <button class="mn-item" id="mn-bida" onclick="nav('bida',null,'bida')"><span class="mn-ic">🎱</span><span class="mn-lb">Bida</span></button>
+    <button class="mn-item" id="mn-inv" onclick="nav('inv',null,'inv')"><span class="mn-ic">📦</span><span class="mn-lb">Kho</span></button>
+    <button class="mn-item" id="mn-hist" onclick="nav('hist',null,'hist')"><span class="mn-ic">📜</span><span class="mn-lb">Lịch sử</span></button>
+    <button class="mn-item" id="mn-sum" onclick="nav('sum',null,'sum')"><span class="mn-ic">📋</span><span class="mn-lb">Tổng kết</span></button>
+    <button class="mn-item" id="mn-debt" onclick="nav('debt',null,'debt')"><span class="mn-ic">💳</span><span class="mn-lb">Nợ</span></button>
+    <button class="mn-item" id="mn-adj" onclick="nav('adj',null,'adj')"><span class="mn-ic">📝</span><span class="mn-lb">Điều chỉnh</span></button>
+  </div>
+</nav>
+
+<!-- ===== MODALS ===== -->
+
+<!-- MODAL: TẠO TAB / ORDER NHANH -->
+<div class="ov" id="mo-newtab">
+  <div class="mbox">
+    <div class="mh"><h2 id="newtab-title">🎯 Tạo tab mới</h2><button class="mcl" onclick="closeModal('mo-newtab')">✕</button></div>
+    <div class="mb">
+      <div class="fg" id="newtab-name-fg">
+        <label class="fl">Tên khách</label>
+        <input class="fi" id="newtab-name" type="text" placeholder="Nhập tên khách...">
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Thêm order ngay (tùy chọn)</div>
+      <div class="prod-cats" id="nt-cats"></div>
+      <div class="prod-grid" id="nt-prods"></div>
+      <div class="cart-area">
+        <div class="cart-title">Cart</div>
+        <div id="nt-cart-rows"><div style="color:var(--fa);font-size:12px">Chưa có món</div></div>
+        <div class="cart-total">
+          <span>Tổng</span>
+          <span class="mono" id="nt-total">0đ</span>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-newtab')">Hủy</button>
+      <button class="btn btn-p" id="newtab-submit-btn" onclick="submitNewTab()">✓ Tạo tab</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ORDER TAB (thêm/trả đồ vào tab) -->
+<div class="ov" id="mo-order">
+  <div class="mbox wide">
+    <div class="mh"><h2 id="order-title">🛒 Order — Tab A</h2><button class="mcl" onclick="closeModal('mo-order')">✕</button></div>
+    <div class="mb">
+      <div class="mtabs">
+        <button class="mtab on" onclick="switchMTab('mo-order','ord-add')">➕ Thêm món</button>
+        <button class="mtab" onclick="switchMTab('mo-order','ord-ret')">↩ Trả hàng</button>
+      </div>
+      <!-- THÊM MÓN -->
+      <div class="mtab-pane on" id="ord-add">
+        <div class="prod-cats" id="ord-cats"></div>
+        <div class="prod-grid" id="ord-prods"></div>
+        <div class="cart-area">
+          <div class="cart-title">Giỏ hàng thêm</div>
+          <div id="ord-cart-rows"><div style="color:var(--fa);font-size:12px">Chưa chọn món</div></div>
+          <div class="cart-total"><span>Tổng thêm</span><span class="mono" id="ord-total">0đ</span></div>
+        </div>
+      </div>
+      <!-- TRẢ HÀNG -->
+      <div class="mtab-pane" id="ord-ret">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:10px">Chọn số lượng cần trả lại — sẽ trừ khỏi tab.</div>
+        <div id="ord-ret-rows"><div style="color:var(--fa);font-size:13px">Chưa có món trong tab</div></div>
+        <div style="display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:1px solid var(--bd);font-size:13px;font-weight:700">
+          <span style="color:var(--r)">Trả lại</span>
+          <span class="mono" style="color:var(--r)" id="ord-ret-total">0đ</span>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-order')">Hủy</button>
+      <button class="btn btn-p" onclick="submitOrder()">✓ Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ORDER BIDA (thêm/trả đồ tại bàn, có xác nhận) -->
+<div class="ov" id="mo-bida-order">
+  <div class="mbox wide">
+    <div class="mh"><h2 id="bo-title">🛒 Order — Bàn X</h2><button class="mcl" onclick="closeModal('mo-bida-order')">✕</button></div>
+    <div class="mb">
+      <!-- Đã order tại bàn -->
+      <div id="bo-current-wrap" style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Đã order tại bàn</div>
+        <div id="bo-current"><div style="color:var(--fa);font-size:12px;padding:8px 0">Chưa có món nào</div></div>
+      </div>
+
+      <div class="mtabs">
+        <button class="mtab on" onclick="switchMTab('mo-bida-order','bo-add')">➕ Thêm món</button>
+        <button class="mtab" onclick="switchMTab('mo-bida-order','bo-ret')">↩ Trả hàng</button>
+      </div>
+
+      <!-- THÊM MÓN -->
+      <div class="mtab-pane on" id="bo-add">
+        <div class="prod-cats" id="bo-cats"></div>
+        <div class="prod-grid" id="bo-prods"></div>
+        <div class="cart-area">
+          <div class="cart-title">Món mới thêm</div>
+          <div id="bo-cart-rows"><div style="color:var(--fa);font-size:12px">Chưa chọn món</div></div>
+          <div class="cart-total"><span>Tổng thêm</span><span class="mono" id="bo-total">0đ</span></div>
+        </div>
+      </div>
+
+      <!-- TRẢ HÀNG -->
+      <div class="mtab-pane" id="bo-ret">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:10px">Chọn số lượng trả lại — sẽ trừ khỏi bàn.</div>
+        <div id="bo-ret-rows"><div style="color:var(--fa);font-size:13px">Chưa có món tại bàn</div></div>
+        <div style="display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:1px solid var(--bd);font-size:13px;font-weight:700">
+          <span style="color:var(--r)">Trả lại</span>
+          <span class="mono" style="color:var(--r)" id="bo-ret-total">0đ</span>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-bida-order')">Hủy</button>
+      <button class="btn btn-p" onclick="confirmBidaOrder()">✓ Xác nhận order</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: THANH TOÁN -->
+<div class="ov" id="mo-pay">
+  <div class="mbox wide">
+    <div class="mh"><h2 id="pay-title">💳 Thanh toán</h2><button class="mcl" onclick="closeModal('mo-pay')">✕</button></div>
+    <div class="mb">
+      <!-- Chi tiết hoá đơn -->
+      <div id="pay-bill" style="background:var(--sf2);border-radius:10px;padding:14px;margin-bottom:12px;font-size:13px"></div>
+
+      <!-- Tab thêm/trả -->
+      <div class="mtabs">
+        <button class="mtab on" onclick="switchMTab('mo-pay','pay-add')">➕ Thêm món</button>
+        <button class="mtab" onclick="switchMTab('mo-pay','pay-ret')">↩ Trả hàng</button>
+      </div>
+
+      <!-- THÊM MÓN -->
+      <div class="mtab-pane on" id="pay-add">
+        <div class="prod-cats" id="pay-cats"></div>
+        <div class="prod-grid" id="pay-prods"></div>
+        <div class="cart-area" id="pay-extra-area">
+          <div class="cart-title">Thêm khi thanh toán</div>
+          <div id="pay-extra-rows"><div style="color:var(--fa);font-size:12px">Chưa chọn món</div></div>
+          <div class="cart-total"><span>Thêm</span><span class="mono" id="pay-extra-total">0đ</span></div>
+        </div>
+      </div>
+
+      <!-- TRẢ HÀNG -->
+      <div class="mtab-pane" id="pay-ret">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:10px">Trả lại món — số tiền sẽ được trừ khỏi tổng.</div>
+        <div id="pay-ret-rows"><div style="color:var(--fa);font-size:13px">Chưa có món trong tab</div></div>
+        <div style="display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:1px solid var(--bd);font-size:13px;font-weight:700">
+          <span style="color:var(--r)">Trả lại</span>
+          <span class="mono" style="color:var(--r)" id="pay-ret-total">0đ</span>
+        </div>
+      </div>
+
+      <!-- Tổng -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:2px solid var(--bd)">
+        <div>
+          <div style="font-size:14px;font-weight:700">TỔNG CỘNG</div>
+          <div style="font-size:11px;color:var(--mu)" id="pay-breakdown"></div>
+        </div>
+        <div class="mono" style="font-size:24px;font-weight:700;color:var(--g)" id="pay-grand">0đ</div>
+      </div>
+
+      <!-- Phương thức -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
+        <button class="btn btn-p" onclick="finalPay('cash')">💵 Tiền mặt</button>
+        <button class="btn btn-b" onclick="finalPay('qr')">📱 QR</button>
+        <button class="btn btn-r" onclick="openDebtForm()">📋 Ghi nợ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: QR -->
+<div class="ov" id="mo-qr">
+  <div class="mbox" style="width:360px">
+    <div class="mh"><h2>📱 Quét QR thanh toán</h2><button class="mcl" onclick="closeModal('mo-qr')">✕</button></div>
+    <div class="mb" style="text-align:center">
+      <div style="font-size:13px;color:var(--mu);margin-bottom:12px">Số tiền: <strong class="mono" id="qr-amount">0đ</strong></div>
+      <div style="background:var(--sf2);border-radius:12px;padding:20px;display:inline-block;margin-bottom:12px">
+        <div style="font-size:80px;line-height:1">📷</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:8px">QR VietQR</div>
+      </div>
+      <div style="font-size:12px;color:var(--mu)">Thái Lai Billiards · Quét mã QR để chuyển khoản</div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-qr')">Huỷ</button>
+      <button class="btn btn-p" onclick="confirmQR()">✓ Đã nhận tiền</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: GHI NỢ -->
+<div class="ov" id="mo-debt-form">
+  <div class="mbox" style="width:400px">
+    <div class="mh"><h2>📋 Ghi nợ</h2><button class="mcl" onclick="closeModal('mo-debt-form')">✕</button></div>
+    <div class="mb">
+      <div class="fg"><label class="fl">Tên khách</label><input class="fi" id="df-name" type="text" placeholder="Nhập tên..."></div>
+      <div class="fg"><label class="fl">Số điện thoại (tùy chọn)</label><input class="fi" id="df-phone" type="tel" placeholder="0..."></div>
+      <div class="fg">
+        <label class="fl">Số tiền nợ</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input class="fi" id="df-amount" type="number" placeholder="0" min="0" style="flex:1">
+          <span style="font-size:13px;color:var(--mu)">đ</span>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Ghi chú</label><input class="fi" id="df-note" type="text" placeholder="Lý do nợ..."></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-debt-form')">Hủy</button>
+      <button class="btn btn-r" onclick="submitDebt()">✓ Xác nhận ghi nợ</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NHẬP HÀNG -->
+<div class="ov" id="mo-inv">
+  <div class="mbox wide">
+    <div class="mh"><h2>📦 Nhập hàng</h2><button class="mcl" onclick="closeModal('mo-inv')">✕</button></div>
+    <div class="mb">
+      <div class="frow fr2">
+        <div class="fg"><label class="fl">Mặt hàng</label>
+          <select class="fi" id="inv-item-sel" onchange="invSelChange()">
+            <option value="">-- Chọn --</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Nguồn / Ghi chú</label><input class="fi" id="inv-src" type="text" placeholder="NCC, mua lẻ..."></div>
+      </div>
+      <div class="frow fr3">
+        <div class="fg"><label class="fl">Số lượng</label><input class="fi" id="inv-qty" type="number" placeholder="0" min="1" oninput="calcInvUnit()"></div>
+        <div class="fg"><label class="fl">Tổng tiền (đ)</label><input class="fi" id="inv-total" type="number" placeholder="0" min="0" oninput="calcInvUnit()"></div>
+        <div class="fg"><label class="fl">Đơn giá (tự tính)</label><input class="fi" id="inv-price" type="text" readonly placeholder="0đ" style="background:var(--sf2)"></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-inv')">Hủy</button>
+      <button class="btn btn-p" onclick="submitInv()">✓ Xác nhận nhập</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ĐIỀU CHỈNH -->
+<div class="ov" id="mo-adj">
+  <div class="mbox" style="width:400px">
+    <div class="mh"><h2 id="adj-modal-title">📝 Điều chỉnh</h2><button class="mcl" onclick="closeModal('mo-adj')">✕</button></div>
+    <div class="mb">
+      <div class="fg"><label class="fl">Lý do / Mô tả</label><input class="fi" id="adj-desc" type="text" placeholder="VD: Mua đá, Thu thêm từ khách..."></div>
+      <div class="fg">
+        <label class="fl">Số tiền (đ)</label>
+        <input class="fi" id="adj-amt" type="number" placeholder="0" min="0">
+      </div>
+      <div id="adj-type-hint" style="font-size:12px;color:var(--mu);margin-top:-6px"></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-adj')">Hủy</button>
+      <button class="btn btn-p" id="adj-submit-btn" onclick="submitAdj()">✓ Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: KẾT THÚC BIDA -->
+<div class="ov" id="mo-bida-end">
+  <div class="mbox wide">
+    <div class="mh"><h2 id="be-title">🎱 Kết thúc bàn</h2><button class="mcl" onclick="closeModal('mo-bida-end')">✕</button></div>
+    <div class="mb">
+      <div style="background:var(--ybg);border:1.5px solid var(--ybr);border-radius:12px;padding:16px;text-align:center;margin-bottom:16px">
+        <div style="font-size:12px;color:var(--y);font-weight:700;margin-bottom:6px">TỔNG THỜI GIAN</div>
+        <div class="mono" style="font-size:40px;font-weight:700;color:var(--tx)" id="be-timer">00:00:00</div>
+        <div style="font-size:13px;color:var(--mu);margin-top:6px" id="be-price-info">Đơn giá: —</div>
+        <div style="font-size:20px;font-weight:700;color:var(--g);margin-top:8px" id="be-cost">0đ</div>
+      </div>
+
+      <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Order từ bàn</div>
+      <div class="prod-cats" id="be-cats"></div>
+      <div class="prod-grid" id="be-prods"></div>
+      <div class="cart-area" id="be-cart-area">
+        <div class="cart-title">Vật phẩm tại bàn</div>
+        <div id="be-cart-rows"><div style="color:var(--fa);font-size:12px">Chưa có</div></div>
+        <div class="cart-total">
+          <span>Vật phẩm</span>
+          <span class="mono" id="be-cart-total">0đ</span>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:2px solid var(--bd)">
+        <div style="font-size:14px;font-weight:700">TỔNG CỘNG</div>
+        <div class="mono" style="font-size:22px;font-weight:700;color:var(--g)" id="be-grand">0đ</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px">
+        <button class="btn btn-p" onclick="endBida('tab')">➕ Gộp vào tab</button>
+        <button class="btn btn-p" onclick="endBida('cash')">💵 Tiền mặt</button>
+        <button class="btn btn-b" onclick="endBida('qr')">📱 QR</button>
+        <button class="btn btn-r" onclick="endBida('debt')">💳 Ghi nợ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CHI TIẾT NỢ -->
+<div class="ov" id="mo-debt-detail">
+  <div class="mbox" style="width:460px">
+    <div class="mh">
+      <div>
+        <h2 id="dd-name">Chi tiết nợ</h2>
+        <div style="font-size:11px;color:var(--mu);margin-top:2px" id="dd-meta"></div>
+      </div>
+      <button class="mcl" onclick="closeModal('mo-debt-detail')">✕</button>
+    </div>
+    <div class="mb">
+
+      <!-- Trạng thái -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <span id="dd-badge"></span>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--mu)">Còn nợ</div>
+          <div class="mono" style="font-size:24px;font-weight:700;color:var(--r)" id="dd-remaining"></div>
+        </div>
+      </div>
+
+      <!-- Bida -->
+      <div id="dd-bida-section" style="display:none;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎱 Bida</div>
+        <div style="background:var(--ybg);border:1px solid var(--ybr);border-radius:9px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:600" id="dd-bida-table"></div>
+            <div style="font-size:11px;color:var(--mu);margin-top:2px" id="dd-bida-dur"></div>
+          </div>
+          <div class="mono" style="font-size:15px;font-weight:700;color:var(--y)" id="dd-bida-cost"></div>
+        </div>
+      </div>
+
+      <!-- Vật phẩm -->
+      <div id="dd-items-section" style="display:none;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🛒 Vật phẩm</div>
+        <div style="background:var(--sf2);border-radius:9px;overflow:hidden">
+          <div id="dd-items-rows"></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 12px;font-size:13px;font-weight:700;border-top:1px solid var(--bd)">
+            <span>Tổng vật phẩm</span>
+            <span class="mono" style="color:var(--b)" id="dd-items-total"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Điều chỉnh -->
+      <div id="dd-adj-section" style="display:none;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">📝 Điều chỉnh</div>
+        <div id="dd-adj-rows"></div>
+      </div>
+
+      <!-- Tổng -->
+      <div style="background:var(--gbg);border:1.5px solid var(--gbr);border-radius:10px;padding:12px 14px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-bottom:6px">
+          <span>Tổng hoá đơn gốc</span>
+          <span class="mono" id="dd-orig"></span>
+        </div>
+        <div id="dd-paid-row" style="display:none;flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-bottom:6px">
+          <span>Đã trả</span>
+          <span class="mono" style="color:var(--g)" id="dd-paid"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding-top:6px;border-top:1px solid var(--gbr)">
+          <span>Còn lại cần thu</span>
+          <span class="mono" style="color:var(--r)" id="dd-remaining2"></span>
+        </div>
+      </div>
+
+      <!-- Ghi chú -->
+      <div id="dd-note-row" style="display:none;margin-top:12px;font-size:12px;color:var(--mu)">
+        📌 Ghi chú: <span id="dd-note"></span>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-debt-detail')">Đóng</button>
+      <button class="btn btn-p" id="dd-pay-btn" onclick="openPayFromDetail()">💰 Thu nợ</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CHI TIẾT PHIÊN THANH TOÁN -->
+<div class="ov" id="mo-session-detail">
+  <div class="mbox" style="width:420px">
+    <div class="mh">
+      <div>
+        <h2 id="sd-title">📋 Chi tiết phiên</h2>
+        <div id="sd-meta" style="font-size:11px;color:var(--mu);margin-top:2px"></div>
+      </div>
+      <button class="mcl" onclick="closeModal('mo-session-detail')">✕</button>
+    </div>
+    <div class="mb">
+      <!-- bida -->
+      <div id="sd-bida-wrap">
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎱 Bida</div>
+        <div id="sd-bida" style="background:var(--sf2);border-radius:8px;padding:10px 12px;margin-bottom:14px"></div>
+      </div>
+      <!-- items -->
+      <div id="sd-items-wrap">
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🛒 Đồ đã dùng</div>
+        <div id="sd-items" style="margin-bottom:14px"></div>
+      </div>
+      <!-- note -->
+      <div id="sd-note-wrap">
+        <div style="font-size:11px;color:var(--mu);margin-bottom:4px">📝 Ghi chú</div>
+        <div id="sd-note" style="font-size:13px;padding:8px 12px;background:var(--sf2);border-radius:8px"></div>
+      </div>
+      <!-- total -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:2px solid var(--bd)">
+        <span style="font-weight:700;font-size:14px">Tổng thanh toán</span>
+        <span class="mono" id="sd-total" style="font-size:18px;font-weight:700;color:var(--g)"></span>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-session-detail')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TRẢ NỢ -->
+<div class="ov" id="mo-pay-debt">
+  <div class="mbox" style="width:380px">
+    <div class="mh"><h2>💳 Trả nợ</h2><button class="mcl" onclick="closeModal('mo-pay-debt')">✕</button></div>
+    <div class="mb">
+      <div style="background:var(--rbg);border:1px solid var(--rbr);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px" id="debt-pay-info"></div>
+      <div class="fg"><label class="fl">Số tiền trả</label><input class="fi" id="debt-pay-amt" type="number" placeholder="0" min="1"></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-s" onclick="closeModal('mo-pay-debt')">Hủy</button>
+      <button class="btn btn-p" onclick="submitPayDebt()">✓ Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===============================================================
+   AUTH & API LAYER
+=============================================================== */
+const authToken = localStorage.getItem('bida_token') || '';
+const currentUser = JSON.parse(localStorage.getItem('bida_me') || 'null');
+if(!authToken || !currentUser){ window.location.href='login.html'; }
+
+async function apiFetch(path, opts={}){
+  try {
+    const res = await fetch(path, {
+      ...opts,
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+authToken, ...(opts.headers||{}) }
+    });
+    if(res.status===401){ localStorage.clear(); window.location.href='login.html'; return null; }
+    return res.json();
+  } catch(e){ toast('Lỗi kết nối server','tr'); return null; }
+}
+const apiGet    = p        => apiFetch(p);
+const apiPost   = (p,b)    => apiFetch(p,{method:'POST',  body:JSON.stringify(b)});
+const apiPut    = (p,b)    => apiFetch(p,{method:'PUT',   body:JSON.stringify(b)});
+const apiDelete = p        => apiFetch(p,{method:'DELETE'});
+
+// Áp delta kho: items=[{pid,qty}], sign=-1 (bán/trừ) hoặc +1 (trả/cộng).
+// Cập nhật cả local products lẫn backend — đây là nguồn duy nhất sửa stock,
+// các nơi gọi KHÔNG tự sửa p.stock nữa (tránh trừ 2 lần).
+async function syncStock(items, sign){
+  await Promise.all(items.map(it=>{
+    const p = products.find(x=>x.id===it.pid);
+    if(!p) return Promise.resolve();
+    p.stock = p.stock + sign * it.qty;
+    return apiPut('/api/inventory/'+p.id, {
+      name:p.name, price:p.price, unit:p.unit, cat:p.cat,
+      stock:p.stock, min_stock:p.min_stock||0
+    });
+  }));
+}
+
+/* ── WebSocket ───────────────────────────────────────────── */
+let ws=null;
+function connectWS(){
+  const proto = location.protocol==='https:'?'wss':'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws?token=${authToken}`);
+  ws.onmessage = e => {
+    const msg = JSON.parse(e.data);
+    switch(msg.type){
+      case 'bida':
+        if(msg.data) Object.entries(msg.data).forEach(([k,v])=>{
+          const prev=bidaState[k]?._pauseStart;
+          bidaState[k]=apiToFrontendBida(v);
+          if(prev) bidaState[k]._pauseStart=prev;
+        });
+        if(currentPage==='bida') renderBida();
+        break;
+      case 'tabs_add':
+        if(!tabs.find(t=>t.id===msg.data.id)) tabs.push(apiFrontTab(msg.data));
+        if(currentPage==='tabs') renderTabs();
+        break;
+      case 'tabs_remove':
+        tabs = tabs.filter(t=>t.id!==msg.data);
+        if(currentPage==='tabs') renderTabs();
+        break;
+      case 'tab_update':
+        { const i=tabs.findIndex(t=>t.id===msg.data.id);
+          if(i>=0){ const frozen=tabs[i].frozenBidaCost; tabs[i]=apiFrontTab(msg.data); if(frozen) tabs[i].frozenBidaCost=frozen; }
+          if(currentPage==='tabs') renderTabs(); }
+        break;
+      case 'session_add':
+        if(!sessions.find(s=>s.id===msg.data.id)) sessions.unshift(msg.data);
+        if(currentPage==='hist') renderHist();
+        break;
+      case 'inventory_add': case 'inventory_update':
+        { const i=products.findIndex(p=>p.id===msg.data.id);
+          if(i>=0) products[i]=msg.data; else products.push(msg.data); }
+        break;
+      case 'inventory_remove':
+        products=products.filter(p=>p.id!==msg.data);
+        break;
+      case 'adjustment_add':
+        if(!adjustments.find(a=>a.id===msg.data.id)) adjustments.unshift(msg.data);
+        if(currentPage==='adj') renderAdj();
+        break;
+      case 'adjustment_remove':
+        adjustments=adjustments.filter(a=>a.id!==msg.data);
+        if(currentPage==='adj') renderAdj();
+        break;
+      case 'debt_update':
+        { const i=debts.findIndex(d=>d.id===msg.data.id);
+          if(i>=0) debts[i]=msg.data; else debts.unshift(msg.data);
+          if(currentPage==='debt') renderDebts(); }
+        break;
+      case 'settings':
+        applySettings(msg.data);
+        break;
+    }
+  };
+  ws.onclose = () => setTimeout(connectWS, 3000);
+}
+
+/* ── Convert bida API format → frontend format ───────────── */
+function apiToFrontendBida(s){
+  return {
+    running: s.running,
+    paused:  s.paused,
+    startTime: s.start_time ? new Date(s.start_time).getTime() : null,
+    pausedMs:  s.paused_ms || 0,
+    cart:      s.cart || [],
+    _pauseStart: null
+  };
+}
+function frontendToApiBida(bid, st){
+  return {
+    running:    st.running,
+    paused:     st.paused,
+    start_time: st.startTime ? new Date(st.startTime).toISOString() : null,
+    paused_ms:  st.pausedMs || 0,
+    cart:       st.cart || []
+  };
+}
+function apiFrontTab(t){
+  return { ...t, created: new Date(t.created_at).getTime(), items: t.items||[], frozenBidaCost: t.bida_cost||0 };
+}
+
+/* ── Apply settings from API ─────────────────────────────── */
+function applySettings(s){
+  if(!s) return;
+  if(s.rates){
+    TABLES.forEach(t=>{
+      const r = s.rates[t.type];
+      if(r){ t.rateA = r.before; t.rateB = r.after; }
+    });
+  }
+  if(s.cutoff){ CUTOFF.h=s.cutoff.h; CUTOFF.m=s.cutoff.m; }
+}
+
+/* ── Load all data ───────────────────────────────────────── */
+async function loadAll(){
+  const [sets, bidas, tabsR, sess, inv, debtsR, adjs, imps] = await Promise.all([
+    apiGet('/api/settings'),
+    apiGet('/api/bida/state'),
+    apiGet('/api/tabs'),
+    apiGet('/api/sessions?limit=5000'),
+    apiGet('/api/inventory'),
+    apiGet('/api/debts'),
+    apiGet('/api/adjustments'),
+    apiGet('/api/imports?limit=5000'),
+  ]);
+  applySettings(sets);
+  if(bidas) Object.entries(bidas).forEach(([k,v])=>{ bidaState[k]=apiToFrontendBida(v); });
+  tabs         = (tabsR   ||[]).map(apiFrontTab);
+  sessions     = sess     || [];
+  products     = inv      || [];
+  debts        = debtsR   || [];
+  adjustments  = adjs     || [];
+  invImports   = imps     || [];
+  connectWS();
+  renderTabs();
+  // update sidebar user info
+  document.getElementById('s-uname').textContent = currentUser.name;
+  document.getElementById('s-urole').textContent = currentUser.role==='admin'?'Quản lý':'Nhân viên';
+  document.getElementById('s-uav').textContent   = currentUser.name.charAt(0).toUpperCase();
+}
+
+/* ── Save bida state to API ─────────────────────────────── */
+async function saveBida(bid){
+  await apiPut('/api/bida/'+bid+'/state', frontendToApiBida(bid, bidaState[bid]));
+}
+
+/* ===============================================================
+   DATA
+=============================================================== */
+const TABLES = [
+  {id:'b1', name:'Bàn phân 1', type:'phan', rateA:25000, rateB:30000},
+  {id:'b2', name:'Bàn phân 2', type:'phan', rateA:25000, rateB:30000},
+  {id:'b3', name:'Bàn 3C',     type:'ba_bang', rateA:25000, rateB:30000}
+];
+const CUTOFF = {h:21, m:0};
+
+const CATLAB = {nuoc:'🥤 Nước', thuoc:'🚬 Thuốc', an:'🍜 Đồ ăn', khac:'📦 Khác'};
+let products   = [];
+let tabs       = [];
+let bidaState  = { b1:{running:false,paused:false,startTime:null,pausedMs:0,cart:[]},
+                   b2:{running:false,paused:false,startTime:null,pausedMs:0,cart:[]},
+                   b3:{running:false,paused:false,startTime:null,pausedMs:0,cart:[]} };
+let sessions   = [];
+let invImports = [];
+let debts      = [];
+let adjustments= [];
+
+/* ===============================================================
+   STATE
+=============================================================== */
+let currentPage = 'tabs';
+let activeBidaId = null;    // bàn đang được thao tác
+let activeTabId = null;     // tab đang được thao tác
+let payTabId = null;
+let adjType = 1;            // +1 hoặc -1
+let debtFilter = 'pending';
+let activeProductCat = 'nuoc'; // cho các modal picker
+let tempCart = {};           // cart tạm trong các modal
+let currentInvCat = 'nuoc';
+
+/* ===============================================================
+   CLOCK
+=============================================================== */
+function tick(){
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('vi-VN');
+  // Update bida timers
+  document.querySelectorAll('[data-bid]').forEach(el => {
+    const bid = el.dataset.bid;
+    const st = bidaState[bid];
+    if(!st.running || st.paused) return;
+    const ms = bidaElapsedMs(st);
+    el.textContent = fmtTime(ms);
+    // Update cost
+    const costEl = document.querySelector(`[data-bid-cost="${bid}"]`);
+    if(costEl) costEl.textContent = fmtMoney(calcBidaCost(bid));
+  });
+}
+setInterval(tick, 1000);
+tick();
+
+/* ===============================================================
+   NAVIGATION
+=============================================================== */
+const PAGE_TITLES = {tabs:'Tab khách',bida:'Bàn bida',inv:'Nhập hàng',hist:'Lịch sử',sum:'Tổng kết ngày',debt:'Công nợ',adj:'Điều chỉnh'};
+function nav(id, sideBtn, mobId){
+  document.querySelectorAll('[id^="p-"]').forEach(e=>e.style.display='none');
+  document.getElementById('p-'+id).style.display='block';
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
+  if(sideBtn) sideBtn.classList.add('on');
+  document.querySelectorAll('.mn-item').forEach(b=>b.classList.remove('on'));
+  const mkey = mobId||id;
+  const mb = document.getElementById('mn-'+mkey);
+  if(mb) mb.classList.add('on');
+  document.getElementById('pg-title').textContent = PAGE_TITLES[id]||'';
+  currentPage = id;
+  // Lazy render
+  if(id==='tabs') renderTabs();
+  if(id==='bida') renderBida();
+  if(id==='inv'){renderInvGrid();renderInvHist();}
+  if(id==='hist') renderHist();
+  if(id==='sum') renderSum();
+  if(id==='debt') setDebtFilter(debtFilter); // re-apply filter + highlight button
+  if(id==='adj') renderAdj();
+}
+
+/* ===============================================================
+   HELPERS
+=============================================================== */
+function fmtMoney(n){return Math.round(n).toLocaleString('vi-VN')+'đ';}
+function fmtTime(ms){
+  const s=Math.floor(ms/1000);
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+  return [h,m,sec].map(x=>String(x).padStart(2,'0')).join(':');
+}
+function roundUp1k(n){return Math.ceil(n/1000)*1000;}
+// Số ms đã chơi thực tế (trừ thời gian tạm dừng, kể cả lần dừng đang diễn ra)
+function bidaElapsedMs(st){
+  if(!st||!st.running) return 0;
+  let paused=st.pausedMs||0;
+  if(st.paused && st._pauseStart) paused+=Date.now()-st._pauseStart;
+  return Date.now()-st.startTime-paused;
+}
+function calcBidaCost(bid){
+  const st=bidaState[bid];
+  if(!st.running) return 0;
+  const tbl=TABLES.find(t=>t.id===bid);
+  const ms=bidaElapsedMs(st);
+  const hrs=ms/3600000;
+  const now=new Date();
+  const afterCut=now.getHours()>CUTOFF.h||(now.getHours()===CUTOFF.h&&now.getMinutes()>=CUTOFF.m);
+  const rate=afterCut?tbl.rateB:tbl.rateA;
+  return roundUp1k(hrs*rate);
+}
+function getTabItems(tid){
+  const tab=tabs.find(t=>t.id===tid);
+  return tab?tab.items:[];
+}
+function tabCartTotal(tid){
+  return getTabItems(tid).reduce((s,i)=>s+i.qty*i.price,0);
+}
+function getProd(pid){return products.find(p=>p.id===pid);}
+
+/* ===============================================================
+   TOAST
+=============================================================== */
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.className='toast',2800);
+}
+
+/* ===============================================================
+   MODAL
+=============================================================== */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+/* ===============================================================
+   PRODUCT PICKER (shared)
+=============================================================== */
+function renderProdPicker(catEl, prodEl, cart, onAdd){
+  let cat = activeProductCat;
+  const cats = Object.keys(CATLAB);
+  catEl.innerHTML = cats.map(c=>
+    `<button class="pcat-btn${c===cat?' on':''}" onclick="switchProdCat('${c}','${catEl.id}','${prodEl.id}')">${CATLAB[c]}</button>`
+  ).join('');
+  const filteredProds = products.filter(p=>p.cat===cat);
+  prodEl.innerHTML = filteredProds.map(p=>
+    `<button class="prod-btn" onclick="addToTempCart('${p.id}','${prodEl.id}')">
+      <div class="pb-name">${p.name}</div>
+      <div class="pb-price">${fmtMoney(p.price)}</div>
+    </button>`
+  ).join('');
+}
+
+function switchProdCat(cat, catElId, prodElId){
+  activeProductCat = cat;
+  const catEl = document.getElementById(catElId);
+  const prodEl = document.getElementById(prodElId);
+  catEl.querySelectorAll('.pcat-btn').forEach(b=>b.classList.remove('on'));
+  catEl.querySelector(`[onclick*="'${cat}'"]`).classList.add('on');
+  const filteredProds = products.filter(p=>p.cat===cat);
+  prodEl.innerHTML = filteredProds.map(p=>
+    `<button class="prod-btn" onclick="addToTempCart('${p.id}','${prodEl.id}')">
+      <div class="pb-name">${p.name}</div>
+      <div class="pb-price">${fmtMoney(p.price)}</div>
+    </button>`
+  ).join('');
+}
+
+// tempCart indexed by modal context: 'nt','ord','pay','be','bo'
+const carts = {nt:{},ord:{},pay:{},be:{},bo:{}};
+// returnCarts track items to be refunded
+const returnCarts = {ord:{},bo:{},pay:{}};
+
+function cartKey(prodElId){
+  if(prodElId.startsWith('nt')) return 'nt';
+  if(prodElId.startsWith('ord')) return 'ord';
+  if(prodElId.startsWith('pay')) return 'pay';
+  if(prodElId.startsWith('be')) return 'be';
+  if(prodElId.startsWith('bo')) return 'bo';
+  return 'nt';
+}
+
+function switchMTab(modalId, paneId){
+  const modal = document.getElementById(modalId);
+  modal.querySelectorAll('.mtab').forEach(b=>b.classList.remove('on'));
+  modal.querySelectorAll('.mtab-pane').forEach(p=>p.classList.remove('on'));
+  // find the tab button that references this paneId
+  const btn = [...modal.querySelectorAll('.mtab')].find(b=>b.getAttribute('onclick')&&b.getAttribute('onclick').includes(paneId));
+  if(btn) btn.classList.add('on');
+  const pane = document.getElementById(paneId);
+  if(pane) pane.classList.add('on');
+}
+
+function renderReturnRows(sourceItems, retKey, rowElId, totalElId){
+  const rowEl = document.getElementById(rowElId);
+  const totalEl = document.getElementById(totalElId);
+  if(!rowEl) return;
+  if(!sourceItems || sourceItems.length===0){
+    rowEl.innerHTML='<div style="color:var(--fa);font-size:12px">Không có món để trả</div>';
+    if(totalEl) totalEl.textContent='0đ';
+    return;
+  }
+  rowEl.innerHTML = sourceItems.map(it=>{
+    const retQty = returnCarts[retKey][it.pid]?.qty || 0;
+    return `<div class="ret-row">
+      <span class="cr-name" style="flex:1">${it.name}</span>
+      <span style="font-size:11px;color:var(--mu);margin-right:4px">×${it.qty}</span>
+      <button class="qty-btn" onclick="changeReturn('${retKey}','${it.pid}',${it.qty},${it.price},-1,'${rowElId}','${totalElId}')">−</button>
+      <span class="ret-qty">${retQty}</span>
+      <button class="qty-btn" onclick="changeReturn('${retKey}','${it.pid}',${it.qty},${it.price},1,'${rowElId}','${totalElId}')">+</button>
+      <span class="cr-price" style="min-width:58px;text-align:right">${fmtMoney(retQty*it.price)}</span>
+    </div>`;
+  }).join('');
+  const retTotal = Object.values(returnCarts[retKey]).reduce((s,i)=>s+i.qty*i.price,0);
+  if(totalEl) totalEl.textContent = fmtMoney(retTotal);
+}
+
+function changeReturn(retKey, pid, maxQty, price, delta, rowElId, totalElId){
+  if(!returnCarts[retKey][pid]) returnCarts[retKey][pid]={pid,qty:0,price};
+  const newQty = Math.min(maxQty, Math.max(0, returnCarts[retKey][pid].qty + delta));
+  if(newQty===0) delete returnCarts[retKey][pid];
+  else returnCarts[retKey][pid].qty = newQty;
+  // find source items from the modal to re-render
+  const sourceItems = _getReturnSource(retKey);
+  renderReturnRows(sourceItems, retKey, rowElId, totalElId);
+  if(retKey==='pay') updatePayGrand();
+  if(retKey==='bo') updateBoGrand();
+}
+
+function _getReturnSource(retKey){
+  if(retKey==='ord'){
+    const tab = tabs.find(t=>t.id===activeTabId);
+    return tab?tab.items:[];
+  }
+  if(retKey==='bo'){
+    return activeBidaId?bidaState[activeBidaId].cart:[];
+  }
+  if(retKey==='pay'){
+    const tab = tabs.find(t=>t.id===payTabId);
+    return tab?tab.items:[];
+  }
+  return [];
+}
+
+function addToTempCart(pid, prodElId){
+  const key = cartKey(prodElId);
+  const p = getProd(pid);
+  if(!p) return;
+  if(!carts[key][pid]) carts[key][pid]={pid, name:p.name, qty:0, price:p.price};
+  carts[key][pid].qty++;
+  renderCart(key);
+}
+
+function qtyChange(pid, key, delta){
+  if(!carts[key][pid]) return;
+  carts[key][pid].qty = Math.max(0, carts[key][pid].qty + delta);
+  if(carts[key][pid].qty === 0) delete carts[key][pid];
+  renderCart(key);
+}
+
+const CART_ROWS = {nt:'nt-cart-rows',ord:'ord-cart-rows',pay:'pay-extra-rows',be:'be-cart-rows',bo:'bo-cart-rows'};
+const CART_TOTALS = {nt:'nt-total',ord:'ord-total',pay:null,be:'be-cart-total',bo:'bo-total'};
+
+function renderCart(key){
+  const items = Object.values(carts[key]);
+  const rowEl = document.getElementById(CART_ROWS[key]);
+  const totId = CART_TOTALS[key];
+  if(!rowEl) return;
+  if(items.length===0){
+    rowEl.innerHTML='<div style="color:var(--fa);font-size:12px">Chưa có món</div>';
+  } else {
+    rowEl.innerHTML = items.map(it=>`
+      <div class="cart-row">
+        <span class="cr-name">${it.name}</span>
+        <div class="cr-qty-ctrl">
+          <button class="qty-btn" onclick="qtyChange('${it.pid}','${key}',-1)">−</button>
+          <span class="cr-qty">${it.qty}</span>
+          <button class="qty-btn" onclick="qtyChange('${it.pid}','${key}',1)">+</button>
+        </div>
+        <span class="cr-price">${fmtMoney(it.qty*it.price)}</span>
+        <button class="cr-del" onclick="qtyChange('${it.pid}','${key}',-999)">×</button>
+      </div>`).join('');
+  }
+  const total = items.reduce((s,i)=>s+i.qty*i.price,0);
+  if(totId) document.getElementById(totId).textContent = fmtMoney(total);
+  // update grand total for pay/be
+  if(key==='be') updateBeGrand();
+  if(key==='pay') updatePayGrand();
+  if(key==='bo') updateBoGrand();
+}
+
+/* ===============================================================
+   PAGE: TAB KHÁCH
+=============================================================== */
+function renderTabs(){
+  const grid = document.getElementById('tab-grid');
+  let html = '';
+  tabs.forEach(tab=>{
+    const liveBida = tab.bidaId && bidaState[tab.bidaId]?.running;
+    const bidaCost = tab.frozenBidaCost || (liveBida ? calcBidaCost(tab.bidaId) : 0);
+    const total = tabCartTotal(tab.id) + bidaCost;
+    const itemStr = tab.items.length
+      ? tab.items.map(i=>`${i.name}×${i.qty}`).join(', ')
+      : 'Chưa order';
+    const hasBida = liveBida || tab.frozenBidaCost>0;
+    const bidaName = liveBida ? TABLES.find(t=>t.id===tab.bidaId)?.name : '🎱 Bida';
+    html += `
+      <div class="tab-card${hasBida?' has-bida':''}">
+        <div class="tc-name">${tab.name}</div>
+        <div class="tc-time">${new Date(tab.created).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</div>
+        ${hasBida?`<div style="font-size:11px;margin-bottom:4px"><span class="badge bg-y">🎱 ${liveBida?bidaName:''} ${fmtMoney(bidaCost)}</span></div>`:''}
+        <div class="tc-items">${itemStr}</div>
+        <div class="tc-total">${fmtMoney(total)}</div>
+        <div class="tc-actions">
+          <button class="btn btn-sm btn-s" onclick="openOrderModal('${tab.id}')">+ Order</button>
+          <button class="btn btn-sm btn-p" onclick="openPayModal('${tab.id}')">💳 TT</button>
+        </div>
+      </div>`;
+  });
+  html += `<button class="add-tab-btn" onclick="openNewTab()">
+    <span style="font-size:28px">＋</span>
+    <span style="font-size:12px;font-weight:600">Tạo tab mới</span>
+  </button>`;
+  grid.innerHTML = html;
+}
+
+function openQuickOrder(){
+  activeTabId = '__quick__';
+  carts.nt = {};
+  activeProductCat = 'nuoc';
+  document.getElementById('newtab-title').textContent = '⚡ Order nhanh';
+  document.getElementById('newtab-name').value='';
+  document.getElementById('newtab-name-fg').style.display='none';
+  document.getElementById('newtab-submit-btn').textContent='✓ Thanh toán';
+  renderProdPicker(
+    document.getElementById('nt-cats'),
+    document.getElementById('nt-prods'),
+    carts.nt, null
+  );
+  renderCart('nt');
+  openModal('mo-newtab');
+}
+
+async function submitNewTab(){
+  const name = document.getElementById('newtab-name').value.trim();
+  const items = Object.values(carts.nt);
+  if(activeTabId === '__quick__'){
+    if(items.length===0){toast('Chưa chọn món nào','tr');return;}
+    const cartCost = items.reduce((s,i)=>s+i.qty*i.price,0);
+    const res = await apiPost('/api/sessions',{
+      tab:'Order nhanh', staff:currentUser.name,
+      bida:0, cart:cartCost, total:cartCost,
+      details:{bida:null, items:items.map(i=>({name:i.name,qty:i.qty,price:i.price})), note:'Order nhanh'}
+    });
+    if(res){
+      await syncStock(items, -1);
+      toast('✓ Order nhanh đã thanh toán','tg');
+    }
+  } else {
+    if(!name){toast('Nhập tên khách!','tr');return;}
+    const res = await apiPost('/api/tabs',{name, items, bida_id:null});
+    if(res){
+      if(items.length) await syncStock(items, -1);
+      toast('✓ Đã tạo tab: '+name,'tg');
+    }
+  }
+  carts.nt={};
+  closeModal('mo-newtab');
+  renderTabs();
+}
+
+/* ===============================================================
+   ORDER MODAL
+=============================================================== */
+function openOrderModal(tid){
+  activeTabId = tid;
+  const tab = tabs.find(t=>t.id===tid);
+  document.getElementById('order-title').textContent = `🛒 Order — ${tab.name}`;
+  carts.ord = {};
+  returnCarts.ord = {};
+  activeProductCat='nuoc';
+  renderProdPicker(document.getElementById('ord-cats'),document.getElementById('ord-prods'),carts.ord,null);
+  renderCart('ord');
+  renderReturnRows(tab.items,'ord','ord-ret-rows','ord-ret-total');
+  openModal('mo-order');
+}
+async function submitOrder(){
+  const addItems = Object.values(carts.ord);
+  const retItems = Object.values(returnCarts.ord);
+  if(addItems.length===0 && retItems.length===0){toast('Chưa chọn món nào','tr');return;}
+  const tab = tabs.find(t=>t.id===activeTabId);
+  // apply additions (chỉ sửa nội dung tab; kho do syncStock xử lý)
+  addItems.forEach(it=>{
+    const ex = tab.items.find(i=>i.pid===it.pid);
+    if(ex) ex.qty+=it.qty; else tab.items.push({...it});
+  });
+  // apply returns
+  retItems.forEach(it=>{
+    const ex = tab.items.find(i=>i.pid===it.pid);
+    if(ex){ ex.qty-=it.qty; if(ex.qty<=0) tab.items=tab.items.filter(i=>i.pid!==it.pid); }
+  });
+  await Promise.all([
+    apiPut('/api/tabs/'+activeTabId, {name:tab.name, items:tab.items, bida_id:tab.bidaId||null, bida_cost:tab.frozenBidaCost||0}),
+    syncStock(addItems, -1),
+    syncStock(retItems, +1),
+  ]);
+  carts.ord={}; returnCarts.ord={};
+  closeModal('mo-order');
+  renderTabs();
+  const addedCount=addItems.reduce((s,i)=>s+i.qty,0), retCount=retItems.reduce((s,i)=>s+i.qty,0);
+  let msg = addedCount>0&&retCount>0?`✓ Đã thêm ${addedCount} món, trả ${retCount} món`:addedCount>0?`✓ Đã thêm order`:`✓ Đã trả ${retCount} món`;
+  toast(msg,'tg');
+}
+
+/* ===============================================================
+   PAY MODAL
+=============================================================== */
+let payGrand = 0;
+function openPayModal(tid){
+  payTabId = tid;
+  const tab = tabs.find(t=>t.id===tid);
+  let billHtml = `<div style="font-weight:700;margin-bottom:8px">${tab.name}</div>`;
+  let base = 0;
+  if(tab.items.length){
+    billHtml += tab.items.map(i=>`
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)">
+        <span>${i.name} ×${i.qty}</span>
+        <span class="mono">${fmtMoney(i.qty*i.price)}</span>
+      </div>`).join('');
+    base = tab.items.reduce((s,i)=>s+i.qty*i.price,0);
+  }
+  // bida cost
+  let bidaCost = 0;
+  if(tab.frozenBidaCost){
+    bidaCost = tab.frozenBidaCost;
+    billHtml += `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)">
+      <span>🎱 Bida</span>
+      <span class="mono">${fmtMoney(bidaCost)}</span>
+    </div>`;
+  } else if(tab.bidaId && bidaState[tab.bidaId]?.running){
+    bidaCost = calcBidaCost(tab.bidaId);
+    const tname = TABLES.find(t=>t.id===tab.bidaId)?.name;
+    billHtml += `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)">
+      <span>🎱 ${tname}</span>
+      <span class="mono">${fmtMoney(bidaCost)}</span>
+    </div>`;
+  }
+  document.getElementById('pay-bill').innerHTML = billHtml;
+  carts.pay={};
+  returnCarts.pay={};
+  activeProductCat='nuoc';
+  renderProdPicker(document.getElementById('pay-cats'),document.getElementById('pay-prods'),carts.pay,null);
+  renderCart('pay');
+  renderReturnRows(tab.items,'pay','pay-ret-rows','pay-ret-total');
+  payGrand = roundUp1k(base+bidaCost);
+  document.getElementById('pay-grand').textContent = fmtMoney(payGrand);
+  document.getElementById('pay-title').textContent = `💳 Thanh toán — ${tab.name}`;
+  openModal('mo-pay');
+}
+function updatePayGrand(){
+  const tab = tabs.find(t=>t.id===payTabId);
+  let base = tab?tab.items.reduce((s,i)=>s+i.qty*i.price,0):0;
+  let bidaCost = tab?.frozenBidaCost || ((tab&&tab.bidaId&&bidaState[tab.bidaId]?.running)?calcBidaCost(tab.bidaId):0);
+  let extra = Object.values(carts.pay).reduce((s,i)=>s+i.qty*i.price,0);
+  let ret = Object.values(returnCarts.pay).reduce((s,i)=>s+i.qty*i.price,0);
+  payGrand = roundUp1k(base+bidaCost+extra-ret);
+  document.getElementById('pay-grand').textContent = fmtMoney(payGrand);
+  const breakdownEl = document.getElementById('pay-breakdown');
+  if(breakdownEl){
+    let parts=[];
+    if(extra>0) parts.push(`+${fmtMoney(extra)} thêm`);
+    if(ret>0) parts.push(`−${fmtMoney(ret)} trả`);
+    breakdownEl.textContent = parts.length?parts.join(' · '):'';
+  }
+}
+function finalPay(method){
+  if(method==='qr'){
+    document.getElementById('qr-amount').textContent = fmtMoney(payGrand);
+    closeModal('mo-pay');
+    openModal('mo-qr');
+    return;
+  }
+  completePayment();
+}
+// confirmQR handled below (supports both tab payment and bida end)
+async function completePayment(){
+  if(!payTabId) return;
+  const tab = tabs.find(t=>t.id===payTabId);
+  const bidaCost = tab?.frozenBidaCost || (tab?.bidaId&&bidaState[tab.bidaId]?.running?calcBidaCost(tab.bidaId):0);
+  const extraCost= Object.values(carts.pay).reduce((s,i)=>s+i.qty*i.price,0);
+  const retCost  = Object.values(returnCarts.pay).reduce((s,i)=>s+i.qty*i.price,0);
+  const allItems = [...(tab?.items||[]), ...Object.values(carts.pay)];
+  // apply returns to allItems
+  Object.values(returnCarts.pay).forEach(ri=>{
+    const ex=allItems.find(i=>i.pid===ri.pid);
+    if(ex){ ex.qty-=ri.qty; }
+  });
+  const detItems = allItems.filter(i=>i.qty>0).map(i=>({name:i.name,qty:i.qty,price:i.price}));
+  const tblName  = tab?.bidaId?TABLES.find(t=>t.id===tab.bidaId)?.name:'';
+
+  const res = await apiPost('/api/sessions',{
+    tab: tab?.name||'—', staff: currentUser.name,
+    bida: bidaCost, cart: payGrand-bidaCost, total: payGrand,
+    details:{ bida: bidaCost>0?{table:tblName,duration:'—',cost:bidaCost}:null, items:detItems, note:'Thanh toán' }
+  });
+  if(!res) return;
+  // Trừ/cộng kho cho món thêm/trả lúc thanh toán (món cũ đã trừ khi order)
+  await Promise.all([
+    syncStock(Object.values(carts.pay), -1),
+    syncStock(Object.values(returnCarts.pay), +1),
+  ]);
+  // Reset bida nếu tab có bida
+  if(tab?.bidaId){
+    bidaState[tab.bidaId]={running:false,paused:false,startTime:null,pausedMs:0,cart:[]};
+    await saveBida(tab.bidaId);
+  }
+  await apiDelete('/api/tabs/'+payTabId);
+  tabs=tabs.filter(t=>t.id!==payTabId);
+  carts.pay={}; returnCarts.pay={}; payTabId=null;
+  closeModal('mo-pay');
+  renderTabs();
+  if(currentPage==='bida') renderBida();
+  toast('✓ Thanh toán thành công — '+fmtMoney(payGrand),'tg');
+}
+
+function openDebtForm(){
+  const tab = tabs.find(t=>t.id===payTabId);
+  if(tab) document.getElementById('df-name').value = tab.name;
+  document.getElementById('df-amount').value = payGrand || '';
+  document.getElementById('df-phone').value = '';
+  document.getElementById('df-note').value = '';
+  closeModal('mo-pay');
+  openModal('mo-debt-form');
+}
+
+async function submitDebt(){
+  const name=document.getElementById('df-name').value.trim();
+  const amt =parseInt(document.getElementById('df-amount').value)||0;
+  const note=document.getElementById('df-note').value;
+  if(!name||amt<=0){toast('Điền đủ thông tin!','tr');return;}
+
+  if(_pendingBidaDebt){
+    const {bid,cost,cartItems,cartCost,grand}=_pendingBidaDebt;
+    const t=TABLES.find(x=>x.id===bid);
+    // Chỉ tạo bản ghi nợ — KHÔNG tạo session doanh thu.
+    // Doanh thu chỉ được tính khi thu nợ (backend tạo adjustment "Thu nợ").
+    await apiPost('/api/debts',{
+      name, phone:document.getElementById('df-phone').value,
+      orig:amt, note, details:{bida:{table:t.name,duration:'—',cost},items:cartItems.map(i=>({name:i.name,qty:i.qty,price:i.price})),adjustments:[]}
+    });
+    // Reset bida
+    bidaState[bid]={running:false,paused:false,startTime:null,pausedMs:0,cart:[]};
+    await saveBida(bid);
+    carts.be={}; activeBidaId=null; _pendingBidaDebt=null;
+    closeModal('mo-debt-form');
+    renderBida();
+    if(currentPage==='tabs') renderTabs();
+    toast(`✓ Đã ghi nợ ${name} — ${fmtMoney(grand)}`,'tg');
+  } else {
+    const tab=tabs.find(t=>t.id===payTabId);
+    const bidaCost = tab?.frozenBidaCost || (tab?.bidaId&&bidaState[tab.bidaId]?.running?calcBidaCost(tab.bidaId):0);
+    const tblName=tab?.bidaId?TABLES.find(t=>t.id===tab.bidaId)?.name:'';
+    // Gộp món thêm trong modal thanh toán (carts.pay) + trừ món trả (returnCarts.pay)
+    const allItems=[...(tab?.items||[]).map(i=>({...i})), ...Object.values(carts.pay).map(i=>({...i}))];
+    Object.values(returnCarts.pay).forEach(ri=>{ const ex=allItems.find(i=>i.pid===ri.pid); if(ex) ex.qty-=ri.qty; });
+    const items=allItems.filter(i=>i.qty>0).map(i=>({name:i.name,qty:i.qty,price:i.price}));
+    // Chỉ tạo bản ghi nợ — KHÔNG tạo session doanh thu (tránh tính 2 lần khi thu nợ).
+    await apiPost('/api/debts',{
+      name, phone:document.getElementById('df-phone').value||'',
+      orig:amt, note, details:{bida:bidaCost>0?{table:tblName,duration:'—',cost:bidaCost}:null, items, adjustments:[]}
+    });
+    // Trừ/cộng kho cho món thêm/trả lúc thanh toán (món cũ đã trừ khi order)
+    await Promise.all([
+      syncStock(Object.values(carts.pay), -1),
+      syncStock(Object.values(returnCarts.pay), +1),
+    ]);
+    if(tab?.bidaId){
+      bidaState[tab.bidaId]={running:false,paused:false,startTime:null,pausedMs:0,cart:[]};
+      await saveBida(tab.bidaId);
+    }
+    await apiDelete('/api/tabs/'+payTabId);
+    tabs=tabs.filter(t=>t.id!==payTabId);
+    carts.pay={}; returnCarts.pay={}; payTabId=null;
+    closeModal('mo-debt-form');
+    renderTabs();
+    if(currentPage==='bida') renderBida();
+    toast('✓ Đã ghi nợ cho '+name,'tg');
+  }
+}
+
+/* ===============================================================
+   PAGE: BIDA
+=============================================================== */
+function renderBida(){
+  let free=0,busy=0;
+  const grid = document.getElementById('bida-grid');
+  grid.innerHTML = TABLES.map(tbl=>{
+    const st = bidaState[tbl.id];
+    let cls='free', statusTxt='● Trống', statusCls='free';
+    if(st.running && !st.paused){cls='busy';statusTxt='● Đang chạy';statusCls='busy';busy++;}
+    else if(st.running && st.paused){cls='paused';statusTxt='⏸ Tạm dừng';statusCls='paused';busy++;}
+    else free++;
+    const rateInfo = `${fmtMoney(tbl.rateA)}/h → ${fmtMoney(tbl.rateB)}/h sau ${CUTOFF.h}:${String(CUTOFF.m).padStart(2,'0')}`;
+    const ms = bidaElapsedMs(st);
+    const timeStr = fmtTime(ms);
+    const cost = st.running?calcBidaCost(tbl.id):0;
+    const cartStr = st.cart.length?st.cart.map(i=>`${i.name}×${i.qty}`).join(', '):'';
+    let actHtml='';
+    if(!st.running){
+      actHtml=`<button class="btn btn-p" onclick="startBida('${tbl.id}')">▶ Bắt đầu</button>`;
+    } else if(!st.paused){
+      actHtml=`
+        <button class="btn btn-y btn-sm" onclick="pauseBida('${tbl.id}')">⏸ Dừng</button>
+        <button class="btn btn-s btn-sm" onclick="orderBida('${tbl.id}')">🛒 Order</button>
+        <button class="btn btn-r btn-sm" onclick="openEndBida('${tbl.id}')">■ Kết thúc</button>`;
+    } else {
+      actHtml=`
+        <button class="btn btn-p btn-sm" onclick="resumeBida('${tbl.id}')">▶ Tiếp tục</button>
+        <button class="btn btn-r btn-sm" onclick="openEndBida('${tbl.id}')">■ Kết thúc</button>`;
+    }
+    return `<div class="bida-card ${cls}">
+      <div class="bc-top">
+        <span class="bc-name">${tbl.name}</span>
+        <span class="bc-status ${statusCls}">${statusTxt}</span>
+      </div>
+      <div class="bc-price">${rateInfo}</div>
+      ${st.running?`<div class="bc-timer" data-bid="${tbl.id}">${timeStr}</div>
+      <div class="bc-cost" data-bid-cost="${tbl.id}">${fmtMoney(cost)}</div>`:'<div style="height:60px;display:flex;align-items:center;justify-content:center;color:var(--fa);font-size:13px">Trống</div>'}
+      ${cartStr?`<div class="bc-cart">🛒 ${cartStr}</div>`:''}
+      <div class="bc-actions">${actHtml}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('bd-free').textContent=free;
+  document.getElementById('bd-busy').textContent=busy;
+  // calc today's bida revenue from sessions
+  const todayD = new Date().toLocaleDateString('sv-SE');
+  const bidaToday = sessions.filter(s=>s.date===todayD).reduce((sum,s)=>sum+s.bida,0);
+  document.getElementById('bd-today').textContent=fmtMoney(bidaToday);
+}
+
+async function startBida(bid){
+  bidaState[bid]={running:true,paused:false,startTime:Date.now(),pausedMs:0,cart:[]};
+  renderBida();
+  await saveBida(bid);
+  toast('▶ Đã bắt đầu '+TABLES.find(t=>t.id===bid).name,'tg');
+}
+async function pauseBida(bid){
+  bidaState[bid].paused=true;
+  bidaState[bid]._pauseStart=Date.now();
+  renderBida();
+  await saveBida(bid);
+  toast('⏸ Đã tạm dừng');
+}
+async function resumeBida(bid){
+  const st=bidaState[bid];
+  if(st._pauseStart) st.pausedMs=(st.pausedMs||0)+(Date.now()-st._pauseStart);
+  st.paused=false;
+  st._pauseStart=null;
+  renderBida();
+  await saveBida(bid);
+  toast('▶ Tiếp tục chơi','tg');
+}
+
+function orderBida(bid){
+  activeBidaId=bid;
+  carts.bo={};
+  returnCarts.bo={};
+  activeProductCat='nuoc';
+  const tname=TABLES.find(t=>t.id===bid).name;
+  document.getElementById('bo-title').textContent='🛒 Order — '+tname;
+  renderProdPicker(document.getElementById('bo-cats'),document.getElementById('bo-prods'),carts.bo,null);
+  renderCart('bo');
+  // show current cart items on the table
+  const cur=bidaState[bid].cart;
+  const curEl=document.getElementById('bo-current');
+  if(cur.length){
+    document.getElementById('bo-current-wrap').style.display='block';
+    curEl.innerHTML=cur.map(i=>`<span style="font-size:12px;color:var(--mu)">${i.name}×${i.qty}</span>`).join(' · ');
+  } else {
+    document.getElementById('bo-current-wrap').style.display='none';
+  }
+  renderReturnRows(cur,'bo','bo-ret-rows','bo-ret-total');
+  openModal('mo-bida-order');
+}
+
+async function confirmBidaOrder(){
+  const bid=activeBidaId;
+  if(!bid) return;
+  const addItems=Object.values(carts.bo), retItems=Object.values(returnCarts.bo);
+  if(addItems.length===0&&retItems.length===0){toast('Chưa chọn món nào','tr');return;}
+  const st=bidaState[bid];
+  addItems.forEach(it=>{ const ex=st.cart.find(i=>i.pid===it.pid); if(ex) ex.qty+=it.qty; else st.cart.push({...it}); });
+  retItems.forEach(it=>{ const ex=st.cart.find(i=>i.pid===it.pid); if(ex){ ex.qty-=it.qty; if(ex.qty<=0) st.cart=st.cart.filter(i=>i.pid!==it.pid); } });
+  await Promise.all([saveBida(bid), syncStock(addItems,-1), syncStock(retItems,+1)]);
+  carts.bo={}; returnCarts.bo={};
+  closeModal('mo-bida-order');
+  renderBida();
+  const addedCount=addItems.reduce((s,i)=>s+i.qty,0), retCount=retItems.reduce((s,i)=>s+i.qty,0);
+  toast(addedCount>0&&retCount>0?`✓ Đã thêm ${addedCount} món, trả ${retCount} món`:addedCount>0?`✓ Đã order ${addedCount} món`:`✓ Đã trả ${retCount} món`,'tg');
+}
+
+function updateBoGrand(){
+  const total=Object.values(carts.bo).reduce((s,i)=>s+i.qty*i.price,0);
+  const retTotal=Object.values(returnCarts.bo).reduce((s,i)=>s+i.qty*i.price,0);
+  const el=document.getElementById('bo-total');
+  if(el) el.textContent=fmtMoney(total-retTotal);
+}
+
+let endBidaMode=false;
+let _endOrigCart={};
+function openEndBida(bid){
+  activeBidaId=bid;
+  endBidaMode=true;
+  carts.be={};
+  _endOrigCart={};
+  bidaState[bid].cart.forEach(it=>{carts.be[it.pid]={...it};_endOrigCart[it.pid]=it.qty;});
+  activeProductCat='nuoc';
+  renderProdPicker(document.getElementById('be-cats'),document.getElementById('be-prods'),carts.be,null);
+  renderCart('be');
+  const tbl=TABLES.find(t=>t.id===bid);
+  const ms=bidaElapsedMs(bidaState[bid]);
+  const cost=calcBidaCost(bid);
+  const afterCut=new Date().getHours()>CUTOFF.h||(new Date().getHours()===CUTOFF.h&&new Date().getMinutes()>=CUTOFF.m);
+  document.getElementById('be-title').textContent='■ Kết thúc — '+tbl.name;
+  document.getElementById('be-timer').textContent=fmtTime(ms);
+  document.getElementById('be-price-info').textContent=`Đơn giá: ${fmtMoney(afterCut?tbl.rateB:tbl.rateA)}/h`;
+  document.getElementById('be-cost').textContent=fmtMoney(cost);
+  updateBeGrand();
+  openModal('mo-bida-end');
+}
+function updateBeGrand(){
+  const bid=activeBidaId;
+  if(!bid) return;
+  const bidaCost=bidaState[bid].running?calcBidaCost(bid):0;
+  const cartTotal=Object.values(carts.be).reduce((s,i)=>s+i.qty*i.price,0);
+  const grand=roundUp1k(bidaCost+cartTotal);
+  document.getElementById('be-grand').textContent=fmtMoney(grand);
+}
+async function endBida(method){
+  const bid=activeBidaId;
+  if(!bid) return;
+  const tbl=TABLES.find(t=>t.id===bid);
+  const cost=calcBidaCost(bid);
+  const cartItems=Object.values(carts.be);
+  const cartCost=cartItems.reduce((s,i)=>s+i.qty*i.price,0);
+  const grand=roundUp1k(cost+cartCost);
+
+  // Đồng bộ kho cho món thêm/bớt trong modal kết thúc (so với cart đã order)
+  const addL=[], retL=[];
+  const pids=new Set([...Object.keys(_endOrigCart), ...Object.keys(carts.be)]);
+  pids.forEach(pid=>{
+    const diff=(carts.be[pid]?.qty||0)-(_endOrigCart[pid]||0);
+    if(diff>0) addL.push({pid,qty:diff});
+    else if(diff<0) retL.push({pid,qty:-diff});
+  });
+  if(addL.length||retL.length) await Promise.all([syncStock(addL,-1),syncStock(retL,+1)]);
+
+  if(method==='debt'){
+    // Mở form ghi nợ, truyền thông tin bàn + số tiền
+    closeModal('mo-bida-end');
+    // Pre-fill debt form
+    document.getElementById('df-name').value = tbl.name;
+    document.getElementById('df-phone').value = '';
+    document.getElementById('df-amount').value = grand;
+    document.getElementById('df-note').value = `${tbl.name}${cartItems.length?' + đồ uống':''}`;
+    // Store context để submitDebtFromBida biết cần kết thúc bàn
+    _pendingBidaDebt = {bid, cost, cartItems, cartCost, grand};
+    openModal('mo-debt-form');
+    return;
+  }
+
+  if(method==='tab'){
+    const newTab = await apiPost('/api/tabs',{name:tbl.name, items:cartItems, bida_id:null, bida_cost:cost});
+    if(newTab){
+      // WS tabs_add có thể đã thêm tab này — tránh tạo trùng
+      let ft = tabs.find(t=>t.id===newTab.id);
+      if(ft){ ft.frozenBidaCost = cost; }
+      else { ft = apiFrontTab(newTab); ft.frozenBidaCost = cost; tabs.push(ft); }
+    }
+    bidaState[bid]={running:false,paused:false,startTime:null,pausedMs:0,cart:[]};
+    await saveBida(bid);
+    carts.be={}; activeBidaId=null;
+    closeModal('mo-bida-end');
+    renderBida();
+    if(currentPage==='tabs') renderTabs();
+    toast(`✓ Chuyển ${tbl.name} sang tab khách`,'tg');
+    return;
+  }
+  if(method==='qr'){
+    // Hiện QR rồi xác nhận
+    document.getElementById('qr-amount').textContent=fmtMoney(grand);
+    closeModal('mo-bida-end');
+    _pendingBidaDebt=null;
+    _pendingBidaEnd={bid,cost,cartItems,cartCost,grand,tbl};
+    openModal('mo-qr');
+    return;
+  }
+  _finishEndBida(bid,cost,cartItems,cartCost,grand,tbl);
+}
+
+let _pendingBidaDebt=null;
+let _pendingBidaEnd=null;
+
+function confirmQR(){
+  if(_pendingBidaEnd){
+    const {bid,cost,cartItems,cartCost,grand,tbl}=_pendingBidaEnd;
+    _pendingBidaEnd=null;
+    closeModal('mo-qr');
+    _finishEndBida(bid,cost,cartItems,cartCost,grand,tbl);
+  } else {
+    closeModal('mo-qr');
+    completePayment();
+  }
+}
+
+async function _finishEndBida(bid,cost,cartItems,cartCost,grand,tbl){
+  const res=await apiPost('/api/sessions',{
+    tab:tbl.name, staff:currentUser.name, bida:cost, cart:cartCost, total:grand,
+    details:{bida:{table:tbl.name,duration:'—',cost},items:cartItems.map(i=>({name:i.name,qty:i.qty,price:i.price})),note:''}
+  });
+  bidaState[bid]={running:false,paused:false,startTime:null,pausedMs:0,cart:[]};
+  await saveBida(bid);
+  carts.be={}; activeBidaId=null;
+  closeModal('mo-bida-end');
+  renderBida();
+  if(currentPage==='tabs') renderTabs();
+  toast(`✓ Kết thúc ${tbl.name} — ${fmtMoney(grand)}`,'tg');
+}
+
+/* ===============================================================
+   PAGE: NHẬP HÀNG
+=============================================================== */
+function renderInvGrid(cat){
+  const c=cat||currentInvCat;
+  currentInvCat=c;
+  // Cat buttons
+  const catEl=document.getElementById('inv-cat-btns');
+  catEl.innerHTML=Object.keys(CATLAB).map(k=>
+    `<button class="inv-cat-btn${k===c?' on':''}" onclick="renderInvGrid('${k}')">${CATLAB[k]}</button>`
+  ).join('');
+  // Grid
+  const filtered=products.filter(p=>p.cat===c);
+  const grid=document.getElementById('inv-grid');
+  grid.innerHTML=filtered.map(p=>{
+    const low=p.stock<5;
+    return `<div class="inv-item${low?' low':''}">
+      <div class="ii-name">${p.name}</div>
+      <div class="ii-stock ${low?'low':'ok'}">${p.stock}</div>
+      <div class="ii-unit">${p.unit}</div>
+    </div>`;
+  }).join('');
+}
+function renderInvHist(){
+  const body=document.getElementById('inv-hist-body');
+  body.innerHTML=invImports.map(im=>`
+    <tr>
+      <td class="mono">${im.date||''} ${im.time||''}</td>
+      <td>${im.name}</td>
+      <td class="mono">${im.qty}</td>
+      <td class="mono" style="color:var(--r)">−${fmtMoney(im.cost)}</td>
+      <td style="color:var(--mu)">${im.note}</td>
+    </tr>`).join('');
+}
+// Populate inventory select
+function populateInvSel(){
+  const sel=document.getElementById('inv-item-sel');
+  sel.innerHTML='<option value="">-- Chọn --</option>'+products.map(p=>
+    `<option value="${p.id}">${p.name} (còn ${p.stock} ${p.unit})</option>`
+  ).join('');
+}
+function invSelChange(){
+  const pid=document.getElementById('inv-item-sel').value;
+  const p=getProd(pid);
+  const qty=parseInt(document.getElementById('inv-qty').value)||0;
+  // Gợi ý tổng tiền = giá vốn ước tính (70% giá bán) × số lượng (nếu đã nhập SL)
+  if(p && qty>0 && !document.getElementById('inv-total').value){
+    document.getElementById('inv-total').value=Math.round(p.price*0.7)*qty;
+  }
+  calcInvUnit();
+}
+// Đơn giá = Tổng tiền ÷ Số lượng (tự tính, chỉ hiển thị)
+function calcInvUnit(){
+  const qty=parseInt(document.getElementById('inv-qty').value)||0;
+  const total=parseInt(document.getElementById('inv-total').value)||0;
+  document.getElementById('inv-price').value = qty>0 ? fmtMoney(Math.round(total/qty)) : '0đ';
+}
+async function submitInv(){
+  const pid=document.getElementById('inv-item-sel').value;
+  const qty=parseInt(document.getElementById('inv-qty').value)||0;
+  const total=parseInt(document.getElementById('inv-total').value)||0;
+  const src=document.getElementById('inv-src').value;
+  if(!pid||qty<=0){toast('Chọn mặt hàng và nhập số lượng!','tr');return;}
+  if(total<=0){toast('Nhập tổng tiền!','tr');return;}
+  const p=getProd(pid);
+  const unit=Math.round(total/qty);
+  const res=await apiPost('/api/imports',{product_id:pid,name:p.name,qty,unit_cost:unit,cost:total,note:src});
+  if(!res) return;
+  p.stock+=qty;
+  invImports.unshift(res);
+  // Reset form
+  document.getElementById('inv-item-sel').value='';
+  document.getElementById('inv-qty').value='';
+  document.getElementById('inv-total').value='';
+  document.getElementById('inv-price').value='';
+  document.getElementById('inv-src').value='';
+  closeModal('mo-inv');
+  renderInvGrid(); renderInvHist();
+  toast(`✓ Đã nhập ${qty} ${p.unit} ${p.name}`,'tg');
+}
+
+/* ===============================================================
+   PAGE: LỊCH SỬ
+=============================================================== */
+function renderHist(){
+  const el=document.getElementById('hist-list');
+  const from=document.getElementById('hist-from').value;
+  const to=document.getElementById('hist-to').value;
+  let list=sessions;
+  if(from) list=list.filter(s=>s.date>=from);
+  if(to)   list=list.filter(s=>s.date<=to);
+  if(!list.length){
+    el.innerHTML='<div class="card" style="text-align:center;color:var(--mu);padding:32px">Chưa có phiên nào trong khoảng ngày này</div>';
+    return;
+  }
+  el.innerHTML=list.map(s=>`
+    <div class="hist-card" onclick="openSessionDetail('${s.id}')">
+      <div class="hc-top">
+        <div class="hc-left">
+          <span class="hc-time mono">${s.time}</span>
+          <span class="hc-tab">${s.tab}</span>
+        </div>
+        <div class="hc-total mono">${fmtMoney(s.total)}</div>
+      </div>
+      <div class="hc-bot">
+        <span class="hc-staff">👤 ${s.staff}</span>
+        ${s.bida?`<span class="hc-chip chip-g">🎱 ${fmtMoney(s.bida)}</span>`:''}
+        ${s.cart?`<span class="hc-chip chip-b">🛒 ${fmtMoney(s.cart)}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function openSessionDetail(sid){
+  const s = sessions.find(x=>x.id===sid);
+  if(!s) return;
+  document.getElementById('sd-title').textContent = `📋 ${s.tab}`;
+  document.getElementById('sd-meta').textContent = `${s.time} · ${s.staff}`;
+  document.getElementById('sd-total').textContent = fmtMoney(s.total);
+
+  // bida section
+  const d = s.details;
+  const bidaWrap = document.getElementById('sd-bida-wrap');
+  const bidaEl = document.getElementById('sd-bida');
+  if(d && d.bida){
+    bidaWrap.style.display='block';
+    bidaEl.innerHTML=`
+      <div style="display:flex;justify-content:space-between;font-size:13px">
+        <span style="color:var(--mu)">${d.bida.table}</span>
+        <span style="color:var(--mu)">${d.bida.duration}</span>
+        <span class="mono" style="font-weight:700;color:var(--g)">${fmtMoney(d.bida.cost)}</span>
+      </div>`;
+  } else {
+    bidaWrap.style.display='none';
+  }
+
+  // items section
+  const itemsWrap = document.getElementById('sd-items-wrap');
+  const itemsEl = document.getElementById('sd-items');
+  if(d && d.items && d.items.length){
+    itemsWrap.style.display='block';
+    itemsEl.innerHTML = d.items.map(it=>`
+      <div style="display:flex;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--bd);font-size:13px;background:var(--sf2);border-radius:6px;margin-bottom:4px">
+        <span>${it.name}</span>
+        <span style="color:var(--mu)">×${it.qty}</span>
+        <span class="mono">${fmtMoney(it.qty*it.price)}</span>
+      </div>`).join('');
+  } else {
+    itemsWrap.style.display='none';
+  }
+
+  // note section
+  const noteWrap = document.getElementById('sd-note-wrap');
+  const noteEl = document.getElementById('sd-note');
+  if(d && d.note){
+    noteWrap.style.display='block';
+    noteEl.textContent = d.note;
+  } else {
+    noteWrap.style.display='none';
+  }
+
+  openModal('mo-session-detail');
+}
+
+/* ===============================================================
+   PAGE: TỔNG KẾT
+=============================================================== */
+function renderSum(){
+  // Lọc theo ngày được chọn (YYYY-MM-DD), mặc định hôm nay
+  const todayISO = new Date().toLocaleDateString('sv-SE'); // "2026-06-12"
+  const selDate = document.getElementById('sum-date').value || todayISO;
+  if(!document.getElementById('sum-date').value)
+    document.getElementById('sum-date').value = todayISO;
+
+  const daySess = sessions.filter(s => s.date === selDate);
+  const dayAdjs = adjustments.filter(a => a.date === selDate);
+  const dayImps = invImports.filter(i => i.date === selDate);
+
+  const bidaSum = daySess.reduce((s,x)=>s+x.bida, 0);
+  const spSum   = daySess.reduce((s,x)=>s+(x.cart||0), 0);
+  const adjP    = dayAdjs.filter(a=>a.amt>0).reduce((s,a)=>s+a.amt, 0);
+  const adjM    = dayAdjs.filter(a=>a.amt<0).reduce((s,a)=>s+Math.abs(a.amt), 0);
+  const nhap    = dayImps.reduce((s,i)=>s+i.cost, 0);
+  const thu = bidaSum+spSum+adjP;
+  const chi = nhap+adjM;
+  const dt  = thu-chi;
+  document.getElementById('s-bida').textContent=fmtMoney(bidaSum);
+  document.getElementById('s-sp').textContent=fmtMoney(spSum);
+  document.getElementById('s-adj-p').textContent=fmtMoney(adjP);
+  document.getElementById('s-thu2').textContent=fmtMoney(thu);
+  document.getElementById('s-thu').textContent=fmtMoney(thu);
+  document.getElementById('s-nhap').textContent=fmtMoney(nhap);
+  document.getElementById('s-adj-m').textContent=fmtMoney(adjM);
+  document.getElementById('s-chi2').textContent=fmtMoney(chi);
+  document.getElementById('s-chi').textContent=fmtMoney(chi);
+  document.getElementById('s-dt').textContent=fmtMoney(dt);
+  // Items table: sold/imported per product
+  document.getElementById('sum-items-body').innerHTML=products.map(p=>{
+    const sold = daySess.reduce((s,x)=>{
+      const det = x.details||[];
+      return s+(Array.isArray(det)?det.filter(i=>i.name===p.name).reduce((a,i)=>a+i.qty,0):0);
+    },0);
+    const imp  = dayImps.filter(i=>i.name===p.name).reduce((s,i)=>s+i.qty,0);
+    return `<div style="display:grid;grid-template-columns:1fr 80px 80px 80px;padding:8px 14px;border-bottom:1px solid var(--bd);font-size:12px;background:var(--sf)">
+      <span>${p.name}</span>
+      <span class="mono">${p.stock}</span>
+      <span class="mono" style="color:var(--y)">${imp?'+'+imp:'-'}</span>
+      <span class="mono" style="color:var(--r)">${sold?'−'+sold:'-'}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ===============================================================
+   PAGE: NỢ
+=============================================================== */
+let currentDebtId=null;
+function setDebtFilter(f){
+  debtFilter=f;
+  document.querySelectorAll('#p-debt .btn').forEach(b=>b.style.opacity='0.6');
+  document.getElementById('df-'+f).style.opacity='1';
+  renderDebts();
+}
+function renderDebts(){
+  const q=document.getElementById('debt-search').value.toLowerCase();
+  const list=document.getElementById('debt-list');
+  let filtered=debts.filter(d=>{
+    if(d.orig===0 && d.remaining===0) return false; // bo qua no 0d (record xoa/lo)
+    if(debtFilter==='pending'&&d.status==='paid') return false;
+    if(debtFilter==='paid'&&d.status!=='paid') return false;
+    if(q&&!d.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(!filtered.length){list.innerHTML='<div style="color:var(--fa);font-size:13px;padding:20px">Không có dữ liệu</div>';return;}
+  list.innerHTML=filtered.map(d=>{
+    const cls=d.status==='paid'?'bg-g':d.status==='partial'?'bg-y':'bg-r';
+    const stLab=d.status==='paid'?'Đã trả':d.status==='partial'?'Trả một phần':'Chưa trả';
+    const paidAmt = d.orig - d.remaining;
+    return `<div class="debt-card" onclick="openDebtDetail('${d.id}')" style="cursor:pointer">
+      <div class="dc-top">
+        <div class="dc-name">${d.name}${d.phone?` · <span style="font-size:12px;color:var(--mu)">${d.phone}</span>`:''}</div>
+        <span class="badge ${cls}">${stLab}</span>
+      </div>
+      <div class="dc-orig">Gốc: ${fmtMoney(d.orig)} · ${d.date}${d.note?' · '+d.note:''}</div>
+      ${paidAmt>0?`<div style="font-size:12px;color:var(--g);margin-bottom:2px">Đã trả: ${fmtMoney(paidAmt)}</div>`:''}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        <div class="dc-remain">${fmtMoney(d.remaining)}</div>
+        <span style="font-size:11px;color:var(--mu)">Nhấn để xem chi tiết →</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openDebtDetail(did){
+  currentDebtId=did;
+  const d=debts.find(x=>x.id===did);
+  const det=d.details||{bida:null,items:[],adjustments:[]};
+  const paidAmt=d.orig-d.remaining;
+
+  // Header
+  document.getElementById('dd-name').textContent=d.name+(d.phone?' · '+d.phone:'');
+  document.getElementById('dd-meta').textContent=`${d.date}${d.note?' · '+d.note:''}`;
+
+  // Badge
+  const cls=d.status==='paid'?'bg-g':d.status==='partial'?'bg-y':'bg-r';
+  const stLab=d.status==='paid'?'Đã trả':d.status==='partial'?'Trả một phần':'Chưa trả';
+  document.getElementById('dd-badge').innerHTML=`<span class="badge ${cls}">${stLab}</span>`;
+
+  // Remaining
+  document.getElementById('dd-remaining').textContent=fmtMoney(d.remaining);
+  document.getElementById('dd-remaining2').textContent=fmtMoney(d.remaining);
+  document.getElementById('dd-orig').textContent=fmtMoney(d.orig);
+
+  // Paid row
+  const paidRow=document.getElementById('dd-paid-row');
+  if(paidAmt>0){
+    paidRow.style.display='flex';
+    document.getElementById('dd-paid').textContent=fmtMoney(paidAmt);
+  } else {
+    paidRow.style.display='none';
+  }
+
+  // Bida
+  const bidaSec=document.getElementById('dd-bida-section');
+  if(det.bida){
+    bidaSec.style.display='block';
+    document.getElementById('dd-bida-table').textContent=det.bida.table;
+    document.getElementById('dd-bida-dur').textContent='Thời gian: '+det.bida.duration;
+    document.getElementById('dd-bida-cost').textContent=fmtMoney(det.bida.cost);
+  } else {
+    bidaSec.style.display='none';
+  }
+
+  // Items
+  const itemsSec=document.getElementById('dd-items-section');
+  if(det.items&&det.items.length){
+    itemsSec.style.display='block';
+    const itemTotal=det.items.reduce((s,i)=>s+i.qty*i.price,0);
+    document.getElementById('dd-items-rows').innerHTML=det.items.map(i=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--bd);font-size:13px">
+        <span>${i.name}</span>
+        <span style="color:var(--mu);margin:0 8px">×${i.qty}</span>
+        <span class="mono">${fmtMoney(i.qty*i.price)}</span>
+      </div>`).join('');
+    document.getElementById('dd-items-total').textContent=fmtMoney(itemTotal);
+  } else {
+    itemsSec.style.display='none';
+  }
+
+  // Adjustments
+  const adjSec=document.getElementById('dd-adj-section');
+  if(det.adjustments&&det.adjustments.length){
+    adjSec.style.display='block';
+    document.getElementById('dd-adj-rows').innerHTML=det.adjustments.map(a=>`
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 12px;background:var(--sf2);border-radius:8px;margin-bottom:4px">
+        <span>${a.desc}</span>
+        <span class="mono" style="color:${a.amt<0?'var(--r)':'var(--g)'}">${a.amt>0?'+':''}${fmtMoney(a.amt)}</span>
+      </div>`).join('');
+  } else {
+    adjSec.style.display='none';
+  }
+
+  // Note
+  const noteRow=document.getElementById('dd-note-row');
+  if(d.note){noteRow.style.display='block';document.getElementById('dd-note').textContent=d.note;}
+  else noteRow.style.display='none';
+
+  // Pay button
+  document.getElementById('dd-pay-btn').style.display=d.status==='paid'?'none':'inline-flex';
+
+  openModal('mo-debt-detail');
+}
+
+function openPayFromDetail(){
+  closeModal('mo-debt-detail');
+  openPayDebtModal(currentDebtId);
+}
+
+function openPayDebtModal(did){
+  currentDebtId=did;
+  const d=debts.find(x=>x.id===did);
+  document.getElementById('debt-pay-info').innerHTML=`<strong>${d.name}</strong><br>Số tiền còn nợ: <strong class="mono" style="color:var(--r)">${fmtMoney(d.remaining)}</strong>`;
+  document.getElementById('debt-pay-amt').value=d.remaining;
+  openModal('mo-pay-debt');
+}
+async function submitPayDebt(){
+  const d=debts.find(x=>x.id===currentDebtId);
+  const amt=parseInt(document.getElementById('debt-pay-amt').value)||0;
+  if(amt<=0||amt>d.remaining){toast('Số tiền không hợp lệ','tr');return;}
+  const res=await apiPost('/api/debts/'+currentDebtId+'/pay',{amount:amt});
+  if(!res) return;
+  const i=debts.findIndex(x=>x.id===currentDebtId);
+  if(i>=0) debts[i]={...debts[i],...res};
+  closeModal('mo-pay-debt');
+  renderDebts();
+  toast(`✓ ${d.name} đã trả ${fmtMoney(amt)}`,'tg');
+}
+
+/* ===============================================================
+   PAGE: ĐIỀU CHỈNH
+=============================================================== */
+function openAdj(type){
+  adjType=type;
+  document.getElementById('adj-modal-title').textContent=type>0?'➕ Cộng tiền':'➖ Chi phí vận hành';
+  document.getElementById('adj-type-hint').textContent=type>0?'Sẽ cộng vào doanh thu ngày':'Sẽ trừ khỏi doanh thu ngày';
+  document.getElementById('adj-submit-btn').className='btn '+(type>0?'btn-p':'btn-r');
+  document.getElementById('adj-desc').value='';
+  document.getElementById('adj-amt').value='';
+  openModal('mo-adj');
+}
+async function submitAdj(){
+  const desc=document.getElementById('adj-desc').value.trim();
+  const amt=parseInt(document.getElementById('adj-amt').value)||0;
+  if(!desc||amt<=0){toast('Điền đủ thông tin!','tr');return;}
+  const res=await apiPost('/api/adjustments',{desc,amt:adjType*amt,type:adjType});
+  if(!res) return;
+  closeModal('mo-adj');
+  renderAdj();
+  toast(`✓ Đã thêm điều chỉnh`,'tg');
+}
+function renderAdj(){
+  const today=new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD
+  const todayAdjs=adjustments.filter(a=>a.date===today);
+  const todayEl=document.getElementById('adj-today-list');
+  todayEl.innerHTML=todayAdjs.length?todayAdjs.map(a=>adjRow(a)).join('')
+    :'<div style="color:var(--fa);font-size:13px;padding:16px 0">Chưa có điều chỉnh hôm nay</div>';
+  document.getElementById('adj-all-list').innerHTML=adjustments.map(a=>adjRow(a)).join('');
+}
+function adjRow(a){
+  const plus=a.amt>0;
+  return `<div class="adj-row">
+    <div class="adj-ic" style="background:${plus?'var(--gbg)':'var(--rbg)'}">${plus?'➕':'➖'}</div>
+    <div class="adj-main">
+      <div class="adj-title">${a.desc}</div>
+      <div class="adj-sub">${a.date}</div>
+    </div>
+    <div class="adj-val" style="color:${plus?'var(--g)':'var(--r)'}">${plus?'+':''}${fmtMoney(a.amt)}</div>
+  </div>`;
+}
+
+/* ===============================================================
+   INIT
+=============================================================== */
+window.onload=async ()=>{
+  const today=new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD theo giờ địa phương (VN)
+  document.getElementById('hist-from').value=today;
+  document.getElementById('hist-to').value=today;
+  document.getElementById('sum-date').value=today;
+  document.getElementById('sum-date').addEventListener('change', renderSum);
+  document.getElementById('mo-newtab').addEventListener('click',e=>{if(e.target===e.currentTarget) closeModal('mo-newtab');});
+  // Load dữ liệu từ API
+  await loadAll();
+  populateInvSel();
+};
+
+// Mở modal "Tạo tab mới" — chế độ tạo tab khách
+function openNewTab(){
+  activeTabId=null;
+  carts.nt={};
+  activeProductCat='nuoc';
+  document.getElementById('newtab-title').textContent='🎯 Tạo tab mới';
+  document.getElementById('newtab-name').value='';
+  document.getElementById('newtab-name-fg').style.display='';
+  document.getElementById('newtab-submit-btn').textContent='✓ Tạo tab';
+  renderProdPicker(document.getElementById('nt-cats'),document.getElementById('nt-prods'),carts.nt,null);
+  renderCart('nt');
+  openModal('mo-newtab');
+}
+
+function doLogout(){
+  localStorage.removeItem('bida_token');
+  localStorage.removeItem('bida_me');
+  if(ws) ws.close();
+  window.location.href='login.html';
+}
+</script>
+</body>
+</html>

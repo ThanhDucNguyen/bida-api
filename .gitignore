@@ -1,0 +1,28 @@
+# ─── Secrets / cấu hình môi trường ───────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ─── Dữ liệu khách hàng / dump DB (KHÔNG đưa lên) ─────────────
+*.sql
+import_data.sql
+fix_*.sql
+
+# ─── Binary build ────────────────────────────────────────────
+bida-server
+backend/bida-server
+*.exe
+
+# ─── Node / dependencies ─────────────────────────────────────
+node_modules/
+
+# ─── Hệ điều hành / editor ───────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ─── Tài liệu nội bộ / scratch ───────────────────────────────
+Document/

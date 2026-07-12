@@ -1,0 +1,1896 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bida Manager — Chủ quán</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#16a34a;--green-d:#15803d;--green-bg:#f0fdf4;--green-border:#bbf7d0;--green-light:#dcfce7;
+  --yellow:#ca8a04;--yellow-bg:#fefce8;--yellow-border:#fef08a;--yellow-mid:#eab308;--yellow-light:#fef9c3;
+  --text:#111827;--muted:#6b7280;--faint:#9ca3af;--border:#e5e7eb;--border2:#d1d5db;
+  --bg:#f9fafb;--surface:#ffffff;--surface2:#f3f4f6;
+  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+  --blue:#2563eb;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;
+  --sidebar:228px;--topbar:56px;
+}
+html,body{height:100%;font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg);color:var(--text);line-height:1.5}
+a{color:inherit;text-decoration:none}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.s-logo{padding:16px 14px 14px;border-bottom:1px solid var(--border)}
+.s-logomark{display:flex;align-items:center;gap:9px}
+.s-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--yellow-mid),#f59e0b);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 2px 6px rgba(234,179,8,.3)}
+.s-name{font-size:14px;font-weight:700;letter-spacing:-.2px;color:var(--text)}
+.s-branch{font-size:10px;color:var(--yellow);font-weight:600;margin-top:1px;background:var(--yellow-bg);padding:1px 6px;border-radius:4px;display:inline-block}
+
+.s-nav{flex:1;padding:10px 8px;overflow-y:auto}
+.s-section-label{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;padding:10px 10px 5px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;margin-bottom:2px}
+.nav-item:hover{background:var(--yellow-bg);color:var(--yellow)}
+.nav-item.active{background:linear-gradient(135deg,var(--yellow-mid),#f59e0b);color:#fff;box-shadow:0 2px 8px rgba(234,179,8,.35)}
+.ni-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+
+.s-footer{padding:12px 8px;border-top:1px solid var(--border)}
+.u-pill{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;background:var(--bg)}
+.u-av{width:30px;height:30px;background:linear-gradient(135deg,var(--yellow-mid),#f59e0b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.u-name{font-size:12px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-role{font-size:10px;color:var(--muted)}
+.btn-out{background:none;border:none;color:var(--faint);font-size:16px;cursor:pointer;padding:2px;transition:color .15s;display:flex;align-items:center}
+.btn-out:hover{color:var(--red)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:var(--topbar);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50}
+.tb-left{display:flex;align-items:center;gap:10px}
+.page-title{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.tb-right{display:flex;align-items:center;gap:8px}
+.time-pill{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border);border-radius:7px;padding:4px 10px;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.content{padding:24px;flex:1}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid;cursor:pointer;transition:all .12s;white-space:nowrap;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--green),#22c55e);color:#fff;border-color:var(--green);box-shadow:0 2px 6px rgba(22,163,74,.2)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(22,163,74,.3)}
+.btn-yellow{background:linear-gradient(135deg,var(--yellow-mid),#f59e0b);color:#fff;border-color:var(--yellow-mid);box-shadow:0 2px 6px rgba(234,179,8,.25)}
+.btn-yellow:hover{transform:translateY(-1px)}
+.btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border)}
+.btn-secondary:hover{border-color:var(--border2)}
+.btn-danger{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.btn-xs{padding:3px 8px;font-size:11px;border-radius:6px}
+
+/* METRIC CARDS */
+.metric-row{display:grid;gap:12px;margin-bottom:20px}
+.m4{grid-template-columns:repeat(4,1fr)}
+.m3{grid-template-columns:repeat(3,1fr)}
+.m2{grid-template-columns:repeat(2,1fr)}
+.mcard{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 20px;position:relative;overflow:hidden}
+.mcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.mcard.green::before{background:linear-gradient(90deg,var(--green),#22c55e)}
+.mcard.yellow::before{background:linear-gradient(90deg,var(--yellow-mid),#f59e0b)}
+.mcard.red::before{background:var(--red)}
+.mcard.blue::before{background:var(--blue)}
+.mcard.purple::before{background:var(--purple)}
+.mlabel{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.mval{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;line-height:1;color:var(--text)}
+.mval.green{color:var(--green)}
+.mval.yellow{color:var(--yellow)}
+.mval.red{color:var(--red)}
+.mval.purple{color:var(--purple)}
+.msub{font-size:11px;color:var(--faint);margin-top:7px;display:flex;gap:8px;flex-wrap:wrap}
+.msub-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.msub-chip.g{background:var(--green-bg);color:var(--green-d)}
+.msub-chip.y{background:var(--yellow-bg);color:var(--yellow)}
+.msub-chip.r{background:var(--red-bg);color:var(--red)}
+
+/* SECTION CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:20px;margin-bottom:16px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;padding:8px 14px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);background:var(--bg)}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.tbl tbody tr:hover td{background:var(--yellow-bg)}
+.tbl tr:last-child td{border-bottom:none}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:var(--green-bg);color:var(--green-d);border:1px solid var(--green-border)}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}
+.badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.badge-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.badge-purple{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}
+.badge-gray{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+
+/* FORMS */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.fi{width:100%;padding:9px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border .15s,box-shadow .15s}
+.fi:focus{border-color:var(--yellow-mid);box-shadow:0 0 0 3px rgba(234,179,8,.12)}
+.frow{display:grid;gap:14px}
+.frow-2{grid-template-columns:1fr 1fr}
+.frow-3{grid-template-columns:1fr 1fr 1fr}
+select.fi{cursor:pointer}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.32);backdrop-filter:blur(3px);align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.mbox{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:540px;max-width:94vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+.mhead h2{font-size:15px;font-weight:700}
+.mclose{width:28px;height:28px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.mclose:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+.mbody{padding:22px;overflow-y:auto;flex:1}
+.mfoot{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--text);color:#fff;border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none;max-width:320px;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.green{background:var(--green)}
+.toast.yellow{background:var(--yellow-mid)}
+
+/* SCROLL */
+.scroll-x{overflow-x:auto}
+
+/* PROGRESS BAR */
+.pbar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin-top:8px}
+.pbar-fill{height:100%;border-radius:3px;transition:width .5s}
+.pbar-fill.green{background:linear-gradient(90deg,var(--green),#22c55e)}
+.pbar-fill.yellow{background:linear-gradient(90deg,var(--yellow-mid),#f59e0b)}
+
+/* HISTORY PERIOD TOGGLE */
+.period-toggle{display:flex;gap:2px;background:var(--surface2);border-radius:9px;padding:3px;margin-bottom:20px;display:inline-flex}
+.pt-btn{padding:5px 14px;border-radius:7px;font-size:12px;font-weight:500;border:none;background:none;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .12s}
+.pt-btn.on{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:700}
+
+/* FUND ROWS */
+.fund-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border)}
+.fund-row:last-child{border-bottom:none}
+.fund-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.fund-main{flex:1;min-width:0}
+.fund-name{font-size:13px;font-weight:600}
+.fund-desc{font-size:11px;color:var(--muted);margin-top:2px}
+.fund-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;white-space:nowrap}
+
+/* FINANCE TABLE */
+.fin-row{display:grid;grid-template-columns:1fr 120px 120px 80px;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border);font-size:13px}
+.fin-row.head{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;background:var(--bg);border-radius:8px 8px 0 0}
+.fin-row:hover{background:var(--yellow-bg)}
+
+/* EMPTY */
+.empty{text-align:center;color:var(--faint);font-size:13px;padding:40px 20px}
+
+/* ===== MOBILE NAV BAR ===== */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+.mobile-nav-inner{display:flex;align-items:stretch}
+.mnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 10px;border:none;background:none;color:var(--muted);font-size:10px;font-weight:500;cursor:pointer;font-family:inherit;gap:3px;transition:color .12s;position:relative}
+.mnav-item.active{color:var(--yellow-mid)}
+.mnav-item.active::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--yellow-mid);border-radius:0 0 3px 3px}
+.mnav-icon{font-size:20px;line-height:1}
+.mnav-label{font-size:9px;font-weight:600;letter-spacing:.02em}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .mobile-nav{display:block}
+  .content{padding:14px 14px 80px}
+  .topbar{padding:0 14px}
+
+  /* Metric grids */
+  .metric-row.m4,.metric-row.m3{grid-template-columns:1fr 1fr}
+  .metric-row.m2{grid-template-columns:1fr 1fr}
+
+  /* Dashboard two-col sections */
+  .content > #page-dashboard > div[style*="grid-template-columns:1fr 1fr"]{
+    display:flex;flex-direction:column;gap:16px
+  }
+
+  /* Fund rows */
+  .fund-row{flex-wrap:wrap;gap:8px}
+
+  /* Finance rows */
+  .fin-row{grid-template-columns:1fr 100px;gap:8px}
+  .fin-row > div:nth-child(3),.fin-row > div:nth-child(4),.fin-row.head > div:nth-child(3),.fin-row.head > div:nth-child(4){display:none}
+
+  /* Cards */
+  .card{padding:14px}
+
+  /* mval */
+  .mval{font-size:20px}
+
+  /* History */
+  .tbl th:nth-child(5),.tbl td:nth-child(5){display:none}
+}
+
+@media(max-width:480px){
+  .metric-row.m4,.metric-row.m3,.metric-row.m2{grid-template-columns:1fr 1fr}
+  .frow-2,.frow-3{grid-template-columns:1fr}
+  .mbox{width:96vw}
+  .topbar{height:50px}
+  .time-pill{font-size:11px;padding:3px 8px}
+  /* Branch select in topbar — shorten */
+  .topbar select{max-width:120px;font-size:11px}
+  /* Profit info chips */
+  .msub{flex-direction:column;gap:4px}
+  /* History toggle badges */
+  .card-head{flex-wrap:wrap;gap:8px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="s-logo">
+    <div class="s-logomark">
+      <div class="s-icon">👑</div>
+      <div>
+        <div class="s-name">Bida Manager</div>
+        <div class="s-branch">Chủ quán</div>
+      </div>
+    </div>
+  </div>
+  <nav class="s-nav">
+    <div class="s-section-label">Tổng quan</div>
+    <button class="nav-item active" onclick="showPage('dashboard',this)">
+      <span class="ni-icon">📊</span> Dashboard
+    </button>
+    <button class="nav-item" onclick="showPage('loinhuan',this)">
+      <span class="ni-icon">💹</span> Lợi nhuận
+    </button>
+    <div class="s-section-label">Quản lý</div>
+    <button class="nav-item" onclick="showPage('lichsu',this)">
+      <span class="ni-icon">📋</span> Lịch sử
+    </button>
+    <button class="nav-item" onclick="showPage('taichinh',this)">
+      <span class="ni-icon">💰</span> Tài chính
+    </button>
+    <button class="nav-item" onclick="showPage('quy',this)">
+      <span class="ni-icon">🏦</span> Quỹ
+    </button>
+    <button class="nav-item" onclick="showPage('settings',this)">
+      <span class="ni-icon">⚙️</span> Cài đặt
+    </button>
+  </nav>
+  <div class="s-footer">
+    <div class="u-pill">
+      <div class="u-av">A</div>
+      <div>
+        <div class="u-name">Chủ quán</div>
+        <div class="u-role">Administrator</div>
+      </div>
+      <button class="btn-out" onclick="logout()" title="Đăng xuất">Logout</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <span class="page-title" id="page-title">Dashboard</span>
+    </div>
+    <div class="tb-right">
+      <div class="time-pill" id="clock">--:--</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ============================================================ -->
+    <!-- PAGE: DASHBOARD                                              -->
+    <!-- ============================================================ -->
+    <div id="page-dashboard">
+
+      <!-- ROW 1: HÔM NAY -->
+      <div style="font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Hôm nay — <span id="dash-date"></span></div>
+      <div class="metric-row m4" style="margin-bottom:14px">
+        <div class="mcard green">
+          <div class="mlabel">Doanh thu hôm nay</div>
+          <div class="mval green" id="dash-today-val">—</div>
+          <div class="msub" id="dash-today-sub"></div>
+        </div>
+        <div class="mcard yellow">
+          <div class="mlabel">Doanh thu tuần này</div>
+          <div class="mval yellow" id="dash-week-val">—</div>
+          <div class="msub" id="dash-week-sub"></div>
+        </div>
+        <div class="mcard green">
+          <div class="mlabel">Doanh thu tháng này</div>
+          <div class="mval green" id="dash-month-val">—</div>
+          <div class="msub" id="dash-month-sub"></div>
+        </div>
+        <div class="mcard">
+          <div class="mlabel">Số giao dịch hôm nay</div>
+          <div class="mval" style="color:var(--blue)" id="dash-count-val">—</div>
+          <div class="msub" id="dash-count-sub"></div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">So sánh kỳ trước</div>
+      <div class="metric-row m3" style="margin-bottom:20px">
+        <div class="mcard">
+          <div class="mlabel" id="dash-yesterday-label">Hôm qua</div>
+          <div class="mval" id="dash-yesterday-val">—</div>
+          <div class="msub" id="dash-yesterday-sub"></div>
+        </div>
+        <div class="mcard">
+          <div class="mlabel">Tuần trước</div>
+          <div class="mval" id="dash-lastweek-val">—</div>
+          <div class="msub" id="dash-lastweek-sub"></div>
+        </div>
+        <div class="mcard">
+          <div class="mlabel" id="dash-lastmonth-label">Tháng trước</div>
+          <div class="mval" id="dash-lastmonth-val">—</div>
+          <div class="msub" id="dash-lastmonth-sub"></div>
+        </div>
+      </div>
+
+      <!-- ROW 2: VẬT PHẨM + NHẬP HÀNG -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+        <div class="card" style="margin:0">
+          <div class="card-head">
+            <span class="card-title">🏆 Vật phẩm bán nhiều — Tháng này</span>
+          </div>
+          <div id="dash-top-items"><div style="color:var(--muted);font-size:13px;padding:12px 0">Đang tải...</div></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card" style="margin:0">
+            <div class="card-head">
+              <span class="card-title">📦 Nhập hàng tháng này</span>
+              <span class="badge badge-yellow" id="dash-import-badge"></span>
+            </div>
+            <div class="metric-row m2" style="margin:0;gap:10px">
+              <div style="background:var(--surface2);border-radius:9px;padding:12px">
+                <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:4px">TỔNG CHI NHẬP HÀNG</div>
+                <div class="mval red" style="font-size:20px" id="dash-import-total">—</div>
+              </div>
+              <div style="background:var(--surface2);border-radius:9px;padding:12px">
+                <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:4px">SỐ PHIẾU NHẬP</div>
+                <div class="mval" style="font-size:20px;color:var(--blue)" id="dash-import-count">—</div>
+              </div>
+            </div>
+            <div style="margin-top:12px" id="dash-import-list"></div>
+          </div>
+
+          <div class="card" style="margin:0">
+            <div class="card-head">
+              <span class="card-title">🏆 Vật phẩm bán nhiều — Tháng trước</span>
+              <span class="badge badge-gray" id="dash-top-prev-badge"></span>
+            </div>
+            <div id="dash-top-prev"><div style="color:var(--muted);font-size:13px;padding:12px 0">Đang tải...</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: LỢI NHUẬN                                             -->
+    <!-- ============================================================ -->
+    <div id="page-loinhuan" style="display:none">
+      <div style="background:var(--purple-bg);border:1.5px solid var(--purple-border);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--purple)">
+        💡 <strong>Lợi nhuận</strong> = Doanh thu (bida + vật phẩm) + Điều chỉnh − Nhập hàng
+      </div>
+
+      <div class="metric-row m3" style="margin-bottom:14px">
+        <div class="mcard purple">
+          <div class="mlabel">Lợi nhuận hôm nay</div>
+          <div class="mval purple" id="ln-today-val">—</div>
+          <div class="msub" id="ln-today-sub"></div>
+        </div>
+        <div class="mcard purple">
+          <div class="mlabel">Lợi nhuận tuần này</div>
+          <div class="mval purple" id="ln-week-val">—</div>
+          <div class="msub" id="ln-week-sub"></div>
+        </div>
+        <div class="mcard purple">
+          <div class="mlabel">Lợi nhuận tháng này</div>
+          <div class="mval purple" id="ln-month-val">—</div>
+          <div class="msub" id="ln-month-sub"></div>
+        </div>
+      </div>
+
+      <div class="metric-row m3" style="margin-bottom:24px">
+        <div class="mcard">
+          <div class="mlabel" id="ln-yesterday-label">Lợi nhuận hôm qua</div>
+          <div class="mval purple" id="ln-yesterday-val">—</div>
+          <div class="msub" id="ln-yesterday-sub"></div>
+        </div>
+        <div class="mcard">
+          <div class="mlabel">Lợi nhuận tuần trước</div>
+          <div class="mval purple" id="ln-lastweek-val">—</div>
+          <div class="msub" id="ln-lastweek-sub"></div>
+        </div>
+        <div class="mcard">
+          <div class="mlabel" id="ln-lastmonth-label">Lợi nhuận tháng trước</div>
+          <div class="mval purple" id="ln-lastmonth-val">—</div>
+          <div class="msub" id="ln-lastmonth-sub"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">💹 Tổng lợi nhuận tích lũy</span>
+          <span class="badge badge-purple">Từ khi khai trương</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">
+          <div style="background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:10px;padding:16px;text-align:center">
+            <div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;margin-bottom:6px">Tổng bán vật phẩm</div>
+            <div class="mval green" style="font-size:22px" id="ln-all-sell">—</div>
+          </div>
+          <div style="background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;padding:16px;text-align:center">
+            <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;margin-bottom:6px">Tổng nhập hàng</div>
+            <div class="mval red" style="font-size:22px" id="ln-all-import">—</div>
+          </div>
+          <div style="background:var(--purple-bg);border:1.5px solid var(--purple);border-radius:10px;padding:16px;text-align:center">
+            <div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;margin-bottom:6px">TỔNG LỢI NHUẬN</div>
+            <div class="mval purple" style="font-size:28px" id="ln-all-profit">—</div>
+          </div>
+        </div>
+
+        <div class="card-title" style="margin-bottom:12px">Lợi nhuận theo tháng</div>
+        <div class="scroll-x">
+          <table class="tbl">
+            <thead><tr>
+              <th>Tháng</th><th>Doanh thu (+ điều chỉnh)</th><th>Nhập hàng</th><th>Lợi nhuận</th><th>Biên lợi nhuận</th>
+            </tr></thead>
+            <tbody id="ln-month-rows">
+              <tr><td colspan="5" style="text-align:center;color:var(--faint);padding:16px">Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: LỊCH SỬ                                               -->
+    <!-- ============================================================ -->
+    <div id="page-lichsu" style="display:none">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">
+          <span class="card-title">Tìm kiếm lịch sử</span>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+          <div class="fg" style="margin:0;flex:0 0 auto">
+            <label class="fl">Ngày</label>
+            <input class="fi" type="number" id="hist-day" style="width:70px" placeholder="VD: 12" min="1" max="31" oninput="updateHistMode()">
+          </div>
+          <div class="fg" style="margin:0;flex:0 0 auto">
+            <label class="fl">Tháng</label>
+            <input class="fi" type="number" id="hist-month" style="width:80px" min="1" max="12">
+          </div>
+          <div class="fg" style="margin:0;flex:0 0 auto">
+            <label class="fl">Năm</label>
+            <input class="fi" type="number" id="hist-year" style="width:90px">
+          </div>
+          <button class="btn btn-yellow" onclick="searchHistory()">🔍 Tìm</button>
+          <div id="hist-mode-hint" style="font-size:12px;color:var(--muted);padding-bottom:2px">
+            Nhập cả ngày + tháng + năm để xem ngày cụ thể, hoặc chỉ tháng + năm để xem cả tháng.
+          </div>
+        </div>
+      </div>
+
+      <!-- KẾT QUẢ: XEM THEO NGÀY -->
+      <div id="hist-result-day" style="display:none">
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head">
+            <span class="card-title" id="hist-day-title">📅 Tổng kết ngày</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+            <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:9px;padding:14px;text-align:center">
+              <div style="font-size:11px;font-weight:700;color:var(--green-d);margin-bottom:4px">TỔNG THU</div>
+              <div class="mval green" style="font-size:20px" id="hist-day-total">—</div>
+            </div>
+            <div style="background:var(--red-bg);border:1px solid var(--red-border);border-radius:9px;padding:14px;text-align:center">
+              <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:4px">TỔNG CHI (nhập hàng)</div>
+              <div class="mval red" style="font-size:20px" id="hist-day-imp">—</div>
+            </div>
+            <div style="background:var(--yellow-bg);border:1.5px solid var(--yellow-mid);border-radius:9px;padding:14px;text-align:center">
+              <div style="font-size:11px;font-weight:700;color:var(--yellow);margin-bottom:4px">DOANH THU</div>
+              <div class="mval yellow" style="font-size:20px" id="hist-day-net">—</div>
+            </div>
+          </div>
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:13px">
+            <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+              <div style="color:var(--muted);font-size:11px">🎱 Tiền bida</div>
+              <div class="mono" style="font-weight:600;color:var(--green)" id="hist-day-bida">—</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+              <div style="color:var(--muted);font-size:11px">🛒 Vật phẩm</div>
+              <div class="mono" style="font-weight:600;color:var(--blue)" id="hist-day-items">—</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+              <div style="color:var(--muted);font-size:11px">⚖️ Điều chỉnh</div>
+              <div class="mono" style="font-weight:600" id="hist-day-adj">—</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--muted)" id="hist-day-count"></div>
+          <!-- Detail: sessions -->
+          <div id="hist-day-detail" style="margin-top:12px;border-top:1px solid var(--border)"></div>
+        </div>
+      </div>
+
+      <!-- KẾT QUẢ: XEM THEO THÁNG -->
+      <div id="hist-result-month" style="display:none">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title" id="hist-month-title">📅 Lịch sử</span>
+            <span class="badge badge-yellow" id="hist-month-badge"></span>
+          </div>
+          <div class="scroll-x">
+            <table class="tbl">
+              <thead><tr><th>Ngày</th><th>Thu</th><th>Chi (nhập hàng)</th><th>Doanh thu</th><th>Khách</th><th>Chi tiết</th></tr></thead>
+              <tbody id="hist-month-rows">
+                <tr><td colspan="6" style="text-align:center;color:var(--faint);padding:16px">Đang tải...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: TÀI CHÍNH                                             -->
+    <!-- ============================================================ -->
+    <div id="page-taichinh" style="display:none">
+
+      <!-- KỲ CHỌN -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <input class="fi" type="month" id="fin-month" style="width:160px" onchange="calcFinance()">
+        <button class="btn btn-yellow btn-sm" onclick="calcFinance()">Tính toán</button>
+      </div>
+
+      <!-- METRICS TOP -->
+      <div class="metric-row m3" style="margin-bottom:16px" id="fin-metrics">
+        <div class="mcard green">
+          <div class="mlabel">Lợi nhuận gộp</div>
+          <div class="mval green" id="fin-revenue">—</div>
+          <div class="msub" id="fin-rev-sub"><span class="msub-chip g">DT + Điều chỉnh − Nhập hàng</span></div>
+        </div>
+        <div class="mcard" style="border-top:3px solid var(--red)">
+          <div class="mlabel">Tổng chi phí</div>
+          <div class="mval red" id="fin-expense">—</div>
+          <div class="msub"><span style="font-size:10px;color:var(--faint)">Lương + điện nước + mặt bằng + ...</span></div>
+        </div>
+        <div class="mcard purple">
+          <div class="mlabel">Lợi nhuận</div>
+          <div class="mval purple" id="fin-profit">—</div>
+          <div class="msub" id="fin-margin">—</div>
+        </div>
+      </div>
+
+      <!-- KHOẢN THU CHI -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Chi phí vận hành</span>
+          <button class="btn btn-yellow btn-sm" onclick="openFinanceModal()">+ Thêm khoản</button>
+        </div>
+        <div class="fin-row head">
+          <div>Khoản mục</div><div>Số tiền</div><div>Phân loại</div><div>Thao tác</div>
+        </div>
+        <div id="fin-expense-rows">
+          <div style="color:var(--faint);padding:16px;text-align:center">Đang tải...</div>
+        </div>
+      </div>
+
+      <!-- PHÂN PHỐI LỢI NHUẬN -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">💹 Phân phối lợi nhuận</span>
+          <button class="btn btn-secondary btn-sm" onclick="openModal('modal-shareholders')">⚙ Chỉnh tỉ lệ</button>
+        </div>
+
+        <!-- Công thức -->
+        <div style="background:var(--purple-bg);border:1.5px solid var(--purple-border);border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px">
+            <span style="background:var(--green-bg);color:var(--green);padding:3px 8px;border-radius:6px;font-weight:700" id="pp-revenue">—</span>
+            <span style="color:var(--muted)">doanh thu</span>
+            <span style="color:var(--muted)">−</span>
+            <span style="background:var(--red-bg);color:var(--red);padding:3px 8px;border-radius:6px;font-weight:700" id="pp-expense">—</span>
+            <span style="color:var(--muted)">chi phí</span>
+            <span style="color:var(--muted)">=</span>
+            <span style="background:var(--purple-bg);color:var(--purple);padding:3px 8px;border-radius:6px;font-weight:700;border:1px solid var(--purple-border)" id="pp-profit">—</span>
+            <span style="color:var(--muted)">lợi nhuận</span>
+          </div>
+        </div>
+
+        <!-- Quỹ quản lý 5% -->
+        <div style="background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:13px;font-weight:700">🏦 Quỹ quản lý</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">5% lợi nhuận — dùng cho chi phí phát sinh</div>
+          </div>
+          <div class="mono" style="font-size:18px;font-weight:700;color:var(--yellow)" id="pp-fund">—</div>
+        </div>
+
+        <!-- Còn lại để chia -->
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">
+          Còn lại để chia: <strong class="mono" style="color:var(--purple)" id="pp-distributable">—</strong>
+          = <span id="pp-profit-formula">—</span> − <span id="pp-fund-formula">—</span> quỹ quản lý
+        </div>
+
+        <!-- Cổ đông -->
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Chia theo cổ phần</div>
+        <div id="shareholder-rows">
+          <!-- rendered by JS -->
+        </div>
+
+        <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;font-size:13px;font-weight:700">
+          <span>Tổng chia</span>
+          <span class="mono" style="color:var(--purple)" id="pp-total-share">—</span>
+        </div>
+      </div>
+
+      <!-- PHÂN TÍCH CHI PHÍ -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">📊 Cơ cấu chi phí</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div id="fin-bars">
+            <div style="color:var(--faint);font-size:12px">Đang tải...</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:16px;font-size:12px">
+            <div style="font-weight:700;margin-bottom:10px" id="fs-month-label">Tóm tắt tháng</div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Doanh thu</span><span class="mono" style="color:var(--green)" id="fs-rev">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Chi phí</span><span class="mono" style="color:var(--red)" id="fs-exp">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Quỹ QT (5%)</span><span class="mono" style="color:var(--yellow)" id="fs-fund">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;font-weight:700"><span>Chia cổ đông</span><span class="mono" style="color:var(--purple)" id="fs-dist">—</span></div>
+            <div style="margin-top:8px;padding:8px;background:var(--surface);border-radius:8px;text-align:center">
+              <div style="font-size:10px;color:var(--muted);margin-bottom:2px">Tỉ lệ lợi nhuận</div>
+              <div style="font-size:20px;font-weight:700;color:var(--green)" id="fs-margin">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: QUỸ                                                    -->
+    <!-- ============================================================ -->
+    <div id="page-quy" style="display:none">
+      <div class="metric-row m2" style="margin-bottom:20px">
+        <div class="mcard green">
+          <div class="mlabel">Tổng quỹ hiện tại</div>
+          <div class="mval green" id="fund-total">0đ</div>
+          <div class="msub"><span style="color:var(--faint)">Tất cả quỹ cộng lại</span></div>
+        </div>
+        <div class="mcard yellow">
+          <div class="mlabel">Số quỹ đang hoạt động</div>
+          <div class="mval yellow" id="fund-count">0</div>
+          <div class="msub" id="fund-count-sub"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Danh sách quỹ</span>
+          <button class="btn btn-yellow btn-sm" onclick="openFundModal()">+ Thêm quỹ</button>
+        </div>
+        <div id="fund-list">
+          <div style="color:var(--faint);padding:24px;text-align:center">Chưa có quỹ nào. Nhấn "+ Thêm quỹ" để tạo.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: CÀI ĐẶT                                                -->
+    <!-- ============================================================ -->
+    <div id="page-settings" style="display:none">
+
+      <!-- GIÁ BÀN THEO GIỜ -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">
+          <span class="card-title">🎱 Giá bàn theo giờ</span>
+          <button class="btn btn-yellow btn-sm" onclick="saveRates()">✓ Lưu giá</button>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
+          Giá đổi theo giờ cắt: trước giờ cắt tính giá <b>Trước</b>, từ giờ cắt trở đi tính giá <b>Sau</b>.
+        </div>
+        <div class="frow frow-2" style="margin-bottom:16px">
+          <div class="fg">
+            <label class="fl">Giờ cắt (giờ)</label>
+            <input class="fi" type="number" id="set-cutoff-h" min="0" max="23" placeholder="21">
+          </div>
+          <div class="fg">
+            <label class="fl">Giờ cắt (phút)</label>
+            <input class="fi" type="number" id="set-cutoff-m" min="0" max="59" placeholder="0">
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Bàn phân (Bàn phân 1, 2)</div>
+        <div class="frow frow-2" style="margin-bottom:16px">
+          <div class="fg">
+            <label class="fl">Giá trước giờ cắt (đ/h)</label>
+            <input class="fi" type="number" id="set-phan-before" min="0" step="1000" placeholder="25000">
+          </div>
+          <div class="fg">
+            <label class="fl">Giá sau giờ cắt (đ/h)</label>
+            <input class="fi" type="number" id="set-phan-after" min="0" step="1000" placeholder="30000">
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Bàn 3C</div>
+        <div class="frow frow-2">
+          <div class="fg">
+            <label class="fl">Giá trước giờ cắt (đ/h)</label>
+            <input class="fi" type="number" id="set-bb-before" min="0" step="1000" placeholder="40000">
+          </div>
+          <div class="fg">
+            <label class="fl">Giá sau giờ cắt (đ/h)</label>
+            <input class="fi" type="number" id="set-bb-after" min="0" step="1000" placeholder="45000">
+          </div>
+        </div>
+      </div>
+
+      <!-- QUẢN LÝ MẶT HÀNG -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">📦 Quản lý mặt hàng</span>
+          <button class="btn btn-yellow btn-sm" onclick="openProductModal()">+ Thêm mặt hàng</button>
+        </div>
+        <div id="prod-list"></div>
+      </div>
+
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+</div><!-- /layout -->
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mnav-item active" id="mnav-dashboard" onclick="showPage('dashboard',null,'dashboard')">
+      <span class="mnav-icon">📊</span>
+      <span class="mnav-label">Dashboard</span>
+    </button>
+    <button class="mnav-item" id="mnav-loinhuan" onclick="showPage('loinhuan',null,'loinhuan')">
+      <span class="mnav-icon">💹</span>
+      <span class="mnav-label">Lợi nhuận</span>
+    </button>
+    <button class="mnav-item" id="mnav-lichsu" onclick="showPage('lichsu',null,'lichsu')">
+      <span class="mnav-icon">📋</span>
+      <span class="mnav-label">Lịch sử</span>
+    </button>
+    <button class="mnav-item" id="mnav-taichinh" onclick="showPage('taichinh',null,'taichinh')">
+      <span class="mnav-icon">💰</span>
+      <span class="mnav-label">Tài chính</span>
+    </button>
+    <button class="mnav-item" id="mnav-quy" onclick="showPage('quy',null,'quy')">
+      <span class="mnav-icon">🏦</span>
+      <span class="mnav-label">Quỹ</span>
+    </button>
+    <button class="mnav-item" id="mnav-settings" onclick="showPage('settings',null,'settings')">
+      <span class="mnav-icon">⚙️</span>
+      <span class="mnav-label">Cài đặt</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MODAL: THÊM KHOẢN TÀI CHÍNH -->
+<div class="overlay" id="modal-finance">
+  <div class="mbox">
+    <div class="mhead">
+      <h2>💰 Thêm khoản thu/chi</h2>
+      <button class="mclose" onclick="closeModal('modal-finance')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fg">
+        <label class="fl">Tên khoản mục</label>
+        <input class="fi" type="text" id="exp-name" placeholder="VD: Lương nhân viên, Điện nước...">
+      </div>
+      <div class="frow frow-2">
+        <div class="fg">
+          <label class="fl">Số tiền</label>
+          <input class="fi" type="number" id="exp-amount" placeholder="0" min="0">
+        </div>
+        <div class="fg">
+          <label class="fl">Tháng áp dụng</label>
+          <input class="fi" type="month" id="exp-month">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Ghi chú</label>
+        <input class="fi" type="text" id="exp-desc" placeholder="Mô tả thêm (tùy chọn)">
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-finance')">Hủy</button>
+      <button class="btn btn-yellow" onclick="saveFinance()">✓ Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CỔ ĐÔNG -->
+<div class="overlay" id="modal-shareholders">
+  <div class="mbox" style="width:440px">
+    <div class="mhead"><h2>⚙ Tỉ lệ cổ phần</h2><button class="mclose" onclick="closeModal('modal-shareholders')">✕</button></div>
+    <div class="mbody">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Tổng tỉ lệ phải bằng 100%. Thay đổi sẽ được áp dụng ngay.</div>
+      <div id="sh-edit-rows"></div>
+      <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="addShareholder()">+ Thêm cổ đông</button>
+      <div id="sh-total-check" style="margin-top:12px;font-size:13px;font-weight:600"></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-shareholders')">Hủy</button>
+      <button class="btn btn-yellow" onclick="saveShareholders()">✓ Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: THÊM QUỸ -->
+<div class="overlay" id="modal-fund">
+  <div class="mbox" style="width:440px">
+    <div class="mhead">
+      <h2>🏦 Thêm quỹ mới</h2>
+      <button class="mclose" onclick="closeModal('modal-fund')">✕</button>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="fund-edit-id">
+      <div class="fg">
+        <label class="fl">Tên quỹ</label>
+        <input class="fi" type="text" id="fund-name" placeholder="VD: Quỹ dự phòng, Quỹ marketing...">
+      </div>
+      <div class="fg">
+        <label class="fl">Mô tả</label>
+        <input class="fi" type="text" id="fund-desc" placeholder="Mục đích sử dụng quỹ">
+      </div>
+      <div class="fg">
+        <label class="fl">Số dư</label>
+        <input class="fi" type="number" id="fund-amount" placeholder="0" min="0">
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-fund')">Hủy</button>
+      <button class="btn btn-yellow" onclick="saveFund()">✓ Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: MẶT HÀNG -->
+<div class="overlay" id="modal-product">
+  <div class="mbox" style="width:460px">
+    <div class="mhead">
+      <h2 id="prod-modal-title">📦 Thêm mặt hàng</h2>
+      <button class="mclose" onclick="closeModal('modal-product')">✕</button>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="prod-id">
+      <div class="fg">
+        <label class="fl">Tên mặt hàng</label>
+        <input class="fi" type="text" id="prod-name" placeholder="VD: 7Up, Trà đào...">
+      </div>
+      <div class="frow frow-2">
+        <div class="fg">
+          <label class="fl">Giá bán (đ)</label>
+          <input class="fi" type="number" id="prod-price" min="0" step="1000" placeholder="0">
+        </div>
+        <div class="fg">
+          <label class="fl">Đơn vị</label>
+          <input class="fi" type="text" id="prod-unit" placeholder="lon, chai, ly...">
+        </div>
+      </div>
+      <div class="frow frow-2">
+        <div class="fg">
+          <label class="fl">Danh mục</label>
+          <select class="fi" id="prod-cat">
+            <option value="nuoc">🥤 Nước</option>
+            <option value="thuoc">🚬 Thuốc</option>
+            <option value="an">🍜 Đồ ăn</option>
+            <option value="khac">📦 Khác</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Ngưỡng cảnh báo tồn</label>
+          <input class="fi" type="number" id="prod-min" min="0" placeholder="5">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Tồn kho hiện tại</label>
+        <input class="fi" type="number" id="prod-stock" min="0" placeholder="0">
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-product')">Hủy</button>
+      <button class="btn btn-yellow" onclick="saveProduct()">✓ Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   AUTH & API
+============================================================ */
+const authToken  = localStorage.getItem('bida_token') || '';
+const currentUser= JSON.parse(localStorage.getItem('bida_me') || 'null');
+if(!authToken || !currentUser || currentUser.role !== 'admin'){
+  window.location.href = 'login.html';
+}
+
+async function apiFetch(path, opts={}){
+  try{
+    const res = await fetch(path, {
+      ...opts,
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken,...(opts.headers||{})}
+    });
+    if(res.status===401){ localStorage.clear(); window.location.href='login.html'; return null; }
+    return res.json();
+  }catch(e){ toast('Lỗi kết nối server'); return null; }
+}
+const apiGet    = p     => apiFetch(p);
+const apiPost   = (p,b) => apiFetch(p,{method:'POST',  body:JSON.stringify(b)});
+const apiPut    = (p,b) => apiFetch(p,{method:'PUT',   body:JSON.stringify(b)});
+const apiDelete = p     => apiFetch(p,{method:'DELETE'});
+
+/* ── WebSocket ─────────────────────────────────────────── */
+let ws=null;
+function connectWS(){
+  const proto=location.protocol==='https:'?'wss':'ws';
+  ws=new WebSocket(`${proto}://${location.host}/ws?token=${authToken}`);
+  ws.onmessage=async e=>{
+    const msg=JSON.parse(e.data);
+    if(msg.type==='session_add'){
+      const fresh = await apiGet('/api/sessions?limit=5000');
+      if(fresh) ownerData.sessions = fresh;
+      reRenderCurrentPage();
+    }
+    if(msg.type==='adjustment_add'||msg.type==='adjustment_remove'){
+      const fresh = await apiGet('/api/adjustments');
+      if(fresh) ownerData.adjustments = fresh;
+      reRenderCurrentPage();
+    }
+    if(msg.type==='expense_add'||msg.type==='expense_update'||msg.type==='expense_remove'){
+      const fresh = await apiGet('/api/expenses');
+      if(fresh) ownerData.expenses = fresh;
+      reRenderCurrentPage();
+    }
+    if(msg.type==='inventory_add'||msg.type==='inventory_update'){
+      const i=ownerData.inventory.findIndex(p=>p.id===msg.data.id);
+      if(i>=0) ownerData.inventory[i]=msg.data; else ownerData.inventory.push(msg.data);
+      if(currentPageId==='settings') renderProducts();
+    }
+    if(msg.type==='inventory_remove'){
+      ownerData.inventory=ownerData.inventory.filter(p=>p.id!==msg.data);
+      if(currentPageId==='settings') renderProducts();
+    }
+    if(msg.type==='fund_add'||msg.type==='fund_update'){
+      const i=ownerData.funds.findIndex(f=>f.id===msg.data.id);
+      if(i>=0) ownerData.funds[i]=msg.data; else ownerData.funds.push(msg.data);
+      if(currentPageId==='quy') renderFunds();
+    }
+    if(msg.type==='fund_remove'){
+      ownerData.funds=ownerData.funds.filter(f=>f.id!==msg.data);
+      if(currentPageId==='quy') renderFunds();
+    }
+    if(msg.type==='settings'){ applySettings(msg.data); if(currentPageId==='settings') renderSettings(); }
+  };
+  ws.onclose=()=>setTimeout(connectWS,3000);
+}
+
+/* ── Global data cache ─────────────────────────────────── */
+let ownerData = {
+  sessions:[], adjustments:[], expenses:[], imports:[], inventory:[], debts:[], funds:[], settings:null
+};
+
+function applySettings(s){
+  if(!s) return;
+  ownerData.settings=s;
+  if(s.shareholders) shareholders=s.shareholders;
+  if(s.fund_rate!==undefined) FUND_RATE=s.fund_rate;
+}
+
+async function loadOwnerData(){
+  const [sess, adjs, exps, imps, sets, debtsR, inv, fundsR] = await Promise.all([
+    apiGet('/api/sessions?limit=5000'),
+    apiGet('/api/adjustments'),
+    apiGet('/api/expenses'),
+    apiGet('/api/imports?limit=5000'),
+    apiGet('/api/settings'),
+    apiGet('/api/debts'),
+    apiGet('/api/inventory'),
+    apiGet('/api/funds'),
+  ]);
+  ownerData.sessions     = sess    || [];
+  ownerData.adjustments  = adjs    || [];
+  ownerData.expenses     = exps    || [];
+  ownerData.imports      = imps    || [];
+  ownerData.debts        = debtsR  || [];
+  ownerData.inventory    = inv     || [];
+  ownerData.funds        = fundsR  || [];
+  applySettings(sets);
+  // Update UI user info
+  const nameEl = document.getElementById('owner-uname');
+  if(nameEl) nameEl.textContent = currentUser.name;
+  connectWS();
+  renderDashboard();
+}
+
+/* ============================================================
+   FINANCE DATA
+============================================================ */
+let FUND_RATE = 0.05;
+
+let shareholders = [
+  {name:'Hùng', pct:43},
+  {name:'Đức',  pct:35},
+  {name:'Nhân', pct:22},
+];
+
+function getMonthStr(){ return document.getElementById('fin-month')?.value || new Date().toISOString().slice(0,7); }
+
+function getMonthSessions(monthStr){
+  // Dung s.date (YYYY-MM-DD, gio VN tu backend) thay vi parse paid_at UTC
+  return ownerData.sessions.filter(s=>{
+    return (s.date||'').slice(0,7) === monthStr;
+  });
+}
+function getMonthAdj(monthStr){
+  return ownerData.adjustments.filter(a=>{
+    return (a.date||'').slice(0,7) === monthStr;
+  });
+}
+
+/* ── Dashboard render ────────────────────────────────────── */
+function renderDashboard(){
+  const now  = new Date();
+  const todayD = now.toLocaleDateString('sv-SE'); // YYYY-MM-DD
+
+  // Helper: YYYY-MM-DD from Date offset
+  function offsetDate(d, days){
+    const t=new Date(d); t.setDate(t.getDate()+days);
+    return t.toLocaleDateString('sv-SE');
+  }
+
+  const thisM= todayD.slice(0,7);
+  const prevM= now.getMonth()===0 ? `${now.getFullYear()-1}-12`
+               : `${now.getFullYear()}-${String(now.getMonth()).padStart(2,'0')}`;
+  const yesterdayD = offsetDate(now,-1);
+
+  // Week start (Monday)
+  const dow = (now.getDay()+6)%7; // Mon=0
+  const weekStart = offsetDate(now,-dow);
+  const lastWeekStart = offsetDate(now,-dow-7);
+  const lastWeekEnd   = offsetDate(now,-dow-1);
+
+  // Session helpers
+  function sumSess(arr){ return {rev:arr.reduce((s,x)=>s+srev(x),0), bida:arr.reduce((s,x)=>s+x.bida,0), items:arr.reduce((s,x)=>s+(x.cart||0),0), count:arr.length}; }
+  function filterRange(from,to){ return ownerData.sessions.filter(s=>s.date>=from&&s.date<=to); }
+
+  const todayS = sumSess(ownerData.sessions.filter(s=>s.date===todayD));
+  const yestS  = sumSess(ownerData.sessions.filter(s=>s.date===yesterdayD));
+  const weekS  = sumSess(filterRange(weekStart, todayD));
+  const lastWS = sumSess(filterRange(lastWeekStart, lastWeekEnd));
+
+  const thisMSess = getMonthSessions(thisM);
+  const thisMRev  = thisMSess.reduce((s,x)=>s+srev(x),0);
+  const thisMAdj  = getMonthAdj(thisM).reduce((s,a)=>s+a.amt,0);
+  const thisMNet  = thisMRev + thisMAdj;
+  const thisMBida = thisMSess.reduce((s,x)=>s+x.bida,0);
+  const thisMItems= thisMSess.reduce((s,x)=>s+(x.cart||0),0);
+
+  const prevMSess = getMonthSessions(prevM);
+  const prevMRev  = prevMSess.reduce((s,x)=>s+srev(x),0);
+  const prevMAdj  = getMonthAdj(prevM).reduce((s,a)=>s+a.amt,0);
+  const prevMNet  = prevMRev + prevMAdj;
+
+  // Set date header
+  set('dash-date', todayD.split('-').reverse().join('/'));
+
+  // Today card
+  set('dash-today-val', fmtM(todayS.rev));
+  const todaySub=document.getElementById('dash-today-sub');
+  if(todaySub) todaySub.innerHTML=`<span class="msub-chip g">🎱 ${fmtM(todayS.bida)}</span><span class="msub-chip y">🛒 ${fmtM(todayS.items)}</span>`;
+
+  // Week card
+  set('dash-week-val', fmtM(weekS.rev));
+  const weekSub=document.getElementById('dash-week-sub');
+  if(weekSub) weekSub.innerHTML=`<span class="msub-chip g">${weekStart.slice(8)}/${+weekStart.slice(5,7)} → ${todayD.slice(8)}/${+todayD.slice(5,7)}</span>`;
+
+  // Month card
+  set('dash-month-val', fmtM(thisMNet));
+  const monSub=document.getElementById('dash-month-sub');
+  if(monSub) monSub.innerHTML=`<span class="msub-chip g">🎱 ${fmtM(thisMBida)}</span><span class="msub-chip y">🛒 ${fmtM(thisMItems)}</span>`;
+
+  // Count card
+  set('dash-count-val', todayS.count);
+  const cntSub=document.getElementById('dash-count-sub');
+  if(cntSub) cntSub.innerHTML=`<span style="color:var(--faint)">Hôm qua: ${yestS.count} GD</span>`;
+
+  // Yesterday
+  const ylabel=`${yesterdayD.slice(8)}/${+yesterdayD.slice(5,7)}`;
+  set('dash-yesterday-label', `Hôm qua (${ylabel})`);
+  set('dash-yesterday-val', fmtM(yestS.rev));
+  const ySub=document.getElementById('dash-yesterday-sub');
+  if(ySub) ySub.innerHTML=`<span class="msub-chip g">🎱 ${fmtM(yestS.bida)}</span><span class="msub-chip y">🛒 ${fmtM(yestS.items)}</span>`;
+
+  // Last week
+  set('dash-lastweek-val', fmtM(lastWS.rev));
+  const lwSub=document.getElementById('dash-lastweek-sub');
+  if(lwSub){
+    const diff=weekS.rev-lastWS.rev;
+    const pct=lastWS.rev?((diff/lastWS.rev)*100).toFixed(1):0;
+    const col=diff>=0?'var(--green)':'var(--red)';
+    lwSub.innerHTML=`<span style="color:${col};font-size:11px;font-weight:600">${diff>=0?'↑':'↓'} ${Math.abs(pct)}% so với tuần này</span>`;
+  }
+
+  // Last month
+  const prevLabel=`${+prevM.slice(5,7)}/${prevM.slice(0,4)}`;
+  set('dash-lastmonth-label', `Tháng trước (${prevLabel})`);
+  set('dash-lastmonth-val', fmtM(prevMNet));
+  const pmSub=document.getElementById('dash-lastmonth-sub');
+  if(pmSub) pmSub.innerHTML=`<span style="color:var(--faint)">Tháng hoàn chỉnh</span>`;
+
+  // Top items this month
+  const itemCount = {};
+  thisMSess.forEach(s=>{
+    if(s.details?.items) s.details.items.forEach(i=>{
+      itemCount[i.name]=(itemCount[i.name]||0)+i.qty;
+    });
+  });
+  const topItems = Object.entries(itemCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topEl = document.getElementById('dash-top-items');
+  if(topEl) topEl.innerHTML = topItems.length
+    ? topItems.map(([n,q],i)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px"><span>${i+1}. ${n}</span><span class="mono" style="font-weight:600">${q}</span></div>`).join('')
+    : '<div style="color:var(--faint);font-size:13px">Chưa có dữ liệu</div>';
+
+  // Top items prev month
+  const itemCountP = {};
+  prevMSess.forEach(s=>{
+    if(s.details?.items) s.details.items.forEach(i=>{
+      itemCountP[i.name]=(itemCountP[i.name]||0)+i.qty;
+    });
+  });
+  const topPrev = Object.entries(itemCountP).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  set('dash-top-prev-badge', prevLabel);
+  const topPrevEl=document.getElementById('dash-top-prev');
+  if(topPrevEl) topPrevEl.innerHTML = topPrev.length
+    ? `<div style="font-size:12px;color:var(--muted)">${topPrev.map(([n,q])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)"><span>${n}</span><span class="mono">${q}</span></div>`).join('')}</div>`
+    : '<div style="color:var(--faint);font-size:13px">Chưa có dữ liệu</div>';
+
+  // Imports this month
+  const monthImp = ownerData.imports.filter(im=>(im.date||'').slice(0,7)===thisM);
+  const impTotal = monthImp.reduce((s,im)=>s+(im.cost||0),0);
+  set('dash-import-badge', `${+thisM.slice(5,7)}/${thisM.slice(0,4)}`);
+  set('dash-import-total', fmtM(impTotal));
+  set('dash-import-count', monthImp.length);
+  const impListEl=document.getElementById('dash-import-list');
+  if(impListEl){
+    const recent=monthImp.slice(0,10);
+    impListEl.innerHTML=recent.length
+      ? recent.map(im=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)"><span class="mono">${im.name||'—'}</span><span class="mono" style="color:var(--red)">−${fmtM(im.cost||0)}</span></div>`).join('')
+      : '<div style="color:var(--faint);font-size:12px">Không có dữ liệu nhập hàng</div>';
+  }
+}
+
+/* ── History ─────────────────────────────────────────────── */
+function searchHistory(){
+  const day   = (document.getElementById('hist-day').value||'').trim();
+  const mm    = String(document.getElementById('hist-month').value||new Date().getMonth()+1).padStart(2,'0');
+  const yyyy  = document.getElementById('hist-year').value || new Date().getFullYear();
+  const month = `${yyyy}-${mm}`;
+
+  // Build full YYYY-MM-DD if day is provided
+  const fullDay = day ? `${yyyy}-${mm}-${String(day).padStart(2,'0')}` : null;
+
+  if(fullDay){
+    // Filter by exact day - dung s.date (YYYY-MM-DD, gio VN)
+    const daySess = ownerData.sessions.filter(s=> s.date===fullDay);
+    const dayAdj  = ownerData.adjustments.filter(a=> a.date===fullDay);
+    const bida = daySess.reduce((s,x)=>s+x.bida,0);
+    const items= daySess.reduce((s,x)=>s+(x.cart||0),0);
+    const adjP = dayAdj.filter(a=>a.amt>0).reduce((s,a)=>s+a.amt,0);   // điều chỉnh dương → THU
+    const adjM = dayAdj.filter(a=>a.amt<0).reduce((s,a)=>s+Math.abs(a.amt),0); // âm → CHI
+
+    // Imports for this day
+    const dayImp = ownerData.imports.filter(im=>im.date===fullDay).reduce((s,im)=>s+(im.cost||0),0);
+    const thu = bida + items + adjP;        // giống staff
+    const chi = dayImp + adjM;
+    const net = thu - chi;
+
+    const el = document.getElementById('hist-result-day');
+    el.style.display='block';
+    document.getElementById('hist-result-month').style.display='none';
+    const dayLabel = `${+fullDay.slice(8)}/${+fullDay.slice(5,7)}/${fullDay.slice(0,4)}`;
+    set('hist-day-title', `📅 Tổng kết ngày ${dayLabel}`);
+    document.getElementById('hist-day-total').textContent = fmtM(thu);
+    document.getElementById('hist-day-imp').textContent   = chi>0 ? fmtM(chi) : '0đ';
+    document.getElementById('hist-day-net').textContent   = fmtM(net);
+    document.getElementById('hist-day-bida').textContent  = fmtM(bida);
+    document.getElementById('hist-day-items').textContent = fmtM(items);
+    document.getElementById('hist-day-adj').textContent   = fmtM(adjP - adjM);
+    document.getElementById('hist-day-count').textContent = `${daySess.length} giao dịch`;
+
+    // Detail list
+    const detEl = document.getElementById('hist-day-detail');
+    if(detEl) detEl.innerHTML = daySess.map(s=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;background:var(--surface)">
+        <div>
+          <div style="font-weight:600">${s.tab}</div>
+          <div style="font-size:11px;color:var(--muted)">${s.time||''} · ${s.staff||''}</div>
+        </div>
+        <div class="mono" style="font-weight:700;color:var(--green)">${fmtM(srev(s))}</div>
+      </div>`).join('');
+  } else {
+    // Filter by month
+    const monthSess = getMonthSessions(month);
+    // Group by day
+    const byDay = {};
+    monthSess.forEach(s=>{
+      const key=s.date||'';
+      if(!key) return;
+      if(!byDay[key]) byDay[key]={total:0,bida:0,items:0,count:0};
+      byDay[key].total+=srev(s); byDay[key].bida+=s.bida;
+      byDay[key].items+=s.cart||0; byDay[key].count++;
+    });
+    document.getElementById('hist-result-day').style.display='none';
+    const el=document.getElementById('hist-result-month');
+    el.style.display='block';
+
+    // Cộng nhập hàng theo ngày
+    const impByDay={};
+    ownerData.imports.filter(im=>(im.date||'').slice(0,7)===month).forEach(im=>{
+      impByDay[im.date]=(impByDay[im.date]||0)+(im.cost||0);
+    });
+
+    // Cộng điều chỉnh theo ngày: p = dương (vào THU), m = âm tuyệt đối (vào CHI)
+    const adjByDay={};
+    ownerData.adjustments.filter(a=>(a.date||'').slice(0,7)===month).forEach(a=>{
+      if(!adjByDay[a.date]) adjByDay[a.date]={p:0,m:0};
+      if(a.amt>0) adjByDay[a.date].p+=a.amt; else adjByDay[a.date].m+=Math.abs(a.amt);
+    });
+
+    const days = Object.keys({...byDay,...impByDay,...adjByDay});
+    days.forEach(d=>{ if(!byDay[d]) byDay[d]={total:0,bida:0,items:0,count:0}; });
+
+    const label=`${+month.slice(5,7)}/${month.slice(0,4)}`;
+    set('hist-month-title', `📅 Lịch sử tháng ${label}`);
+    const sorted=Object.keys(byDay).sort((a,b)=>b.localeCompare(a));
+    set('hist-month-badge', `${sorted.length} ngày có dữ liệu`);
+
+    const monthEl=document.getElementById('hist-month-rows');
+    if(monthEl) monthEl.innerHTML = sorted.map(day=>{
+      const d=byDay[day];
+      const adjP=adjByDay[day]?.p||0, adjM=adjByDay[day]?.m||0;
+      const thu=d.bida+d.items+adjP;        // tiền bida + vật phẩm + điều chỉnh dương (giống staff)
+      const chi=(impByDay[day]||0)+adjM;    // nhập hàng + điều chỉnh âm
+      const net=thu-chi;
+      const dayLabel=day.slice(8)+'/'+(+day.slice(5,7));
+      return `<tr>
+        <td style="font-weight:600">${dayLabel}</td>
+        <td class="mono" style="color:var(--green)">${fmtM(thu)}</td>
+        <td class="mono" style="color:var(--red)">${chi>0?fmtM(chi):'—'}</td>
+        <td class="mono" style="color:var(--yellow);font-weight:700">${fmtM(net)}</td>
+        <td>${d.count}</td>
+        <td><button class="btn btn-secondary btn-xs" onclick="viewDayHistory('${day}')">Xem</button></td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--faint);padding:16px">Không có dữ liệu</td></tr>';
+  }
+}
+
+function viewDayHistory(dateStr){
+  // Populate the day filter and re-search
+  const [y,m,d]=dateStr.split('-');
+  document.getElementById('hist-year').value=y;
+  document.getElementById('hist-month').value=+m;
+  document.getElementById('hist-day').value=+d;
+  searchHistory();
+}
+
+function fmtM(n){return Math.round(n).toLocaleString('vi-VN')+'đ';}
+// Doanh thu 1 phiên = tiền bida + tiền vật phẩm (giống staff; KHÔNG dùng total vì total cũ có thể sai/0)
+function srev(s){return (s.bida||0)+(s.cart||0);}
+
+function calcFinance(){
+  const monthStr  = getMonthStr();
+  const monthSess = getMonthSessions(monthStr);
+  const monthAdjs = getMonthAdj(monthStr);
+  const revenue  = monthSess.reduce((s,x)=>s+srev(x),0);
+  const adjSum   = monthAdjs.reduce((s,a)=>s+a.amt,0);
+  const importsTotal = ownerData.imports.filter(im=>(im.date||'').slice(0,7)===monthStr.slice(0,7)).reduce((s,im)=>s+(im.cost||0),0);
+  // Lợi nhuận = Doanh thu + Điều chỉnh − Nhập hàng
+  const loinNhuan = revenue + adjSum - importsTotal;
+  const monthExp = ownerData.expenses.filter(e=>!e.month||e.month.startsWith(monthStr.slice(0,7)));
+  const totalExp = monthExp.reduce((s,e)=>s+e.amount,0);
+  // Lãi ròng = Lợi nhuận − Chi phí vận hành
+  const profit   = loinNhuan - totalExp;
+  const fund     = Math.round(profit * FUND_RATE);
+  const distrib  = profit - fund;
+  const margin   = loinNhuan > 0 ? (profit/loinNhuan*100).toFixed(1) : 0;
+
+  const mLabel = `${+monthStr.slice(5,7)}/${monthStr.slice(0,4)}`;
+  set('fin-revenue', fmtM(loinNhuan));
+  set('fin-expense', fmtM(totalExp));
+  set('fin-profit',  fmtM(profit));
+  set('fin-margin',  `<span style="font-size:10px;color:var(--faint)">Tỉ lệ: ${margin}%</span>`);
+  set('pp-revenue',     fmtM(loinNhuan));
+  set('pp-expense',     fmtM(totalExp));
+  set('pp-profit',      fmtM(profit));
+  set('pp-fund',        fmtM(fund));
+  set('pp-distributable', fmtM(distrib));
+  set('pp-profit-formula', fmtM(profit));
+  set('pp-fund-formula',   fmtM(fund));
+  set('fs-month-label', `Tóm tắt tháng ${mLabel}`);
+  set('fs-rev',   fmtM(loinNhuan));
+  set('fs-exp',   '−'+fmtM(totalExp));
+  set('fs-fund',  '−'+fmtM(fund));
+  set('fs-dist',  fmtM(distrib));
+  set('fs-margin', margin+'%');
+  renderShareholderRows(distrib);
+  set('pp-total-share', fmtM(distrib));
+
+  // Expense breakdown bars
+  const finBarsEl = document.getElementById('fin-bars');
+  if(finBarsEl){
+    if(!monthExp.length){
+      finBarsEl.innerHTML='<div style="color:var(--faint);font-size:12px;padding:8px 0">Chưa có chi phí nào</div>';
+    } else {
+      const maxAmt = Math.max(...monthExp.map(e=>e.amount));
+      finBarsEl.innerHTML = monthExp.map(e=>{
+        const pct = totalExp>0 ? (e.amount/totalExp*100).toFixed(1) : 0;
+        const barW = maxAmt>0 ? (e.amount/maxAmt*100).toFixed(1) : 0;
+        return `<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+            <span>${e.name}</span><span style="font-weight:600">${pct}%</span>
+          </div>
+          <div class="pbar"><div class="pbar-fill yellow" style="width:${barW}%"></div></div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Expenses list
+  const expEl = document.getElementById('fin-expense-rows');
+  if(expEl) expEl.innerHTML = monthExp.map(e=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;background:var(--surface)">
+      <div>
+        <div style="font-weight:600">${e.name}</div>
+        ${e.desc?`<div style="font-size:11px;color:var(--muted)">${e.desc}</div>`:''}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="mono" style="font-weight:700;color:var(--red)">${fmtM(e.amount)}</span>
+        <button class="btn btn-danger btn-xs" onclick="deleteExpense('${e.id}')">×</button>
+      </div>
+    </div>`).join('') || '<div style="color:var(--faint);padding:16px;text-align:center">Chưa có chi phí</div>';
+}
+
+// Loi nhuan = Doanh thu (bida+cart) + Dieu chinh - Nhap hang
+function calcLoiNhuan(sess, adjs, imps){
+  const rev = sess.reduce((s,x)=>s+srev(x),0);
+  const adj = adjs.reduce((s,a)=>s+a.amt,0);
+  const imp = imps.reduce((s,im)=>s+(im.cost||0),0);
+  return {rev, adj, imp, profit: rev + adj - imp};
+}
+
+function renderLoiNhuan(){
+  const now = new Date();
+  const todayD = now.toLocaleDateString('sv-SE');
+  const thisM  = todayD.slice(0,7);
+  const prevM  = now.getMonth()===0 ? `${now.getFullYear()-1}-12`
+                 : `${now.getFullYear()}-${String(now.getMonth()).padStart(2,'0')}`;
+
+  function offsetDate(d, days){ const t=new Date(d); t.setDate(t.getDate()+days); return t.toLocaleDateString('sv-SE'); }
+  const yesterdayD   = offsetDate(now,-1);
+  const dow          = (now.getDay()+6)%7;
+  const weekStart    = offsetDate(now,-dow);
+  const lastWeekStart= offsetDate(now,-dow-7);
+  const lastWeekEnd  = offsetDate(now,-dow-1);
+
+  function sessRange(from,to){ return ownerData.sessions.filter(s=>s.date>=from&&s.date<=to); }
+  function adjRange(from,to) { return ownerData.adjustments.filter(a=>a.date>=from&&a.date<=to); }
+  function impRange(from,to) { return ownerData.imports.filter(im=>im.date>=from&&im.date<=to); }
+
+  const todayR  = calcLoiNhuan(sessRange(todayD,todayD),  adjRange(todayD,todayD),  impRange(todayD,todayD));
+  const yestR   = calcLoiNhuan(sessRange(yesterdayD,yesterdayD), adjRange(yesterdayD,yesterdayD), impRange(yesterdayD,yesterdayD));
+  const weekR   = calcLoiNhuan(sessRange(weekStart,todayD), adjRange(weekStart,todayD), impRange(weekStart,todayD));
+  const lwR     = calcLoiNhuan(sessRange(lastWeekStart,lastWeekEnd), adjRange(lastWeekStart,lastWeekEnd), impRange(lastWeekStart,lastWeekEnd));
+
+  const thisMSess = getMonthSessions(thisM);
+  const thisMAdjs = getMonthAdj(thisM);
+  const thisMImps = ownerData.imports.filter(im=>(im.date||'').slice(0,7)===thisM);
+  const thisMR    = calcLoiNhuan(thisMSess, thisMAdjs, thisMImps);
+
+  const prevMSess = getMonthSessions(prevM);
+  const prevMAdjs = getMonthAdj(prevM);
+  const prevMImps = ownerData.imports.filter(im=>(im.date||'').slice(0,7)===prevM);
+  const prevMR    = calcLoiNhuan(prevMSess, prevMAdjs, prevMImps);
+
+  // All time
+  const allRev = ownerData.sessions.reduce((s,x)=>s+srev(x),0);
+  const allAdj = ownerData.adjustments.reduce((s,a)=>s+a.amt,0);
+  const allImp = ownerData.imports.reduce((s,im)=>s+(im.cost||0),0);
+  const allPN  = allRev + allAdj - allImp;
+
+  // Render helpers
+  function subHtml(r){
+    return `<span class="msub-chip g">📈 ${fmtM(r.rev+r.adj)} DT</span><span class="msub-chip r">📦 −${fmtM(r.imp)} nhập</span>`;
+  }
+
+  set('ln-today-val', fmtM(todayR.profit));
+  const ts=document.getElementById('ln-today-sub'); if(ts) ts.innerHTML=subHtml(todayR);
+
+  set('ln-week-val', fmtM(weekR.profit));
+  const ws=document.getElementById('ln-week-sub');
+  if(ws) ws.innerHTML=`<span style="color:var(--faint)">${weekStart.slice(8)}/${+weekStart.slice(5,7)} → hôm nay</span>`;
+
+  set('ln-month-val', fmtM(thisMR.profit));
+  const ms=document.getElementById('ln-month-sub'); if(ms) ms.innerHTML=subHtml(thisMR);
+
+  const ylabel=`${yesterdayD.slice(8)}/${+yesterdayD.slice(5,7)}`;
+  set('ln-yesterday-label',`Lợi nhuận hôm qua (${ylabel})`);
+  set('ln-yesterday-val', fmtM(yestR.profit));
+  const ys=document.getElementById('ln-yesterday-sub'); if(ys) ys.innerHTML=subHtml(yestR);
+
+  set('ln-lastweek-val', fmtM(lwR.profit));
+  const lws=document.getElementById('ln-lastweek-sub');
+  if(lws) lws.innerHTML=`<span style="color:var(--faint)">${lastWeekStart.slice(8)}/${+lastWeekStart.slice(5,7)} → ${lastWeekEnd.slice(8)}/${+lastWeekEnd.slice(5,7)}</span>`;
+
+  const prevLabel=`${+prevM.slice(5,7)}/${prevM.slice(0,4)}`;
+  set('ln-lastmonth-label',`Lợi nhuận tháng trước (${prevLabel})`);
+  set('ln-lastmonth-val', fmtM(prevMR.profit));
+  const pms=document.getElementById('ln-lastmonth-sub'); if(pms) pms.innerHTML=subHtml(prevMR);
+
+  set('ln-all-sell',   fmtM(allRev+allAdj));
+  set('ln-all-import', '−'+fmtM(allImp));
+  set('ln-all-profit', fmtM(allPN));
+
+  // Monthly breakdown
+  const monthMap={};
+  ownerData.sessions.forEach(s=>{
+    const m=(s.date||'').slice(0,7); if(!m) return;
+    if(!monthMap[m]) monthMap[m]={rev:0,adj:0,imp:0};
+    monthMap[m].rev+=srev(s);
+  });
+  ownerData.adjustments.forEach(a=>{
+    const m=(a.date||'').slice(0,7); if(!m) return;
+    if(!monthMap[m]) monthMap[m]={rev:0,adj:0,imp:0};
+    monthMap[m].adj+=a.amt;
+  });
+  ownerData.imports.forEach(im=>{
+    const m=(im.date||'').slice(0,7); if(!m) return;
+    if(!monthMap[m]) monthMap[m]={rev:0,adj:0,imp:0};
+    monthMap[m].imp+=(im.cost||0);
+  });
+  const tbody=document.getElementById('ln-month-rows');
+  if(tbody){
+    const months=Object.keys(monthMap).sort((a,b)=>b.localeCompare(a));
+    tbody.innerHTML=months.map(m=>{
+      const d=monthMap[m];
+      const dt = d.rev+d.adj;
+      const pn = dt - d.imp;
+      const margin = dt>0?(pn/dt*100).toFixed(1):0;
+      const label=`${+m.slice(5,7)}/${m.slice(0,4)}`;
+      const isCur=m===thisM;
+      return `<tr>
+        <td>${label}${isCur?' <span class="badge badge-yellow">hiện tại</span>':''}</td>
+        <td class="mono" style="color:var(--green)">${fmtM(dt)}</td>
+        <td class="mono" style="color:var(--red)">−${fmtM(d.imp)}</td>
+        <td class="mono" style="color:var(--purple);font-weight:700">${fmtM(pn)}</td>
+        <td><span class="badge ${pn>=0?'badge-green':'badge-red'}">${margin}%</span></td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--faint)">Chưa có dữ liệu</td></tr>';
+  }
+}
+
+async function deleteExpense(id){
+  if(!confirm('Xóa khoản này?')) return;
+  await apiDelete('/api/expenses/'+id);
+  ownerData.expenses=ownerData.expenses.filter(e=>e.id!==id);
+  calcFinance();
+  toast('✓ Đã xóa khoản mục','yellow');
+}
+
+function openFinanceModal(){
+  const expMonth = document.getElementById('exp-month');
+  if(expMonth && !expMonth.value) expMonth.value = getMonthStr();
+  document.getElementById('exp-name').value='';
+  document.getElementById('exp-amount').value='';
+  document.getElementById('exp-desc').value='';
+  openModal('modal-finance');
+}
+
+async function saveFinance(){
+  const name = document.getElementById('exp-name')?.value.trim();
+  const desc = document.getElementById('exp-desc')?.value.trim()||'';
+  const amt  = parseInt(document.getElementById('exp-amount')?.value)||0;
+  if(!name||amt<=0){toast('Điền đủ thông tin!');return;}
+  const monthStr = document.getElementById('exp-month')?.value || getMonthStr();
+  const res = await apiPost('/api/expenses',{name,desc,amount:amt,month:monthStr,category:'fixed'});
+  if(!res) return;
+  ownerData.expenses.push(res);
+  closeModal('modal-finance');
+  calcFinance();
+  toast('✓ Đã lưu khoản mục','green');
+}
+
+async function saveShareholders2(){
+  const s = ownerData.settings || {};
+  s.shareholders = shareholders;
+  await apiPut('/api/settings', s);
+  closeModal('modal-shareholders');
+  calcFinance();
+  toast('✓ Đã cập nhật tỉ lệ cổ phần','green');
+}
+
+/* ── Quỹ (localStorage) ──────────────────────────────────── */
+function renderFunds(){
+  const funds = ownerData.funds || [];
+  const total = funds.reduce((s,f)=>s+(f.amount||0),0);
+  set('fund-total', fmtM(total));
+  set('fund-count', funds.length);
+  const sub=document.getElementById('fund-count-sub');
+  if(sub) sub.innerHTML=`<span style="color:var(--faint)">${funds.map(f=>f.name).join(', ')||'Chưa có quỹ'}</span>`;
+
+  const ICONS=['💵','🛡️','🎯','📦','💡','🔧'];
+  const COLORS=['var(--green)','var(--yellow-mid)','var(--blue)','var(--purple)','var(--green)','var(--red)'];
+  const BG=['var(--green-bg)','var(--yellow-bg)','var(--blue-bg)','var(--purple-bg)','var(--green-bg)','var(--red-bg)'];
+  const el=document.getElementById('fund-list');
+  if(!el) return;
+  if(!funds.length){
+    el.innerHTML='<div style="color:var(--faint);padding:24px;text-align:center">Chưa có quỹ nào. Nhấn "+ Thêm quỹ" để tạo.</div>';
+    return;
+  }
+  el.innerHTML=funds.map((f,i)=>`
+    <div class="fund-row">
+      <div class="fund-icon" style="background:${BG[i%BG.length]}">${ICONS[i%ICONS.length]}</div>
+      <div class="fund-main">
+        <div class="fund-name">${f.name}</div>
+        <div class="fund-desc">${f.desc||''}</div>
+      </div>
+      <div style="text-align:right;margin-right:12px">
+        <div class="fund-val" style="color:${COLORS[i%COLORS.length]}">${fmtM(f.amount||0)}</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-secondary btn-xs" onclick="editFund('${f.id}')">Sửa</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteFund('${f.id}')">Xóa</button>
+      </div>
+    </div>`).join('');
+}
+
+function openFundModal(id){
+  document.getElementById('fund-name').value='';
+  document.getElementById('fund-desc').value='';
+  document.getElementById('fund-amount').value='';
+  document.getElementById('fund-edit-id').value = id || '';
+  if(id){
+    const f=(ownerData.funds||[]).find(x=>x.id===id);
+    if(f){
+      document.getElementById('fund-name').value=f.name||'';
+      document.getElementById('fund-desc').value=f.desc||'';
+      document.getElementById('fund-amount').value=f.amount||0;
+    }
+  }
+  openModal('modal-fund');
+}
+
+function editFund(id){ openFundModal(id); }
+
+async function saveFund(){
+  const name=document.getElementById('fund-name')?.value.trim();
+  const desc=document.getElementById('fund-desc')?.value.trim()||'';
+  const amount=parseInt(document.getElementById('fund-amount')?.value)||0;
+  if(!name){toast('Nhập tên quỹ!');return;}
+  const id=document.getElementById('fund-edit-id')?.value;
+  let res;
+  if(id) res=await apiPut('/api/funds/'+id,{name,desc,amount});
+  else   res=await apiPost('/api/funds',{name,desc,amount});
+  if(res===null) return;
+  if(res && res.id){
+    const i=ownerData.funds.findIndex(f=>f.id===res.id);
+    if(i>=0) ownerData.funds[i]=res; else ownerData.funds.push(res);
+  }
+  closeModal('modal-fund');
+  renderFunds();
+  toast('✓ Đã lưu quỹ','green');
+}
+
+async function deleteFund(id){
+  if(!confirm('Xóa quỹ này?')) return;
+  const res=await apiDelete('/api/funds/'+id);
+  if(res===null) return;
+  ownerData.funds=ownerData.funds.filter(f=>f.id!==id);
+  renderFunds();
+  toast('✓ Đã xóa quỹ','yellow');
+}
+
+function renderShareholderRows(distributable){
+  const el = document.getElementById('shareholder-rows');
+  if(!el) return;
+  const COLORS = ['var(--green)','var(--yellow-mid)','var(--blue)','var(--purple)'];
+  el.innerHTML = shareholders.map((sh,i)=>{
+    const amt = Math.round(distributable * sh.pct / 100);
+    const color = COLORS[i % COLORS.length];
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:var(--surface2);margin-bottom:8px">
+      <div style="width:36px;height:36px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0">${sh.name[0]}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700">${sh.name}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">
+          <div class="pbar" style="margin-top:4px"><div class="pbar-fill green" style="width:${sh.pct}%;background:${color}"></div></div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="mono" style="font-size:16px;font-weight:700;color:${color}">${fmtM(amt)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${sh.pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* Shareholder edit modal */
+function renderShEdit(){
+  const el = document.getElementById('sh-edit-rows');
+  if(!el) return;
+  el.innerHTML = shareholders.map((sh,i)=>`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input class="fi" type="text" value="${sh.name}" style="flex:1" onchange="shareholders[${i}].name=this.value">
+      <input class="fi" type="number" value="${sh.pct}" style="width:70px" min="0" max="100"
+        oninput="shareholders[${i}].pct=parseInt(this.value)||0;checkShTotal()">
+      <span style="font-size:13px;color:var(--muted)">%</span>
+      <button class="btn btn-danger btn-xs" onclick="shareholders.splice(${i},1);renderShEdit()">×</button>
+    </div>`).join('');
+  checkShTotal();
+}
+
+function checkShTotal(){
+  const total = shareholders.reduce((s,sh)=>s+sh.pct,0);
+  const el = document.getElementById('sh-total-check');
+  if(el) el.innerHTML = total===100
+    ? '<span style="color:var(--green)">✓ Tổng = 100%</span>'
+    : `<span style="color:var(--red)">⚠ Tổng = ${total}% (cần = 100%)</span>`;
+}
+
+function addShareholder(){
+  shareholders.push({name:'Cổ đông '+( shareholders.length+1), pct:0});
+  renderShEdit();
+}
+
+function saveShareholders(){
+  const total = shareholders.reduce((s,sh)=>s+sh.pct,0);
+  if(total!==100){toast('Tổng tỉ lệ phải bằng 100%!');return;}
+  saveShareholders2();
+}
+
+function set(id,html){
+  const el=document.getElementById(id);
+  if(el) el.innerHTML=html;
+}
+
+// Override openModal to init shareholder edit
+const _origOpen = window.openModal || function(){};
+window.openModal = function(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='modal-shareholders') renderShEdit();
+};
+
+// CLOCK
+function updateClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// NAVIGATION
+const pageTitles = {
+  dashboard:'Dashboard',
+  loinhuan:'Lợi nhuận',
+  lichsu:'Lịch sử',
+  taichinh:'Tài chính',
+  quy:'Quỹ',
+  settings:'Cài đặt'
+};
+
+let currentPageId = 'dashboard';
+
+function reRenderCurrentPage(){
+  if(currentPageId==='dashboard') renderDashboard();
+  else if(currentPageId==='lichsu') searchHistory();
+  else if(currentPageId==='taichinh') calcFinance();
+  else if(currentPageId==='loinhuan') renderLoiNhuan();
+}
+
+function showPage(id, sidebarBtn, mobileId){
+  document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display='none');
+  document.getElementById('page-'+id).style.display='block';
+  // Sync sidebar
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if(sidebarBtn) sidebarBtn.classList.add('active');
+  // Sync mobile nav
+  document.querySelectorAll('.mnav-item').forEach(b => b.classList.remove('active'));
+  const mKey = mobileId || id;
+  const mBtn = document.getElementById('mnav-'+mKey);
+  if(mBtn) mBtn.classList.add('active');
+  document.getElementById('page-title').textContent = pageTitles[id]||'';
+  currentPageId = id;
+  if(id==='taichinh') calcFinance();
+  if(id==='lichsu') searchHistory();
+  if(id==='dashboard') renderDashboard();
+  if(id==='loinhuan') renderLoiNhuan();
+  if(id==='quy') renderFunds();
+  if(id==='settings') renderSettings();
+}
+
+// MODALS
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+// TOAST
+function toast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' '+type : '');
+  setTimeout(()=> t.className='toast', 2800);
+}
+
+// HISTORY
+function updateHistMode(){
+  const day = document.getElementById('hist-day').value;
+  const hint = document.getElementById('hist-mode-hint');
+  if(day){
+    hint.textContent = '→ Sẽ xem tổng kết ngày ' + day + ' cụ thể';
+    hint.style.color = 'var(--yellow)';
+  } else {
+    hint.textContent = '→ Sẽ xem tất cả các ngày trong tháng';
+    hint.style.color = 'var(--muted)';
+  }
+}
+
+// (duplicate stubs removed — real functions defined above)
+
+/* ============================================================
+   CÀI ĐẶT: GIÁ BÀN + MẶT HÀNG
+============================================================ */
+const PROD_CATLAB = {nuoc:'🥤 Nước', thuoc:'🚬 Thuốc', an:'🍜 Đồ ăn', khac:'📦 Khác'};
+
+function renderSettings(){
+  const s = ownerData.settings || {};
+  const rates = s.rates || {};
+  const phan = rates.phan || {}, bb = rates.ba_bang || {};
+  const cutoff = s.cutoff || {};
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value = (v??''); };
+  set('set-cutoff-h', cutoff.h);
+  set('set-cutoff-m', cutoff.m);
+  set('set-phan-before', phan.before);
+  set('set-phan-after',  phan.after);
+  set('set-bb-before',   bb.before);
+  set('set-bb-after',    bb.after);
+  renderProducts();
+}
+
+async function saveRates(){
+  const num=id=>parseInt(document.getElementById(id).value)||0;
+  const s = {...(ownerData.settings||{})};
+  s.cutoff = {h:num('set-cutoff-h'), m:num('set-cutoff-m')};
+  s.rates = {
+    phan:    {before:num('set-phan-before'), after:num('set-phan-after')},
+    ba_bang: {before:num('set-bb-before'),   after:num('set-bb-after')},
+  };
+  const res = await apiPut('/api/settings', s);
+  if(res!==null){ ownerData.settings = s; toast('✓ Đã lưu giá bàn','green'); }
+}
+
+function renderProducts(){
+  const el = document.getElementById('prod-list');
+  if(!el) return;
+  const inv = ownerData.inventory || [];
+  if(!inv.length){ el.innerHTML='<div style="color:var(--faint);padding:24px;text-align:center">Chưa có mặt hàng nào.</div>'; return; }
+  let html='';
+  Object.keys(PROD_CATLAB).forEach(cat=>{
+    const items = inv.filter(p=>p.cat===cat);
+    if(!items.length) return;
+    html += `<div style="font-size:12px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px">${PROD_CATLAB[cat]}</div>`;
+    html += `<table class="tbl" style="width:100%"><thead><tr>
+      <th>Tên</th><th class="mono">Giá</th><th>ĐV</th><th class="mono">Tồn</th><th style="text-align:right">Thao tác</th>
+    </tr></thead><tbody>`;
+    html += items.map(p=>{
+      const low = (p.stock??0) <= (p.min_stock??0);
+      return `<tr>
+        <td>${p.name}</td>
+        <td class="mono">${fmtM(p.price||0)}</td>
+        <td>${p.unit||''}</td>
+        <td class="mono"${low?' style="color:var(--red);font-weight:700"':''}>${p.stock??0}</td>
+        <td style="text-align:right">
+          <button class="btn btn-secondary btn-sm" onclick="openProductModal('${p.id}')">Sửa</button>
+          <button class="btn btn-secondary btn-sm" style="color:var(--red)" onclick="deleteProduct('${p.id}')">Xóa</button>
+        </td>
+      </tr>`;
+    }).join('');
+    html += `</tbody></table>`;
+  });
+  el.innerHTML = html;
+}
+
+function openProductModal(id){
+  const p = id ? (ownerData.inventory||[]).find(x=>x.id===id) : null;
+  document.getElementById('prod-modal-title').textContent = p ? '📦 Sửa mặt hàng' : '📦 Thêm mặt hàng';
+  document.getElementById('prod-id').value    = p?.id || '';
+  document.getElementById('prod-name').value  = p?.name || '';
+  document.getElementById('prod-price').value = p?.price ?? '';
+  document.getElementById('prod-unit').value  = p?.unit || '';
+  document.getElementById('prod-cat').value   = p?.cat || 'nuoc';
+  document.getElementById('prod-min').value   = p?.min_stock ?? '';
+  document.getElementById('prod-stock').value = p?.stock ?? '';
+  openModal('modal-product');
+}
+
+async function saveProduct(){
+  const id    = document.getElementById('prod-id').value;
+  const name  = document.getElementById('prod-name').value.trim();
+  const price = parseInt(document.getElementById('prod-price').value)||0;
+  const unit  = document.getElementById('prod-unit').value.trim();
+  const cat   = document.getElementById('prod-cat').value;
+  const min_stock = parseInt(document.getElementById('prod-min').value)||0;
+  const stock = parseInt(document.getElementById('prod-stock').value)||0;
+  if(!name){ toast('Nhập tên mặt hàng!'); return; }
+  const body = {name, price, unit, cat, min_stock, stock};
+  let res;
+  if(id) res = await apiPut('/api/inventory/'+id, body);
+  else   res = await apiPost('/api/inventory', body);
+  if(res===null) return;
+  closeModal('modal-product');
+  toast('✓ Đã lưu mặt hàng','green');
+  // WS inventory_add/update sẽ cập nhật danh sách; cập nhật ngay cho chắc
+  if(res && res.id){
+    const i=ownerData.inventory.findIndex(p=>p.id===res.id);
+    if(i>=0) ownerData.inventory[i]=res; else ownerData.inventory.push(res);
+    renderProducts();
+  }
+}
+
+async function deleteProduct(id){
+  const p=(ownerData.inventory||[]).find(x=>x.id===id);
+  if(!confirm(`Xóa mặt hàng "${p?.name||''}"?`)) return;
+  const res = await apiDelete('/api/inventory/'+id);
+  if(res===null) return;
+  ownerData.inventory = ownerData.inventory.filter(x=>x.id!==id);
+  renderProducts();
+  toast('✓ Đã xóa mặt hàng','yellow');
+}
+
+function logout(){
+  if(confirm('Đăng xuất?')){
+    localStorage.removeItem('bida_token');
+    localStorage.removeItem('bida_me');
+    if(ws) ws.close();
+    window.location.href='login.html';
+  }
+}
+
+// INIT
+window.onload = async () => {
+  const now = new Date();
+  const curYear  = now.getFullYear();
+  const curMonth = String(now.getMonth()+1).padStart(2,'0');
+  const curMonthStr = `${curYear}-${curMonth}`;
+
+  // Set default values for date inputs
+  const fin = document.getElementById('fin-month');
+  if(fin) fin.value = curMonthStr;
+  const histYear = document.getElementById('hist-year');
+  if(histYear) histYear.value = curYear;
+  const histMonth = document.getElementById('hist-month');
+  if(histMonth) histMonth.value = now.getMonth()+1;
+
+  await loadOwnerData();
+};
+</script>
+</body>
+</html>
