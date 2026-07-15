@@ -143,7 +143,16 @@ type Fund struct {
 	ID     string `json:"id"`
 	Name   string `json:"name"`
 	Desc   string `json:"desc"`
-	Amount int64  `json:"amount"`
+	Amount int64  `json:"amount"` // số dư hiện tại (cộng dồn từ fund_txns)
+}
+
+type FundTxn struct {
+	ID     string `json:"id"`
+	FundID string `json:"fund_id"`
+	Amount int64  `json:"amount"` // + nạp, - rút
+	Note   string `json:"note"`
+	Date   string `json:"date"`
+	Time   string `json:"time"`
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1026,12 +1035,19 @@ func hCreateFund(w http.ResponseWriter, r *http.Request) {
 	if f.ID == "" {
 		f.ID = genID("f")
 	}
+	// amount ban đầu = số dư mở quỹ
 	_, err := db.Exec(r.Context(),
 		`INSERT INTO funds(id,name,description,amount) VALUES($1,$2,$3,$4)`,
 		f.ID, f.Name, f.Desc, f.Amount)
 	if err != nil {
 		jsonErr(w, err.Error(), 500)
 		return
+	}
+	// Nếu có số dư ban đầu → ghi 1 giao dịch mở quỹ
+	if f.Amount != 0 {
+		db.Exec(r.Context(),
+			`INSERT INTO fund_txns(id,fund_id,amount,note) VALUES($1,$2,$3,$4)`,
+			genID("ft"), f.ID, f.Amount, "Số dư ban đầu")
 	}
 	broadcast("fund_add", f)
 	jsonOK(w, f)
@@ -1044,18 +1060,85 @@ func hUpdateFund(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, "Invalid request", 400)
 		return
 	}
+	// Chỉ sửa tên/mô tả — số dư thay đổi qua giao dịch nạp/rút
 	db.Exec(r.Context(),
-		`UPDATE funds SET name=$2,description=$3,amount=$4,updated_at=NOW() WHERE id=$1`,
-		id, f.Name, f.Desc, f.Amount)
+		`UPDATE funds SET name=$2,description=$3,updated_at=NOW() WHERE id=$1`,
+		id, f.Name, f.Desc)
 	f.ID = id
+	db.QueryRow(r.Context(), `SELECT amount FROM funds WHERE id=$1`, id).Scan(&f.Amount)
 	broadcast("fund_update", f)
 	jsonOK(w, f)
 }
 
 func hDeleteFund(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
+	db.Exec(r.Context(), `DELETE FROM fund_txns WHERE fund_id=$1`, id)
 	db.Exec(r.Context(), `DELETE FROM funds WHERE id=$1`, id)
 	broadcast("fund_remove", id)
+	jsonOK(w, map[string]bool{"ok": true})
+}
+
+// ── Giao dịch quỹ (sổ nạp/rút) ──────────────────────────────
+func hGetFundTxns(w http.ResponseWriter, r *http.Request) {
+	fundID := chi.URLParam(r, "id")
+	rows, err := db.Query(r.Context(),
+		`SELECT id,fund_id,amount,note,created_at FROM fund_txns WHERE fund_id=$1 ORDER BY created_at DESC`, fundID)
+	if err != nil {
+		jsonErr(w, err.Error(), 500)
+		return
+	}
+	defer rows.Close()
+	var list []FundTxn
+	for rows.Next() {
+		var t FundTxn
+		var createdAt time.Time
+		rows.Scan(&t.ID, &t.FundID, &t.Amount, &t.Note, &createdAt)
+		t.Date = vDate(createdAt)
+		t.Time = vTime(createdAt)
+		list = append(list, t)
+	}
+	if list == nil {
+		list = []FundTxn{}
+	}
+	jsonOK(w, list)
+}
+
+func hCreateFundTxn(w http.ResponseWriter, r *http.Request) {
+	fundID := chi.URLParam(r, "id")
+	var t FundTxn
+	if err := decode(r, &t); err != nil {
+		jsonErr(w, "Invalid request", 400)
+		return
+	}
+	t.ID = genID("ft")
+	t.FundID = fundID
+	if _, err := db.Exec(r.Context(),
+		`INSERT INTO fund_txns(id,fund_id,amount,note) VALUES($1,$2,$3,$4)`,
+		t.ID, fundID, t.Amount, t.Note); err != nil {
+		jsonErr(w, err.Error(), 500)
+		return
+	}
+	// Cập nhật số dư quỹ
+	db.Exec(r.Context(), `UPDATE funds SET amount=amount+$2,updated_at=NOW() WHERE id=$1`, fundID, t.Amount)
+	var bal int64
+	db.QueryRow(r.Context(), `SELECT amount FROM funds WHERE id=$1`, fundID).Scan(&bal)
+	broadcast("fund_update", Fund{ID: fundID, Amount: bal})
+	jsonOK(w, t)
+}
+
+func hDeleteFundTxn(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	var fundID string
+	var amount int64
+	if err := db.QueryRow(r.Context(), `SELECT fund_id,amount FROM fund_txns WHERE id=$1`, id).Scan(&fundID, &amount); err != nil {
+		jsonErr(w, "Not found", 404)
+		return
+	}
+	db.Exec(r.Context(), `DELETE FROM fund_txns WHERE id=$1`, id)
+	db.Exec(r.Context(), `UPDATE funds SET amount=amount-$2,updated_at=NOW() WHERE id=$1`, fundID, amount)
+	var bal int64
+	db.QueryRow(r.Context(), `SELECT amount FROM funds WHERE id=$1`, fundID).Scan(&bal)
+	broadcast("fund_update", Fund{ID: fundID, Amount: bal})
 	jsonOK(w, map[string]bool{"ok": true})
 }
 
@@ -1250,6 +1333,14 @@ CREATE TABLE IF NOT EXISTS funds (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+CREATE TABLE IF NOT EXISTS fund_txns (
+    id VARCHAR(50) PRIMARY KEY,
+    fund_id VARCHAR(50) NOT NULL,
+    amount BIGINT NOT NULL,
+    note VARCHAR(255) DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_fund_txns_fund ON fund_txns(fund_id);
 `
 
 func seedDB(ctx context.Context) {
@@ -1390,6 +1481,9 @@ func main() {
 		r.Post("/api/funds", hCreateFund)
 		r.Put("/api/funds/{id}", hUpdateFund)
 		r.Delete("/api/funds/{id}", hDeleteFund)
+		r.Get("/api/funds/{id}/txns", hGetFundTxns)
+		r.Post("/api/funds/{id}/txns", hCreateFundTxn)
+		r.Delete("/api/fund-txns/{id}", hDeleteFundTxn)
 
 		// Admin only
 		r.Group(func(r chi.Router) {

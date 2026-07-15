@@ -2,8 +2,16 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bida Manager — Nhân viên</title>
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#16a34a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Rùa Bida">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -47,6 +55,10 @@ html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;background:v
 .pg-title{font-size:15px;font-weight:700;letter-spacing:-.3px}
 .tb-r{display:flex;align-items:center;gap:8px}
 .clock{background:var(--gbg);color:var(--gd);border:1px solid var(--gbr);border-radius:7px;padding:4px 10px;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.btn-refresh{background:var(--sf);color:var(--mu);border:1px solid var(--bd);border-radius:7px;width:30px;height:30px;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.btn-refresh:hover{border-color:var(--g);color:var(--g)}
+.btn-refresh.spin{animation:spin .7s linear infinite;pointer-events:none;color:var(--g)}
+@keyframes spin{to{transform:rotate(360deg)}}
 .content{padding:16px;flex:1}
 
 /* BUTTONS */
@@ -329,6 +341,7 @@ select.fi{cursor:pointer}
     <span class="pg-title" id="pg-title">Tab khách</span>
   </div>
   <div class="tb-r">
+    <button class="btn-refresh" id="btn-refresh" onclick="manualRefresh()" title="Làm mới dữ liệu">⟳</button>
     <div class="clock" id="clock">--:--:--</div>
   </div>
 </div>
@@ -962,9 +975,17 @@ async function syncStock(items, sign){
 
 /* ── WebSocket ───────────────────────────────────────────── */
 let ws=null;
+let wsEverConnected=false;
 function connectWS(){
+  // Đã có kết nối đang mở/đang kết nối → không tạo thêm (tránh trùng socket)
+  if(ws && (ws.readyState===WebSocket.CONNECTING || ws.readyState===WebSocket.OPEN)) return;
   const proto = location.protocol==='https:'?'wss':'ws';
   ws = new WebSocket(`${proto}://${location.host}/ws?token=${authToken}`);
+  ws.onopen = () => {
+    // Lần kết nối lại (sau khi mất mạng/ngủ máy) → tải lại để bù các sự kiện đã bỏ lỡ
+    if(wsEverConnected) refreshData();
+    wsEverConnected = true;
+  };
   ws.onmessage = e => {
     const msg = JSON.parse(e.data);
     switch(msg.type){
@@ -1021,6 +1042,21 @@ function connectWS(){
   ws.onclose = () => setTimeout(connectWS, 3000);
 }
 
+/* ── Đồng bộ khi app quay lại foreground (quan trọng cho điện thoại/PWA) ──
+   Khi máy ngủ hoặc app bị chuyển nền, WebSocket bị đóng và bỏ lỡ sự kiện.
+   Lúc mở lại: kết nối lại WS (nếu cần) + tải lại dữ liệu để không thấy trạng thái cũ. */
+let _lastForeground = 0;
+function onAppForeground(){
+  if(document.visibilityState !== 'visible') return;
+  const now = Date.now();
+  if(now - _lastForeground < 1500) return; // gộp visibilitychange + focus bắn cùng lúc
+  _lastForeground = now;
+  if(!ws || ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED) connectWS();
+  refreshData();
+}
+document.addEventListener('visibilitychange', onAppForeground);
+window.addEventListener('focus', onAppForeground);
+
 /* ── Convert bida API format → frontend format ───────────── */
 function apiToFrontendBida(s){
   return {
@@ -1057,8 +1093,8 @@ function applySettings(s){
   if(s.cutoff){ CUTOFF.h=s.cutoff.h; CUTOFF.m=s.cutoff.m; }
 }
 
-/* ── Load all data ───────────────────────────────────────── */
-async function loadAll(){
+/* ── Tải/đồng bộ toàn bộ dữ liệu từ server ─────────────────── */
+async function refreshData(){
   const [sets, bidas, tabsR, sess, inv, debtsR, adjs, imps] = await Promise.all([
     apiGet('/api/settings'),
     apiGet('/api/bida/state'),
@@ -1069,16 +1105,42 @@ async function loadAll(){
     apiGet('/api/adjustments'),
     apiGet('/api/imports?limit=5000'),
   ]);
-  applySettings(sets);
-  if(bidas) Object.entries(bidas).forEach(([k,v])=>{ bidaState[k]=apiToFrontendBida(v); });
-  tabs         = (tabsR   ||[]).map(apiFrontTab);
-  sessions     = sess     || [];
-  products     = inv      || [];
-  debts        = debtsR   || [];
-  adjustments  = adjs     || [];
-  invImports   = imps     || [];
+  if(sets) applySettings(sets);
+  if(bidas) Object.entries(bidas).forEach(([k,v])=>{
+    const prev = bidaState[k]?._pauseStart;
+    bidaState[k] = apiToFrontendBida(v);
+    // Bàn đang tạm dừng: giữ mốc _pauseStart cũ, hoặc đóng băng tại thời điểm này
+    if(bidaState[k].running && bidaState[k].paused) bidaState[k]._pauseStart = prev || Date.now();
+  });
+  if(tabsR){
+    const oldFrozen={}; tabs.forEach(t=>{ if(t.frozenBidaCost) oldFrozen[t.id]=t.frozenBidaCost; });
+    tabs = tabsR.map(t=>{ const ft=apiFrontTab(t); if(!ft.frozenBidaCost && oldFrozen[t.id]) ft.frozenBidaCost=oldFrozen[t.id]; return ft; });
+  }
+  if(sess) sessions   = sess;
+  if(inv)  products   = inv;
+  if(debtsR) debts    = debtsR;
+  if(adjs) adjustments= adjs;
+  if(imps) invImports = imps;
+  rerenderCurrent();
+}
+
+// Vẽ lại đúng trang đang mở
+function rerenderCurrent(){
+  switch(currentPage){
+    case 'bida': renderBida(); break;
+    case 'inv':  renderInvGrid(); renderInvHist(); break;
+    case 'hist': renderHist(); break;
+    case 'sum':  renderSum(); break;
+    case 'debt': setDebtFilter(debtFilter); break;
+    case 'adj':  renderAdj(); break;
+    default:     renderTabs();
+  }
+}
+
+/* ── Load lần đầu ────────────────────────────────────────── */
+async function loadAll(){
+  await refreshData();
   connectWS();
-  renderTabs();
   // update sidebar user info
   document.getElementById('s-uname').textContent = currentUser.name;
   document.getElementById('s-urole').textContent = currentUser.role==='admin'?'Quản lý':'Nhân viên';
@@ -2349,6 +2411,25 @@ function doLogout(){
   localStorage.removeItem('bida_me');
   if(ws) ws.close();
   window.location.href='login.html';
+}
+
+// Nút làm mới thủ công: đồng bộ lại toàn bộ dữ liệu từ server
+let _refreshing=false;
+async function manualRefresh(){
+  if(_refreshing) return;
+  _refreshing=true;
+  const btn=document.getElementById('btn-refresh');
+  if(btn) btn.classList.add('spin');
+  // Đảm bảo WS còn sống, rồi tải lại dữ liệu
+  if(!ws || ws.readyState===WebSocket.CLOSING || ws.readyState===WebSocket.CLOSED) connectWS();
+  try{ await refreshData(); toast('✓ Đã làm mới','tg'); }
+  catch(e){ toast('Lỗi làm mới','tr'); }
+  finally{ if(btn) btn.classList.remove('spin'); _refreshing=false; }
+}
+
+// Đăng ký service worker để cài app lên điện thoại (network-only, không cache dữ liệu)
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
 </script>
 </body>

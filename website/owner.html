@@ -850,14 +850,50 @@ select.fi{cursor:pointer}
         <label class="fl">Mô tả</label>
         <input class="fi" type="text" id="fund-desc" placeholder="Mục đích sử dụng quỹ">
       </div>
-      <div class="fg">
-        <label class="fl">Số dư</label>
+      <div class="fg" id="fund-amount-fg">
+        <label class="fl">Số dư ban đầu</label>
         <input class="fi" type="number" id="fund-amount" placeholder="0" min="0">
       </div>
     </div>
     <div class="mfoot">
       <button class="btn btn-secondary" onclick="closeModal('modal-fund')">Hủy</button>
       <button class="btn btn-yellow" onclick="saveFund()">✓ Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SỔ GIAO DỊCH QUỸ -->
+<div class="overlay" id="modal-fund-txns">
+  <div class="mbox" style="width:480px">
+    <div class="mhead">
+      <h2>🏦 <span id="ft-fund-name"></span></h2>
+      <button class="mclose" onclick="closeModal('modal-fund-txns')">✕</button>
+    </div>
+    <div class="mbody">
+      <div style="text-align:center;padding:8px 0 14px;border-bottom:1px solid var(--border);margin-bottom:14px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Số dư hiện tại</div>
+        <div class="mono" id="ft-fund-bal" style="font-size:26px;font-weight:700;color:var(--green)">0đ</div>
+      </div>
+      <div class="frow frow-2" style="margin-bottom:10px">
+        <div class="fg" style="margin:0">
+          <label class="fl">Loại</label>
+          <select class="fi" id="ft-type">
+            <option value="in">⬆ Nạp vào</option>
+            <option value="out">⬇ Rút ra</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label class="fl">Số tiền</label>
+          <input class="fi" type="number" id="ft-amount" min="0" step="1000" placeholder="0">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Lý do / ghi chú</label>
+        <input class="fi" type="text" id="ft-note" placeholder="VD: Trích lợi nhuận, mua bàn mới...">
+      </div>
+      <button class="btn btn-yellow" style="width:100%;justify-content:center" onclick="addFundTxn()">✓ Ghi giao dịch</button>
+      <div style="font-size:12px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 6px">Lịch sử</div>
+      <div id="ft-list" style="max-height:280px;overflow-y:auto"></div>
     </div>
   </div>
 </div>
@@ -973,8 +1009,8 @@ function connectWS(){
     }
     if(msg.type==='fund_add'||msg.type==='fund_update'){
       const i=ownerData.funds.findIndex(f=>f.id===msg.data.id);
-      if(i>=0) ownerData.funds[i]=msg.data; else ownerData.funds.push(msg.data);
-      if(currentPageId==='quy') renderFunds();
+      if(i>=0) ownerData.funds[i]={...ownerData.funds[i],...msg.data}; else ownerData.funds.push(msg.data);
+      if(currentPageId==='quy'){ renderFunds(); if(curFundId===msg.data.id){ const f=ownerData.funds.find(x=>x.id===curFundId); if(f) set('ft-fund-bal', fmtM(f.amount||0)); } }
     }
     if(msg.type==='fund_remove'){
       ownerData.funds=ownerData.funds.filter(f=>f.id!==msg.data);
@@ -1529,7 +1565,7 @@ async function saveShareholders2(){
   toast('✓ Đã cập nhật tỉ lệ cổ phần','green');
 }
 
-/* ── Quỹ (localStorage) ──────────────────────────────────── */
+/* ── Quỹ (lưu DB + sổ giao dịch) ──────────────────────────── */
 function renderFunds(){
   const funds = ownerData.funds || [];
   const total = funds.reduce((s,f)=>s+(f.amount||0),0);
@@ -1558,6 +1594,7 @@ function renderFunds(){
         <div class="fund-val" style="color:${COLORS[i%COLORS.length]}">${fmtM(f.amount||0)}</div>
       </div>
       <div style="display:flex;gap:4px">
+        <button class="btn btn-yellow btn-xs" onclick="openFundTxns('${f.id}')">Nạp/Rút</button>
         <button class="btn btn-secondary btn-xs" onclick="editFund('${f.id}')">Sửa</button>
         <button class="btn btn-danger btn-xs" onclick="deleteFund('${f.id}')">Xóa</button>
       </div>
@@ -1569,13 +1606,19 @@ function openFundModal(id){
   document.getElementById('fund-desc').value='';
   document.getElementById('fund-amount').value='';
   document.getElementById('fund-edit-id').value = id || '';
+  const amtFg = document.getElementById('fund-amount-fg');
   if(id){
+    // Sửa quỹ: chỉ tên + mô tả, số dư đổi qua nạp/rút
     const f=(ownerData.funds||[]).find(x=>x.id===id);
     if(f){
       document.getElementById('fund-name').value=f.name||'';
       document.getElementById('fund-desc').value=f.desc||'';
-      document.getElementById('fund-amount').value=f.amount||0;
     }
+    if(amtFg) amtFg.style.display='none';
+    document.querySelector('#modal-fund .mhead h2').textContent='🏦 Sửa quỹ';
+  } else {
+    if(amtFg) amtFg.style.display='';
+    document.querySelector('#modal-fund .mhead h2').textContent='🏦 Thêm quỹ mới';
   }
   openModal('modal-fund');
 }
@@ -1585,16 +1628,19 @@ function editFund(id){ openFundModal(id); }
 async function saveFund(){
   const name=document.getElementById('fund-name')?.value.trim();
   const desc=document.getElementById('fund-desc')?.value.trim()||'';
-  const amount=parseInt(document.getElementById('fund-amount')?.value)||0;
   if(!name){toast('Nhập tên quỹ!');return;}
   const id=document.getElementById('fund-edit-id')?.value;
   let res;
-  if(id) res=await apiPut('/api/funds/'+id,{name,desc,amount});
-  else   res=await apiPost('/api/funds',{name,desc,amount});
+  if(id){
+    res=await apiPut('/api/funds/'+id,{name,desc});
+  } else {
+    const amount=parseInt(document.getElementById('fund-amount')?.value)||0;
+    res=await apiPost('/api/funds',{name,desc,amount});
+  }
   if(res===null) return;
   if(res && res.id){
     const i=ownerData.funds.findIndex(f=>f.id===res.id);
-    if(i>=0) ownerData.funds[i]=res; else ownerData.funds.push(res);
+    if(i>=0) ownerData.funds[i]={...ownerData.funds[i],...res}; else ownerData.funds.push(res);
   }
   closeModal('modal-fund');
   renderFunds();
@@ -1602,12 +1648,79 @@ async function saveFund(){
 }
 
 async function deleteFund(id){
-  if(!confirm('Xóa quỹ này?')) return;
+  if(!confirm('Xóa quỹ này và toàn bộ lịch sử giao dịch?')) return;
   const res=await apiDelete('/api/funds/'+id);
   if(res===null) return;
   ownerData.funds=ownerData.funds.filter(f=>f.id!==id);
   renderFunds();
   toast('✓ Đã xóa quỹ','yellow');
+}
+
+/* ── Sổ giao dịch quỹ (nạp/rút) ──────────────────────────── */
+let curFundId=null;
+async function openFundTxns(id){
+  curFundId=id;
+  const f=(ownerData.funds||[]).find(x=>x.id===id);
+  if(!f) return;
+  set('ft-fund-name', f.name);
+  set('ft-fund-bal', fmtM(f.amount||0));
+  document.getElementById('ft-amount').value='';
+  document.getElementById('ft-note').value='';
+  document.getElementById('ft-type').value='in';
+  document.getElementById('ft-list').innerHTML='<div style="color:var(--faint);padding:12px;text-align:center">Đang tải...</div>';
+  openModal('modal-fund-txns');
+  renderFundTxns();
+}
+
+async function renderFundTxns(){
+  const txns=await apiGet('/api/funds/'+curFundId+'/txns') || [];
+  const el=document.getElementById('ft-list');
+  if(!el) return;
+  if(!txns.length){ el.innerHTML='<div style="color:var(--faint);padding:16px;text-align:center">Chưa có giao dịch</div>'; return; }
+  el.innerHTML=txns.map(t=>{
+    const isIn=t.amount>=0;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px">
+      <div>
+        <div style="font-weight:600">${isIn?'⬆ Nạp':'⬇ Rút'}${t.note?' · '+t.note:''}</div>
+        <div style="font-size:11px;color:var(--muted)">${t.date||''} ${t.time||''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="mono" style="font-weight:700;color:${isIn?'var(--green)':'var(--red)'}">${isIn?'+':'−'}${fmtM(Math.abs(t.amount))}</span>
+        <button class="btn btn-danger btn-xs" onclick="deleteFundTxn('${t.id}')">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function addFundTxn(){
+  const type=document.getElementById('ft-type').value;
+  let amount=parseInt(document.getElementById('ft-amount').value)||0;
+  const note=document.getElementById('ft-note').value.trim();
+  if(amount<=0){toast('Nhập số tiền!');return;}
+  if(type==='out') amount=-amount;
+  const res=await apiPost('/api/funds/'+curFundId+'/txns',{amount,note});
+  if(res===null) return;
+  document.getElementById('ft-amount').value='';
+  document.getElementById('ft-note').value='';
+  // Cập nhật số dư local ngay (WS fund_update cũng sẽ tới)
+  const f=ownerData.funds.find(x=>x.id===curFundId);
+  if(f){ f.amount=(f.amount||0)+amount; set('ft-fund-bal', fmtM(f.amount)); }
+  renderFundTxns();
+  renderFunds();
+  toast('✓ Đã ghi giao dịch','green');
+}
+
+async function deleteFundTxn(id){
+  if(!confirm('Xóa giao dịch này? Số dư sẽ được điều chỉnh lại.')) return;
+  const res=await apiDelete('/api/fund-txns/'+id);
+  if(res===null) return;
+  // Số dư mới lấy từ WS fund_update; tải lại danh sách giao dịch + quỹ
+  const funds=await apiGet('/api/funds'); if(funds) ownerData.funds=funds;
+  const f=ownerData.funds.find(x=>x.id===curFundId);
+  if(f) set('ft-fund-bal', fmtM(f.amount||0));
+  renderFundTxns();
+  renderFunds();
+  toast('✓ Đã xóa giao dịch','yellow');
 }
 
 function renderShareholderRows(distributable){
