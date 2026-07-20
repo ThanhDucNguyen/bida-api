@@ -12,7 +12,9 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"          # expose để SSH tunnel + Navicat kết nối
+      # Chỉ mở trên localhost — KHÔNG expose ra Internet.
+      # Navicat/DBeaver vẫn kết nối được qua SSH tunnel tới VPS.
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U bida -d bida"]
       interval: 5s

@@ -962,14 +962,12 @@ const apiDelete = p        => apiFetch(p,{method:'DELETE'});
 // Cập nhật cả local products lẫn backend — đây là nguồn duy nhất sửa stock,
 // các nơi gọi KHÔNG tự sửa p.stock nữa (tránh trừ 2 lần).
 async function syncStock(items, sign){
-  await Promise.all(items.map(it=>{
+  await Promise.all(items.map(async it=>{
     const p = products.find(x=>x.id===it.pid);
-    if(!p) return Promise.resolve();
-    p.stock = p.stock + sign * it.qty;
-    return apiPut('/api/inventory/'+p.id, {
-      name:p.name, price:p.price, unit:p.unit, cat:p.cat,
-      stock:p.stock, min_stock:p.min_stock||0
-    });
+    if(!p) return;
+    // Gửi DELTA để server tự cộng/trừ → không ghi đè lẫn nhau khi nhiều máy bán cùng lúc
+    const res = await apiPost('/api/inventory/'+p.id+'/adjust', {delta: sign * it.qty});
+    if(res && typeof res.stock === 'number') p.stock = res.stock; // lấy tồn thật từ server
   }));
 }
 
@@ -1036,6 +1034,13 @@ function connectWS(){
         break;
       case 'settings':
         applySettings(msg.data);
+        break;
+      case 'force_logout':
+        // Tài khoản này vừa đăng nhập ở thiết bị khác → phiên hiện tại bị đá ra
+        if(msg.data && msg.data.user_id===currentUser.id && msg.data.sid!==localStorage.getItem('bida_sid')){
+          alert('⚠️ Tài khoản "'+currentUser.name+'" vừa được đăng nhập ở thiết bị khác.\nPhiên làm việc này sẽ bị đăng xuất.');
+          doLogout();
+        }
         break;
     }
   };
@@ -2409,6 +2414,7 @@ function openNewTab(){
 function doLogout(){
   localStorage.removeItem('bida_token');
   localStorage.removeItem('bida_me');
+  localStorage.removeItem('bida_sid');
   if(ws) ws.close();
   window.location.href='login.html';
 }

@@ -172,6 +172,7 @@ async function doLogin(){
     }
     localStorage.setItem('bida_token', data.token);
     localStorage.setItem('bida_me', JSON.stringify(data.user));
+    localStorage.setItem('bida_sid', data.sid||'');
     currentUser = data.user;
     document.getElementById('greet-name').textContent = data.user.name;
     document.getElementById('step-login').style.display = 'none';

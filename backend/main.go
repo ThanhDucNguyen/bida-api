@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	crand "crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -164,15 +166,17 @@ type Claims struct {
 	Username string `json:"username"`
 	Name     string `json:"name"`
 	Role     string `json:"role"`
+	SessionID string `json:"sid,omitempty"` // phiên đăng nhập duy nhất (staff)
 	jwt.RegisteredClaims
 }
 
-func generateToken(u User) (string, error) {
+func generateToken(u User, sid string) (string, error) {
 	claims := Claims{
 		UserID:   u.ID,
 		Username: u.Username,
 		Name:     u.Name,
 		Role:     u.Role,
+		SessionID: sid,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -215,6 +219,15 @@ func authMiddleware(next http.Handler) http.Handler {
 			jsonErr(w, "Invalid token", 401)
 			return
 		}
+		// Nhân viên: token chỉ hợp lệ khi sid khớp phiên mới nhất trong DB
+		if claims.Role != "admin" {
+			var cur string
+			db.QueryRow(r.Context(), `SELECT COALESCE(session_id,'') FROM users WHERE id=$1`, claims.UserID).Scan(&cur)
+			if cur != claims.SessionID {
+				jsonErr(w, "Tài khoản đã được đăng nhập ở thiết bị khác", 401)
+				return
+			}
+		}
 		ctx := context.WithValue(r.Context(), claimsKey, claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -255,6 +268,15 @@ func decode(r *http.Request, dst interface{}) error {
 
 func genID(prefix string) string {
 	return fmt.Sprintf("%s%d", prefix, time.Now().UnixMilli())
+}
+
+// Chuỗi hex ngẫu nhiên an toàn (dùng cho mật khẩu khởi tạo, session id)
+func randomHex(n int) string {
+	b := make([]byte, n)
+	if _, err := crand.Read(b); err != nil {
+		return fmt.Sprintf("%d", time.Now().UnixNano())
+	}
+	return hex.EncodeToString(b)
 }
 
 var vietLoc *time.Location
@@ -414,12 +436,21 @@ func hLogin(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, "Tên đăng nhập hoặc mật khẩu không đúng", 401)
 		return
 	}
-	token, err := generateToken(u)
+	// Single-session cho tài khoản nhân viên: mỗi lần đăng nhập tạo phiên mới,
+	// phiên cũ lập tức hết hiệu lực và thiết bị cũ bị đá ra (admin được miễn).
+	sid := ""
+	if u.Role != "admin" {
+		sid = randomHex(16)
+		db.Exec(r.Context(), `UPDATE users SET session_id=$2 WHERE id=$1`, u.ID, sid)
+		// Báo cho các thiết bị đang mở: ai cùng user nhưng khác sid → tự đăng xuất
+		broadcast("force_logout", map[string]interface{}{"user_id": u.ID, "sid": sid, "name": u.Name})
+	}
+	token, err := generateToken(u, sid)
 	if err != nil {
 		jsonErr(w, "Server error", 500)
 		return
 	}
-	jsonOK(w, map[string]interface{}{"token": token, "user": u})
+	jsonOK(w, map[string]interface{}{"token": token, "user": u, "sid": sid})
 }
 
 func hMe(w http.ResponseWriter, r *http.Request) {
@@ -725,6 +756,30 @@ func hUpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	p.ID = id
+	broadcast("inventory_update", p)
+	jsonOK(w, p)
+}
+
+// Cộng/trừ tồn kho theo delta — an toàn khi nhiều thiết bị bán cùng lúc.
+// Server tự tính (stock = stock + delta) nên KHÔNG bao giờ ghi đè mất nhau.
+func hAdjustStock(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	var req struct {
+		Delta int `json:"delta"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, "Invalid request", 400)
+		return
+	}
+	var p Product
+	err := db.QueryRow(r.Context(),
+		`UPDATE inventory SET stock=stock+$2 WHERE id=$1
+		 RETURNING id,name,price,unit,cat,stock,min_stock,active`, id, req.Delta,
+	).Scan(&p.ID, &p.Name, &p.Price, &p.Unit, &p.Cat, &p.Stock, &p.MinStock, &p.Active)
+	if err != nil {
+		jsonErr(w, err.Error(), 500)
+		return
+	}
 	broadcast("inventory_update", p)
 	jsonOK(w, p)
 }
@@ -1236,8 +1291,10 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(100) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'staff',
     active BOOLEAN NOT NULL DEFAULT true,
+    session_id VARCHAR(64) DEFAULT '',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+ALTER TABLE users ADD COLUMN IF NOT EXISTS session_id VARCHAR(64) DEFAULT '';
 CREATE TABLE IF NOT EXISTS settings (
     key VARCHAR(100) PRIMARY KEY,
     value JSONB NOT NULL,
@@ -1344,17 +1401,18 @@ CREATE INDEX IF NOT EXISTS idx_fund_txns_fund ON fund_txns(fund_id);
 `
 
 func seedDB(ctx context.Context) {
-	// Admin user — password: admin123
-	adminHash, _ := bcrypt.GenerateFromPassword([]byte("admin123"), bcrypt.DefaultCost)
-	db.Exec(ctx,
-		`INSERT INTO users(username,password_hash,name,role) VALUES('admin',$1,'Chủ quán','admin') ON CONFLICT DO NOTHING`,
-		string(adminHash))
-
-	// Staff user — password: nv123
-	staffHash, _ := bcrypt.GenerateFromPassword([]byte("nv123"), bcrypt.DefaultCost)
-	db.Exec(ctx,
-		`INSERT INTO users(username,password_hash,name,role) VALUES('nhanvien',$1,'Minh Tâm','staff') ON CONFLICT DO NOTHING`,
-		string(staffHash))
+	// Tài khoản mặc định CHỈ tạo khi chưa có user nào (cài đặt lần đầu).
+	// Mật khẩu sinh ngẫu nhiên và in ra log — không hardcode mật khẩu yếu.
+	var userCount int
+	db.QueryRow(ctx, `SELECT COUNT(*) FROM users`).Scan(&userCount)
+	if userCount == 0 {
+		pw := randomHex(9)
+		hash, _ := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
+		db.Exec(ctx,
+			`INSERT INTO users(username,password_hash,name,role) VALUES('admin',$1,'Chủ quán','admin') ON CONFLICT DO NOTHING`,
+			string(hash))
+		log.Printf("⚠️  Đã tạo tài khoản admin đầu tiên — user: admin / mật khẩu: %s  (hãy đổi ngay sau khi đăng nhập)", pw)
+	}
 
 	// Bida table states
 	for _, tid := range []string{"b1", "b2", "b3"} {
@@ -1460,6 +1518,7 @@ func main() {
 		r.Get("/api/inventory", hGetInventory)
 		r.Post("/api/inventory", hCreateProduct)
 		r.Put("/api/inventory/{id}", hUpdateProduct)
+		r.Post("/api/inventory/{id}/adjust", hAdjustStock)
 		r.Delete("/api/inventory/{id}", hDeleteProduct)
 
 		r.Get("/api/imports", hGetImports)

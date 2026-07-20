@@ -978,9 +978,17 @@ const apiDelete = p     => apiFetch(p,{method:'DELETE'});
 
 /* ── WebSocket ─────────────────────────────────────────── */
 let ws=null;
+let wsEverConnected=false;
 function connectWS(){
+  // Đã có kết nối đang mở/đang kết nối → không tạo thêm
+  if(ws && (ws.readyState===WebSocket.CONNECTING || ws.readyState===WebSocket.OPEN)) return;
   const proto=location.protocol==='https:'?'wss':'ws';
   ws=new WebSocket(`${proto}://${location.host}/ws?token=${authToken}`);
+  ws.onopen=()=>{
+    // Kết nối lại sau khi mất mạng → tải lại để bù sự kiện đã bỏ lỡ
+    if(wsEverConnected) refreshOwnerData();
+    wsEverConnected=true;
+  };
   ws.onmessage=async e=>{
     const msg=JSON.parse(e.data);
     if(msg.type==='session_add'){
@@ -1032,6 +1040,42 @@ function applySettings(s){
   if(s.shareholders) shareholders=s.shareholders;
   if(s.fund_rate!==undefined) FUND_RATE=s.fund_rate;
 }
+
+// Tải lại toàn bộ dữ liệu (dùng khi reconnect / mở lại app / bấm refresh)
+async function refreshOwnerData(){
+  const [sess, adjs, exps, imps, sets, debtsR, inv, fundsR] = await Promise.all([
+    apiGet('/api/sessions?limit=5000'),
+    apiGet('/api/adjustments'),
+    apiGet('/api/expenses'),
+    apiGet('/api/imports?limit=5000'),
+    apiGet('/api/settings'),
+    apiGet('/api/debts'),
+    apiGet('/api/inventory'),
+    apiGet('/api/funds'),
+  ]);
+  if(sess)   ownerData.sessions    = sess;
+  if(adjs)   ownerData.adjustments = adjs;
+  if(exps)   ownerData.expenses    = exps;
+  if(imps)   ownerData.imports     = imps;
+  if(debtsR) ownerData.debts       = debtsR;
+  if(inv)    ownerData.inventory   = inv;
+  if(fundsR) ownerData.funds       = fundsR;
+  if(sets)   applySettings(sets);
+  reRenderCurrentPage();
+}
+
+// Đồng bộ khi quay lại foreground
+let _lastFgOwner=0;
+function onOwnerForeground(){
+  if(document.visibilityState!=='visible') return;
+  const now=Date.now();
+  if(now-_lastFgOwner<1500) return;
+  _lastFgOwner=now;
+  if(!ws || ws.readyState===WebSocket.CLOSING || ws.readyState===WebSocket.CLOSED) connectWS();
+  refreshOwnerData();
+}
+document.addEventListener('visibilitychange', onOwnerForeground);
+window.addEventListener('focus', onOwnerForeground);
 
 async function loadOwnerData(){
   const [sess, adjs, exps, imps, sets, debtsR, inv, fundsR] = await Promise.all([
@@ -1343,7 +1387,8 @@ function calcFinance(){
   const importsTotal = ownerData.imports.filter(im=>(im.date||'').slice(0,7)===monthStr.slice(0,7)).reduce((s,im)=>s+(im.cost||0),0);
   // Lợi nhuận = Doanh thu + Điều chỉnh − Nhập hàng
   const loinNhuan = revenue + adjSum - importsTotal;
-  const monthExp = ownerData.expenses.filter(e=>!e.month||e.month.startsWith(monthStr.slice(0,7)));
+  // Chỉ lấy chi phí đúng tháng — trước đây `!e.month` khiến khoản không ghi tháng bị trừ ở MỌI tháng
+  const monthExp = ownerData.expenses.filter(e=>(e.month||'').startsWith(monthStr.slice(0,7)));
   const totalExp = monthExp.reduce((s,e)=>s+e.amount,0);
   // Lãi ròng = Lợi nhuận − Chi phí vận hành
   const profit   = loinNhuan - totalExp;
@@ -1818,6 +1863,8 @@ function reRenderCurrentPage(){
   else if(currentPageId==='lichsu') searchHistory();
   else if(currentPageId==='taichinh') calcFinance();
   else if(currentPageId==='loinhuan') renderLoiNhuan();
+  else if(currentPageId==='quy') renderFunds();
+  else if(currentPageId==='settings') renderSettings();
 }
 
 function showPage(id, sidebarBtn, mobileId){
