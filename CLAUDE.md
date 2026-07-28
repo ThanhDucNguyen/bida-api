@@ -10,7 +10,7 @@
 staff.html        ──── Google Sheets API (hiện tại)
 owner_desktop.html ──── Go REST API + WebSocket (mới)
                             ↓
-                       PostgreSQL @ 103.176.178.198
+                       PostgreSQL @ 162.4.176.129
 ```
 
 Hệ thống gồm 2 file HTML độc lập, không phụ thuộc lẫn nhau, dùng chung cùng 1 cơ sở dữ liệu.
@@ -200,8 +200,8 @@ src="./qr.jpg"  // file qr.jpg cùng thư mục
 **Dành cho:** Chủ quán, quản lý  
 **Kích thước:** ~66KB, 1,300 dòng  
 **Database:** PostgreSQL qua Go REST API  
-**Realtime:** WebSocket (`ws://103.176.178.198/ws`)  
-**API:** `http://103.176.178.198/api`  
+**Realtime:** WebSocket (`ws://162.4.176.129/ws`)  
+**API:** `http://162.4.176.129/api`  
 **Giao diện:** Light theme, desktop-first, sidebar cố định
 
 ### 2.1 Navigation (6 tab)
@@ -313,7 +313,7 @@ Chỉ role='admin' mới vào được
 
 ### 2.4 API Integration
 
-**Base URL:** `http://103.176.178.198/api`
+**Base URL:** `http://162.4.176.129/api`
 
 | Method | Endpoint | Chức năng |
 |--------|----------|-----------|
@@ -335,7 +335,7 @@ Chỉ role='admin' mới vào được
 
 ### 2.5 WebSocket Events
 
-Kết nối: `ws://103.176.178.198/ws?token=<jwt>`
+Kết nối: `ws://162.4.176.129/ws?token=<jwt>`
 
 **Nhận events (realtime update):**
 
@@ -398,9 +398,9 @@ Auto-reconnect khi mất kết nối (sau 3 giây)
 ### Owner Web
 ```bash
 # Upload lên VPS
-scp owner_desktop.html root@103.176.178.198:/var/www/html/owner.html
+scp owner_desktop.html root@162.4.176.129:/var/www/html/owner.html
 
-# Truy cập: http://103.176.178.198/owner.html
+# Truy cập: http://162.4.176.129/owner.html
 # Yêu cầu: Go API đang chạy tại port 3000
 ```
 

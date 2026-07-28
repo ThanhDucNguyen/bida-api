@@ -37,11 +37,11 @@ bida/
 ### Cách 1: Docker Compose (khuyến nghị)
 
 ```bash
-# 1. Clone / upload code lên VPS
-scp -r . root@103.176.178.198:/opt/bida
+# 1. Clone code lên VPS (SSH cổng 24700)
+ssh -p 24700 root@162.4.176.129 "cd /opt && git clone https://github.com/ThanhDucNguyen/bida-api.git bida"
 
 # 2. SSH vào VPS
-ssh root@103.176.178.198
+ssh -p 24700 root@162.4.176.129
 
 # 3. Chạy script cài đặt
 cd /opt/bida
