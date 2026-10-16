@@ -26,3 +26,6 @@ Thumbs.db
 
 # ─── Tài liệu nội bộ / scratch ───────────────────────────────
 Document/
+
+# Bản xem trước tạm (không deploy)
+_preview_*.html

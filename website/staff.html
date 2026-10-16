@@ -59,6 +59,25 @@ html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;background:v
 .btn-refresh:hover{border-color:var(--g);color:var(--g)}
 .btn-refresh.spin{animation:spin .7s linear infinite;pointer-events:none;color:var(--g)}
 @keyframes spin{to{transform:rotate(360deg)}}
+.sumf{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1.5px solid var(--bd);border-radius:9px;overflow:hidden}
+.seg-b{padding:6px 14px;font-size:13px;border:none;background:var(--sf);cursor:pointer;font-family:inherit;color:var(--mu)}
+.seg-b.on{background:var(--g);color:#fff;font-weight:600}
+.pnav{display:flex;align-items:center;gap:6px}
+#sum-plabel{font-size:13px;font-weight:700;min-width:160px;text-align:center}
+.sum-row.clk{cursor:pointer}
+.sum-row.clk:hover{background:var(--gbg)}
+.sum-row.clk>span:last-child::after{content:' ›';color:var(--fa);font-weight:700}
+.sms{font-size:11px;color:var(--mu);margin-top:3px}
+.dtl-r{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--bd);font-size:13px}
+.dtl-s{font-size:11px;color:var(--mu);margin-top:2px}
+.dsum{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:10px;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.dsum-l{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.dsum-v{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:17px;margin-top:2px;white-space:nowrap}
+.dsum-n{grid-column:1/-1;font-size:11px;color:var(--mu);border-top:1px solid var(--bd);padding-top:8px;margin-top:2px}
+.ic{width:16px;height:16px;flex:none;vertical-align:-3px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ni-ic .ic,.mn-ic .ic,.mn-item .ic{width:19px;height:19px;vertical-align:0}
+.sum-hd .ic,.mh .ic{width:17px;height:17px}
 .content{padding:16px;flex:1}
 
 /* BUTTONS */
@@ -302,25 +321,28 @@ select.fi{cursor:pointer}
 </style>
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="i-bida" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/></symbol><symbol id="i-cart" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol><symbol id="i-package" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol><symbol id="i-card" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></symbol><symbol id="i-clipboard" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol><symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></symbol><symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol><symbol id="i-banknote" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V5a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v3h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1"/><path d="M3 6v13a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></symbol><symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 4.1 12.9a1 1 0 0 0 .8 1.6H11l-1 7.5 8.9-10.9a1 1 0 0 0-.8-1.6H13z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-qr" viewBox="0 0 24 24"><rect width="6" height="6" x="3" y="3" rx="1"/><rect width="6" height="6" x="15" y="3" rx="1"/><rect width="6" height="6" x="3" y="15" rx="1"/><path d="M15 15h2v2h-2zM19 15h2M15 19h2M19 19h2"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4.5M12 16h.01"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol><symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol></svg>
+
+
 <div class="layout">
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="s-logo">
-    <div class="s-icon">🎱</div>
+    <div class="s-icon"><svg class="ic"><use href="#i-bida"/></svg></div>
     <div>
       <div class="s-name">Rùa Bida</div>
       <div class="s-branch">Thái Lai</div>
     </div>
   </div>
   <nav class="s-nav">
-    <button class="ni on" onclick="nav('tabs',this)"><span class="ni-ic">🎯</span>Tab khách</button>
-    <button class="ni" onclick="nav('bida',this)"><span class="ni-ic">🎱</span>Bida</button>
-    <button class="ni" onclick="nav('inv',this)"><span class="ni-ic">📦</span>Nhập hàng</button>
-    <button class="ni" onclick="nav('hist',this)"><span class="ni-ic">📜</span>Lịch sử</button>
-    <button class="ni" onclick="nav('sum',this)"><span class="ni-ic">📋</span>Tổng kết</button>
-    <button class="ni" onclick="nav('debt',this)"><span class="ni-ic">💳</span>Nợ</button>
-    <button class="ni" onclick="nav('adj',this)"><span class="ni-ic">📝</span>Điều chỉnh</button>
+    <button class="ni on" onclick="nav('tabs',this)"><span class="ni-ic"><svg class="ic"><use href="#i-target"/></svg></span>Tab khách</button>
+    <button class="ni" onclick="nav('bida',this)"><span class="ni-ic"><svg class="ic"><use href="#i-bida"/></svg></span>Bida</button>
+    <button class="ni" onclick="nav('inv',this)"><span class="ni-ic"><svg class="ic"><use href="#i-package"/></svg></span>Nhập hàng</button>
+    <button class="ni" onclick="nav('hist',this)"><span class="ni-ic"><svg class="ic"><use href="#i-history"/></svg></span>Lịch sử</button>
+    <button class="ni" onclick="nav('sum',this)"><span class="ni-ic"><svg class="ic"><use href="#i-clipboard"/></svg></span>Tổng kết</button>
+    <button class="ni" onclick="nav('debt',this)"><span class="ni-ic"><svg class="ic"><use href="#i-card"/></svg></span>Nợ</button>
+    <button class="ni" onclick="nav('adj',this)"><span class="ni-ic"><svg class="ic"><use href="#i-edit"/></svg></span>Điều chỉnh</button>
   </nav>
   <div class="s-foot">
     <div class="u-pill">
@@ -351,7 +373,7 @@ select.fi{cursor:pointer}
 <div id="p-tabs">
   <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
     <button class="btn btn-p" onclick="openNewTab()">+ Tạo tab mới</button>
-    <button class="btn btn-y" onclick="openQuickOrder()">⚡ Order nhanh</button>
+    <button class="btn btn-y" onclick="openQuickOrder()"><svg class="ic"><use href="#i-zap"/></svg> Order nhanh</button>
   </div>
 
   <div class="tab-grid" id="tab-grid">
@@ -415,7 +437,7 @@ select.fi{cursor:pointer}
         <input class="fi" type="date" id="hist-to" style="width:150px">
       </div>
       <button class="btn btn-p btn-sm" onclick="renderHist()">Lọc</button>
-      <span class="badge bg-n">🔒 Chỉ xem</span>
+      <span class="badge bg-n"><svg class="ic"><use href="#i-lock"/></svg> Chỉ xem</span>
     </div>
   </div>
   <div id="hist-list"></div>
@@ -423,48 +445,73 @@ select.fi{cursor:pointer}
 
 <!-- ======== TỔNG KẾT NGÀY ======== -->
 <div id="p-sum" style="display:none">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-    <div style="display:flex;gap:8px;align-items:center">
-      <input class="fi" type="date" id="sum-date" style="width:160px">
-      <button class="btn btn-s btn-sm" onclick="renderSum()">Xem</button>
+  <div class="sumf">
+    <div class="seg">
+      <button class="seg-b on" id="sm-day" onclick="setSumMode('day')">Ngày</button>
+      <button class="seg-b" id="sm-week" onclick="setSumMode('week')">Tuần</button>
+      <button class="seg-b" id="sm-month" onclick="setSumMode('month')">Tháng</button>
     </div>
-    <button class="btn btn-s btn-sm" onclick="toast('Chức năng xuất báo cáo sẽ có ở phiên bản tiếp theo')">⬇ Xuất PDF</button>
+    <div class="pnav">
+      <button class="btn btn-s btn-sm" onclick="shiftPeriod(-1)">&#8249;</button>
+      <span id="sum-plabel">&mdash;</span>
+      <button class="btn btn-s btn-sm" onclick="shiftPeriod(1)">&#8250;</button>
+    </div>
+    <input class="fi" type="date" id="sum-date" style="width:150px" onchange="onSumDate()">
+    <button class="btn btn-s btn-sm" onclick="sumToday()">Hôm nay</button>
   </div>
 
   <div class="mrow m3" style="margin-bottom:14px">
-    <div class="mc gl"><div class="mlb">Tổng thu</div><div class="mv g" id="s-thu">0đ</div></div>
-    <div class="mc rl"><div class="mlb">Tổng chi</div><div class="mv r" id="s-chi">0đ</div></div>
-    <div class="mc gl"><div class="mlb">Doanh thu ngày</div><div class="mv g" id="s-dt">0đ</div></div>
+    <div class="mc gl"><div class="mlb">Tổng doanh thu</div><div class="mv g" id="s-dt">0đ</div><div class="sms" id="s-dt-s"></div></div>
+    <div class="mc yl"><div class="mlb">Thực thu (tiền vào két)</div><div class="mv" style="color:var(--b)" id="s-thucthu">0đ</div><div class="sms" id="s-tt-s"></div></div>
+    <div class="mc rl"><div class="mlb">Tổng chi</div><div class="mv r" id="s-chi">0đ</div><div class="sms" id="s-chi-s"></div></div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-    <div>
+    <div class="sum-box">
+      <div class="sum-hd inc"><svg class="ic"><use href="#i-wallet"/></svg> Sức bán (khách tiêu dùng)</div>
+      <div class="sum-row clk" onclick="openSumDetail('bida')"><span><svg class="ic"><use href="#i-bida"/></svg> Tiền bida</span><span class="sum-v p" id="s-bida">0đ</span></div>
+      <div class="sum-row clk" onclick="openSumDetail('item')"><span><svg class="ic"><use href="#i-cart"/></svg> Tiền vật phẩm</span><span class="sum-v p" id="s-sp">0đ</span></div>
+      <div class="sum-row tot"><span>Tổng doanh thu</span><span class="sum-v p" id="s-dt2">0đ</span></div>
+    </div>
+
+    <div class="sum-box">
+      <div class="sum-hd inc"><svg class="ic"><use href="#i-banknote"/></svg> Tiền vào két</div>
+      <div class="sum-row clk" onclick="openSumDetail('sale')"><span>Thu từ bán hàng</span><span class="sum-v p" id="s-ban">0đ</span></div>
+      <div class="sum-row clk" onclick="openSumDetail('paydebt')"><span>+ Thu nợ</span><span class="sum-v p" id="s-thuno">0đ</span></div>
+      <div class="sum-row clk" onclick="openSumDetail('adjp')"><span>+ Điều chỉnh (+)</span><span class="sum-v p" id="s-adj-p">0đ</span></div>
+      <div class="sum-row tot"><span>THỰC THU</span><span class="sum-v p" id="s-tt2">0đ</span></div>
+    </div>
+
+    <div class="sum-box">
+      <div class="sum-hd exp"><svg class="ic"><use href="#i-download"/></svg> Chi</div>
+      <div class="sum-row clk" onclick="openSumDetail('import')"><span><svg class="ic"><use href="#i-package"/></svg> Nhập hàng</span><span class="sum-v m" id="s-nhap">0đ</span></div>
+      <div class="sum-row clk" onclick="openSumDetail('adjm')"><span>− Điều chỉnh (−)</span><span class="sum-v m" id="s-adj-m">0đ</span></div>
+      <div class="sum-row tot"><span>Tổng chi</span><span class="sum-v m" id="s-chi2">0đ</span></div>
+    </div>
+
+    <div class="sum-box">
+      <div class="sum-hd" style="background:var(--ybg);color:var(--y)"><svg class="ic"><use href="#i-receipt"/></svg> Công nợ</div>
+      <div class="sum-row clk" onclick="openSumDetail('newdebt')"><span>Ghi nợ trong kỳ <span style="font-size:11px;color:var(--mu)">(chưa thu)</span></span><span class="sum-v" style="color:var(--y)" id="s-ghino">0đ</span></div>
+      <div class="sum-row clk" onclick="openSumDetail('alldebt')"><span>Khách đang nợ (toàn bộ)</span><span class="sum-v" style="color:var(--r)" id="s-duno">0đ</span></div>
+      <div class="sum-row tot"><span>Còn lại (Thực thu − Chi)</span><span class="sum-v p" id="s-conlai">0đ</span></div>
+    </div>
+
+    <div style="grid-column:1/-1;display:none" id="sum-daily-wrap">
       <div class="sum-box">
-        <div class="sum-hd inc">💰 Thu nhập</div>
-        <div class="sum-row"><span>🎱 Tiền bida</span><span class="sum-v p" id="s-bida">0đ</span></div>
-        <div class="sum-row"><span>🛒 Tiền vật phẩm</span><span class="sum-v p" id="s-sp">0đ</span></div>
-        <div class="sum-row"><span>➕ Điều chỉnh (+)</span><span class="sum-v p" id="s-adj-p">0đ</span></div>
-        <div class="sum-row tot"><span>Tổng thu</span><span class="sum-v p" id="s-thu2">0đ</span></div>
+        <div class="sum-hd itm"><svg class="ic"><use href="#i-calendar"/></svg> Phân rã theo ngày</div>
+        <div id="sum-daily-body"></div>
       </div>
     </div>
-    <div>
-      <div class="sum-box">
-        <div class="sum-hd exp">📤 Chi</div>
-        <div class="sum-row"><span>📦 Nhập hàng</span><span class="sum-v m" id="s-nhap">0đ</span></div>
-        <div class="sum-row"><span>➖ Điều chỉnh (−)</span><span class="sum-v m" id="s-adj-m">0đ</span></div>
-        <div class="sum-row tot"><span>Tổng chi</span><span class="sum-v m" id="s-chi2">0đ</span></div>
-      </div>
-    </div>
+
     <div style="grid-column:1/-1">
       <div class="sum-box" id="sum-items-box">
-        <div class="sum-hd itm">📦 Vật phẩm hôm nay</div>
+        <div class="sum-hd itm"><svg class="ic"><use href="#i-package"/></svg> Vật phẩm trong kỳ</div>
         <div id="sum-items-body"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ======== NỢ ======== -->
 <div id="p-debt" style="display:none">
   <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
     <input class="fi" type="text" id="debt-search" placeholder="Tìm theo tên..." style="width:200px" oninput="renderDebts()">
@@ -473,15 +520,17 @@ select.fi{cursor:pointer}
       <button class="btn btn-sm btn-y" id="df-pending" onclick="setDebtFilter('pending')">Chưa trả</button>
       <button class="btn btn-sm btn-g" id="df-paid" onclick="setDebtFilter('paid')">Đã trả</button>
     </div>
+    <button class="btn btn-sm btn-s" onclick="openDebtByCustomer()"><svg class="ic"><use href="#i-user"/></svg> Theo khách</button>
   </div>
+  <div class="dsum" id="debt-sum"></div>
   <div id="debt-list"></div>
 </div>
 
 <!-- ======== ĐIỀU CHỈNH ======== -->
 <div id="p-adj" style="display:none">
   <div style="display:flex;gap:8px;margin-bottom:14px">
-    <button class="btn btn-p" onclick="openAdj(1)">➕ Cộng tiền</button>
-    <button class="btn btn-r" onclick="openAdj(-1)">➖ Chi phí vận hành</button>
+    <button class="btn btn-p" onclick="openAdj(1)"><svg class="ic"><use href="#i-plus"/></svg> Cộng tiền</button>
+    <button class="btn btn-r" onclick="openAdj(-1)"><svg class="ic"><use href="#i-minus"/></svg> Chi phí vận hành</button>
   </div>
   <div class="card">
     <div class="card-h"><span class="card-t">Điều chỉnh hôm nay</span></div>
@@ -500,13 +549,13 @@ select.fi{cursor:pointer}
 <!-- MOBILE NAV -->
 <nav class="mob-nav">
   <div class="mob-nav-inner">
-    <button class="mn-item on" id="mn-tabs" onclick="nav('tabs',null,'tabs')"><span class="mn-ic">🎯</span><span class="mn-lb">Tab</span></button>
-    <button class="mn-item" id="mn-bida" onclick="nav('bida',null,'bida')"><span class="mn-ic">🎱</span><span class="mn-lb">Bida</span></button>
-    <button class="mn-item" id="mn-inv" onclick="nav('inv',null,'inv')"><span class="mn-ic">📦</span><span class="mn-lb">Kho</span></button>
-    <button class="mn-item" id="mn-hist" onclick="nav('hist',null,'hist')"><span class="mn-ic">📜</span><span class="mn-lb">Lịch sử</span></button>
-    <button class="mn-item" id="mn-sum" onclick="nav('sum',null,'sum')"><span class="mn-ic">📋</span><span class="mn-lb">Tổng kết</span></button>
-    <button class="mn-item" id="mn-debt" onclick="nav('debt',null,'debt')"><span class="mn-ic">💳</span><span class="mn-lb">Nợ</span></button>
-    <button class="mn-item" id="mn-adj" onclick="nav('adj',null,'adj')"><span class="mn-ic">📝</span><span class="mn-lb">Điều chỉnh</span></button>
+    <button class="mn-item on" id="mn-tabs" onclick="nav('tabs',null,'tabs')"><span class="mn-ic"><svg class="ic"><use href="#i-target"/></svg></span><span class="mn-lb">Tab</span></button>
+    <button class="mn-item" id="mn-bida" onclick="nav('bida',null,'bida')"><span class="mn-ic"><svg class="ic"><use href="#i-bida"/></svg></span><span class="mn-lb">Bida</span></button>
+    <button class="mn-item" id="mn-inv" onclick="nav('inv',null,'inv')"><span class="mn-ic"><svg class="ic"><use href="#i-package"/></svg></span><span class="mn-lb">Kho</span></button>
+    <button class="mn-item" id="mn-hist" onclick="nav('hist',null,'hist')"><span class="mn-ic"><svg class="ic"><use href="#i-history"/></svg></span><span class="mn-lb">Lịch sử</span></button>
+    <button class="mn-item" id="mn-sum" onclick="nav('sum',null,'sum')"><span class="mn-ic"><svg class="ic"><use href="#i-clipboard"/></svg></span><span class="mn-lb">Tổng kết</span></button>
+    <button class="mn-item" id="mn-debt" onclick="nav('debt',null,'debt')"><span class="mn-ic"><svg class="ic"><use href="#i-card"/></svg></span><span class="mn-lb">Nợ</span></button>
+    <button class="mn-item" id="mn-adj" onclick="nav('adj',null,'adj')"><span class="mn-ic"><svg class="ic"><use href="#i-edit"/></svg></span><span class="mn-lb">Điều chỉnh</span></button>
   </div>
 </nav>
 
@@ -515,7 +564,7 @@ select.fi{cursor:pointer}
 <!-- MODAL: TẠO TAB / ORDER NHANH -->
 <div class="ov" id="mo-newtab">
   <div class="mbox">
-    <div class="mh"><h2 id="newtab-title">🎯 Tạo tab mới</h2><button class="mcl" onclick="closeModal('mo-newtab')">✕</button></div>
+    <div class="mh"><h2 id="newtab-title"><svg class="ic"><use href="#i-target"/></svg> Tạo tab mới</h2><button class="mcl" onclick="closeModal('mo-newtab')">✕</button></div>
     <div class="mb">
       <div class="fg" id="newtab-name-fg">
         <label class="fl">Tên khách</label>
@@ -543,11 +592,11 @@ select.fi{cursor:pointer}
 <!-- MODAL: ORDER TAB (thêm/trả đồ vào tab) -->
 <div class="ov" id="mo-order">
   <div class="mbox wide">
-    <div class="mh"><h2 id="order-title">🛒 Order — Tab A</h2><button class="mcl" onclick="closeModal('mo-order')">✕</button></div>
+    <div class="mh"><h2 id="order-title"><svg class="ic"><use href="#i-cart"/></svg> Order — Tab A</h2><button class="mcl" onclick="closeModal('mo-order')">✕</button></div>
     <div class="mb">
       <div class="mtabs">
-        <button class="mtab on" onclick="switchMTab('mo-order','ord-add')">➕ Thêm món</button>
-        <button class="mtab" onclick="switchMTab('mo-order','ord-ret')">↩ Trả hàng</button>
+        <button class="mtab on" onclick="switchMTab('mo-order','ord-add')"><svg class="ic"><use href="#i-plus"/></svg> Thêm món</button>
+        <button class="mtab" onclick="switchMTab('mo-order','ord-ret')"><svg class="ic"><use href="#i-undo"/></svg> Trả hàng</button>
       </div>
       <!-- THÊM MÓN -->
       <div class="mtab-pane on" id="ord-add">
@@ -579,7 +628,7 @@ select.fi{cursor:pointer}
 <!-- MODAL: ORDER BIDA (thêm/trả đồ tại bàn, có xác nhận) -->
 <div class="ov" id="mo-bida-order">
   <div class="mbox wide">
-    <div class="mh"><h2 id="bo-title">🛒 Order — Bàn X</h2><button class="mcl" onclick="closeModal('mo-bida-order')">✕</button></div>
+    <div class="mh"><h2 id="bo-title"><svg class="ic"><use href="#i-cart"/></svg> Order — Bàn X</h2><button class="mcl" onclick="closeModal('mo-bida-order')">✕</button></div>
     <div class="mb">
       <!-- Đã order tại bàn -->
       <div id="bo-current-wrap" style="margin-bottom:14px">
@@ -588,8 +637,8 @@ select.fi{cursor:pointer}
       </div>
 
       <div class="mtabs">
-        <button class="mtab on" onclick="switchMTab('mo-bida-order','bo-add')">➕ Thêm món</button>
-        <button class="mtab" onclick="switchMTab('mo-bida-order','bo-ret')">↩ Trả hàng</button>
+        <button class="mtab on" onclick="switchMTab('mo-bida-order','bo-add')"><svg class="ic"><use href="#i-plus"/></svg> Thêm món</button>
+        <button class="mtab" onclick="switchMTab('mo-bida-order','bo-ret')"><svg class="ic"><use href="#i-undo"/></svg> Trả hàng</button>
       </div>
 
       <!-- THÊM MÓN -->
@@ -623,15 +672,15 @@ select.fi{cursor:pointer}
 <!-- MODAL: THANH TOÁN -->
 <div class="ov" id="mo-pay">
   <div class="mbox wide">
-    <div class="mh"><h2 id="pay-title">💳 Thanh toán</h2><button class="mcl" onclick="closeModal('mo-pay')">✕</button></div>
+    <div class="mh"><h2 id="pay-title"><svg class="ic"><use href="#i-card"/></svg> Thanh toán</h2><button class="mcl" onclick="closeModal('mo-pay')">✕</button></div>
     <div class="mb">
       <!-- Chi tiết hoá đơn -->
       <div id="pay-bill" style="background:var(--sf2);border-radius:10px;padding:14px;margin-bottom:12px;font-size:13px"></div>
 
       <!-- Tab thêm/trả -->
       <div class="mtabs">
-        <button class="mtab on" onclick="switchMTab('mo-pay','pay-add')">➕ Thêm món</button>
-        <button class="mtab" onclick="switchMTab('mo-pay','pay-ret')">↩ Trả hàng</button>
+        <button class="mtab on" onclick="switchMTab('mo-pay','pay-add')"><svg class="ic"><use href="#i-plus"/></svg> Thêm món</button>
+        <button class="mtab" onclick="switchMTab('mo-pay','pay-ret')"><svg class="ic"><use href="#i-undo"/></svg> Trả hàng</button>
       </div>
 
       <!-- THÊM MÓN -->
@@ -666,9 +715,9 @@ select.fi{cursor:pointer}
 
       <!-- Phương thức -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
-        <button class="btn btn-p" onclick="finalPay('cash')">💵 Tiền mặt</button>
-        <button class="btn btn-b" onclick="finalPay('qr')">📱 QR</button>
-        <button class="btn btn-r" onclick="openDebtForm()">📋 Ghi nợ</button>
+        <button class="btn btn-p" onclick="finalPay('cash')"><svg class="ic"><use href="#i-banknote"/></svg> Tiền mặt</button>
+        <button class="btn btn-b" onclick="finalPay('qr')"><svg class="ic"><use href="#i-phone"/></svg> QR</button>
+        <button class="btn btn-r" onclick="openDebtForm()"><svg class="ic"><use href="#i-clipboard"/></svg> Ghi nợ</button>
       </div>
     </div>
   </div>
@@ -677,11 +726,11 @@ select.fi{cursor:pointer}
 <!-- MODAL: QR -->
 <div class="ov" id="mo-qr">
   <div class="mbox" style="width:360px">
-    <div class="mh"><h2>📱 Quét QR thanh toán</h2><button class="mcl" onclick="closeModal('mo-qr')">✕</button></div>
+    <div class="mh"><h2><svg class="ic"><use href="#i-phone"/></svg> Quét QR thanh toán</h2><button class="mcl" onclick="closeModal('mo-qr')">✕</button></div>
     <div class="mb" style="text-align:center">
       <div style="font-size:13px;color:var(--mu);margin-bottom:12px">Số tiền: <strong class="mono" id="qr-amount">0đ</strong></div>
       <div style="background:var(--sf2);border-radius:12px;padding:20px;display:inline-block;margin-bottom:12px">
-        <div style="font-size:80px;line-height:1">📷</div>
+        <div style="font-size:80px;line-height:1"><svg class="ic"><use href="#i-qr"/></svg></div>
         <div style="font-size:12px;color:var(--mu);margin-top:8px">QR VietQR</div>
       </div>
       <div style="font-size:12px;color:var(--mu)">Thái Lai Billiards · Quét mã QR để chuyển khoản</div>
@@ -696,7 +745,7 @@ select.fi{cursor:pointer}
 <!-- MODAL: GHI NỢ -->
 <div class="ov" id="mo-debt-form">
   <div class="mbox" style="width:400px">
-    <div class="mh"><h2>📋 Ghi nợ</h2><button class="mcl" onclick="closeModal('mo-debt-form')">✕</button></div>
+    <div class="mh"><h2><svg class="ic"><use href="#i-clipboard"/></svg> Ghi nợ</h2><button class="mcl" onclick="closeModal('mo-debt-form')">✕</button></div>
     <div class="mb">
       <div class="fg"><label class="fl">Tên khách</label><input class="fi" id="df-name" type="text" placeholder="Nhập tên..."></div>
       <div class="fg"><label class="fl">Số điện thoại (tùy chọn)</label><input class="fi" id="df-phone" type="tel" placeholder="0..."></div>
@@ -719,7 +768,7 @@ select.fi{cursor:pointer}
 <!-- MODAL: NHẬP HÀNG -->
 <div class="ov" id="mo-inv">
   <div class="mbox wide">
-    <div class="mh"><h2>📦 Nhập hàng</h2><button class="mcl" onclick="closeModal('mo-inv')">✕</button></div>
+    <div class="mh"><h2><svg class="ic"><use href="#i-package"/></svg> Nhập hàng</h2><button class="mcl" onclick="closeModal('mo-inv')">✕</button></div>
     <div class="mb">
       <div class="frow fr2">
         <div class="fg"><label class="fl">Mặt hàng</label>
@@ -745,7 +794,7 @@ select.fi{cursor:pointer}
 <!-- MODAL: ĐIỀU CHỈNH -->
 <div class="ov" id="mo-adj">
   <div class="mbox" style="width:400px">
-    <div class="mh"><h2 id="adj-modal-title">📝 Điều chỉnh</h2><button class="mcl" onclick="closeModal('mo-adj')">✕</button></div>
+    <div class="mh"><h2 id="adj-modal-title"><svg class="ic"><use href="#i-edit"/></svg> Điều chỉnh</h2><button class="mcl" onclick="closeModal('mo-adj')">✕</button></div>
     <div class="mb">
       <div class="fg"><label class="fl">Lý do / Mô tả</label><input class="fi" id="adj-desc" type="text" placeholder="VD: Mua đá, Thu thêm từ khách..."></div>
       <div class="fg">
@@ -764,7 +813,7 @@ select.fi{cursor:pointer}
 <!-- MODAL: KẾT THÚC BIDA -->
 <div class="ov" id="mo-bida-end">
   <div class="mbox wide">
-    <div class="mh"><h2 id="be-title">🎱 Kết thúc bàn</h2><button class="mcl" onclick="closeModal('mo-bida-end')">✕</button></div>
+    <div class="mh"><h2 id="be-title"><svg class="ic"><use href="#i-bida"/></svg> Kết thúc bàn</h2><button class="mcl" onclick="closeModal('mo-bida-end')">✕</button></div>
     <div class="mb">
       <div style="background:var(--ybg);border:1.5px solid var(--ybr);border-radius:12px;padding:16px;text-align:center;margin-bottom:16px">
         <div style="font-size:12px;color:var(--y);font-weight:700;margin-bottom:6px">TỔNG THỜI GIAN</div>
@@ -791,10 +840,10 @@ select.fi{cursor:pointer}
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px">
-        <button class="btn btn-p" onclick="endBida('tab')">➕ Gộp vào tab</button>
-        <button class="btn btn-p" onclick="endBida('cash')">💵 Tiền mặt</button>
-        <button class="btn btn-b" onclick="endBida('qr')">📱 QR</button>
-        <button class="btn btn-r" onclick="endBida('debt')">💳 Ghi nợ</button>
+        <button class="btn btn-p" onclick="endBida('tab')"><svg class="ic"><use href="#i-plus"/></svg> Gộp vào tab</button>
+        <button class="btn btn-p" onclick="endBida('cash')"><svg class="ic"><use href="#i-banknote"/></svg> Tiền mặt</button>
+        <button class="btn btn-b" onclick="endBida('qr')"><svg class="ic"><use href="#i-phone"/></svg> QR</button>
+        <button class="btn btn-r" onclick="endBida('debt')"><svg class="ic"><use href="#i-card"/></svg> Ghi nợ</button>
       </div>
     </div>
   </div>
@@ -823,7 +872,7 @@ select.fi{cursor:pointer}
 
       <!-- Bida -->
       <div id="dd-bida-section" style="display:none;margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎱 Bida</div>
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px"><svg class="ic"><use href="#i-bida"/></svg> Bida</div>
         <div style="background:var(--ybg);border:1px solid var(--ybr);border-radius:9px;padding:12px;display:flex;justify-content:space-between;align-items:center">
           <div>
             <div style="font-size:13px;font-weight:600" id="dd-bida-table"></div>
@@ -835,7 +884,7 @@ select.fi{cursor:pointer}
 
       <!-- Vật phẩm -->
       <div id="dd-items-section" style="display:none;margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🛒 Vật phẩm</div>
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px"><svg class="ic"><use href="#i-cart"/></svg> Vật phẩm</div>
         <div style="background:var(--sf2);border-radius:9px;overflow:hidden">
           <div id="dd-items-rows"></div>
           <div style="display:flex;justify-content:space-between;padding:9px 12px;font-size:13px;font-weight:700;border-top:1px solid var(--bd)">
@@ -847,7 +896,7 @@ select.fi{cursor:pointer}
 
       <!-- Điều chỉnh -->
       <div id="dd-adj-section" style="display:none;margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">📝 Điều chỉnh</div>
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px"><svg class="ic"><use href="#i-edit"/></svg> Điều chỉnh</div>
         <div id="dd-adj-rows"></div>
       </div>
 
@@ -869,22 +918,42 @@ select.fi{cursor:pointer}
 
       <!-- Ghi chú -->
       <div id="dd-note-row" style="display:none;margin-top:12px;font-size:12px;color:var(--mu)">
-        📌 Ghi chú: <span id="dd-note"></span>
+        Ghi chú: <span id="dd-note"></span>
       </div>
     </div>
     <div class="mf">
       <button class="btn btn-s" onclick="closeModal('mo-debt-detail')">Đóng</button>
-      <button class="btn btn-p" id="dd-pay-btn" onclick="openPayFromDetail()">💰 Thu nợ</button>
+      <button class="btn btn-p" id="dd-pay-btn" onclick="openPayFromDetail()"><svg class="ic"><use href="#i-wallet"/></svg> Thu nợ</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: CHI TIẾT PHIÊN THANH TOÁN -->
+<div class="ov" id="mo-debt-cust">
+  <div class="mbox" style="width:470px">
+    <div class="mh"><h2><svg class="ic"><use href="#i-user"/></svg> Khách đang nợ</h2><button class="mcl" onclick="closeModal('mo-debt-cust')">✕</button></div>
+    <div class="mb">
+      <div class="dsum" id="dcu-head" style="grid-template-columns:1fr 1fr"></div>
+      <div id="dcu-body" style="max-height:54vh;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="mo-sum-detail">
+  <div class="mbox" style="width:640px">
+    <div class="mh"><h2 id="sdt-title">Chi tiết</h2><button class="mcl" onclick="closeModal('mo-sum-detail')">✕</button></div>
+    <div class="mb">
+      <div id="sdt-head" style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:9px;margin-bottom:10px;font-size:13px;font-weight:700"></div>
+      <div id="sdt-body" style="max-height:52vh;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
 <div class="ov" id="mo-session-detail">
   <div class="mbox" style="width:420px">
     <div class="mh">
       <div>
-        <h2 id="sd-title">📋 Chi tiết phiên</h2>
+        <h2 id="sd-title"><svg class="ic"><use href="#i-clipboard"/></svg> Chi tiết phiên</h2>
         <div id="sd-meta" style="font-size:11px;color:var(--mu);margin-top:2px"></div>
       </div>
       <button class="mcl" onclick="closeModal('mo-session-detail')">✕</button>
@@ -892,17 +961,17 @@ select.fi{cursor:pointer}
     <div class="mb">
       <!-- bida -->
       <div id="sd-bida-wrap">
-        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎱 Bida</div>
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px"><svg class="ic"><use href="#i-bida"/></svg> Bida</div>
         <div id="sd-bida" style="background:var(--sf2);border-radius:8px;padding:10px 12px;margin-bottom:14px"></div>
       </div>
       <!-- items -->
       <div id="sd-items-wrap">
-        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🛒 Đồ đã dùng</div>
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px"><svg class="ic"><use href="#i-cart"/></svg> Đồ đã dùng</div>
         <div id="sd-items" style="margin-bottom:14px"></div>
       </div>
       <!-- note -->
       <div id="sd-note-wrap">
-        <div style="font-size:11px;color:var(--mu);margin-bottom:4px">📝 Ghi chú</div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:4px"><svg class="ic"><use href="#i-edit"/></svg> Ghi chú</div>
         <div id="sd-note" style="font-size:13px;padding:8px 12px;background:var(--sf2);border-radius:8px"></div>
       </div>
       <!-- total -->
@@ -920,7 +989,7 @@ select.fi{cursor:pointer}
 <!-- MODAL: TRẢ NỢ -->
 <div class="ov" id="mo-pay-debt">
   <div class="mbox" style="width:380px">
-    <div class="mh"><h2>💳 Trả nợ</h2><button class="mcl" onclick="closeModal('mo-pay-debt')">✕</button></div>
+    <div class="mh"><h2><svg class="ic"><use href="#i-card"/></svg> Trả nợ</h2><button class="mcl" onclick="closeModal('mo-pay-debt')">✕</button></div>
     <div class="mb">
       <div style="background:var(--rbg);border:1px solid var(--rbr);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px" id="debt-pay-info"></div>
       <div class="fg"><label class="fl">Số tiền trả</label><input class="fi" id="debt-pay-amt" type="number" placeholder="0" min="1"></div>
@@ -1038,7 +1107,7 @@ function connectWS(){
       case 'force_logout':
         // Tài khoản này vừa đăng nhập ở thiết bị khác → phiên hiện tại bị đá ra
         if(msg.data && msg.data.user_id===currentUser.id && msg.data.sid!==localStorage.getItem('bida_sid')){
-          alert('⚠️ Tài khoản "'+currentUser.name+'" vừa được đăng nhập ở thiết bị khác.\nPhiên làm việc này sẽ bị đăng xuất.');
+          alert('Tài khoản "'+currentUser.name+'" vừa được đăng nhập ở thiết bị khác.\nPhiên làm việc này sẽ bị đăng xuất.');
           doLogout();
         }
         break;
@@ -1167,7 +1236,7 @@ const TABLES = [
 ];
 const CUTOFF = {h:21, m:0};
 
-const CATLAB = {nuoc:'🥤 Nước', thuoc:'🚬 Thuốc', an:'🍜 Đồ ăn', khac:'📦 Khác'};
+const CATLAB = {nuoc:'Nước', thuoc:'Thuốc', an:'Đồ ăn', khac:'Khác'};
 let products   = [];
 let tabs       = [];
 let bidaState  = { b1:{running:false,paused:false,startTime:null,pausedMs:0,cart:[]},
@@ -1460,17 +1529,17 @@ function renderTabs(){
       ? tab.items.map(i=>`${i.name}×${i.qty}`).join(', ')
       : 'Chưa order';
     const hasBida = liveBida || tab.frozenBidaCost>0;
-    const bidaName = liveBida ? TABLES.find(t=>t.id===tab.bidaId)?.name : '🎱 Bida';
+    const bidaName = liveBida ? TABLES.find(t=>t.id===tab.bidaId)?.name : '<svg class="ic"><use href="#i-bida"/></svg> Bida';
     html += `
       <div class="tab-card${hasBida?' has-bida':''}">
         <div class="tc-name">${tab.name}</div>
         <div class="tc-time">${new Date(tab.created).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</div>
-        ${hasBida?`<div style="font-size:11px;margin-bottom:4px"><span class="badge bg-y">🎱 ${liveBida?bidaName:''} ${fmtMoney(bidaCost)}</span></div>`:''}
+        ${hasBida?`<div style="font-size:11px;margin-bottom:4px"><span class="badge bg-y"><svg class="ic"><use href="#i-bida"/></svg> ${liveBida?bidaName:''} ${fmtMoney(bidaCost)}</span></div>`:''}
         <div class="tc-items">${itemStr}</div>
         <div class="tc-total">${fmtMoney(total)}</div>
         <div class="tc-actions">
           <button class="btn btn-sm btn-s" onclick="openOrderModal('${tab.id}')">+ Order</button>
-          <button class="btn btn-sm btn-p" onclick="openPayModal('${tab.id}')">💳 TT</button>
+          <button class="btn btn-sm btn-p" onclick="openPayModal('${tab.id}')"><svg class="ic"><use href="#i-card"/></svg> TT</button>
         </div>
       </div>`;
   });
@@ -1485,7 +1554,7 @@ function openQuickOrder(){
   activeTabId = '__quick__';
   carts.nt = {};
   activeProductCat = 'nuoc';
-  document.getElementById('newtab-title').textContent = '⚡ Order nhanh';
+  document.getElementById('newtab-title').textContent = 'Order nhanh';
   document.getElementById('newtab-name').value='';
   document.getElementById('newtab-name-fg').style.display='none';
   document.getElementById('newtab-submit-btn').textContent='✓ Thanh toán';
@@ -1532,7 +1601,7 @@ async function submitNewTab(){
 function openOrderModal(tid){
   activeTabId = tid;
   const tab = tabs.find(t=>t.id===tid);
-  document.getElementById('order-title').textContent = `🛒 Order — ${tab.name}`;
+  document.getElementById('order-title').textContent = `Order — ${tab.name}`;
   carts.ord = {};
   returnCarts.ord = {};
   activeProductCat='nuoc';
@@ -1591,14 +1660,14 @@ function openPayModal(tid){
   if(tab.frozenBidaCost){
     bidaCost = tab.frozenBidaCost;
     billHtml += `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)">
-      <span>🎱 Bida</span>
+      <span><svg class="ic"><use href="#i-bida"/></svg> Bida</span>
       <span class="mono">${fmtMoney(bidaCost)}</span>
     </div>`;
   } else if(tab.bidaId && bidaState[tab.bidaId]?.running){
     bidaCost = calcBidaCost(tab.bidaId);
     const tname = TABLES.find(t=>t.id===tab.bidaId)?.name;
     billHtml += `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)">
-      <span>🎱 ${tname}</span>
+      <span><svg class="ic"><use href="#i-bida"/></svg> ${tname}</span>
       <span class="mono">${fmtMoney(bidaCost)}</span>
     </div>`;
   }
@@ -1611,7 +1680,7 @@ function openPayModal(tid){
   renderReturnRows(tab.items,'pay','pay-ret-rows','pay-ret-total');
   payGrand = roundUp1k(base+bidaCost);
   document.getElementById('pay-grand').textContent = fmtMoney(payGrand);
-  document.getElementById('pay-title').textContent = `💳 Thanh toán — ${tab.name}`;
+  document.getElementById('pay-title').textContent = `Thanh toán — ${tab.name}`;
   openModal('mo-pay');
 }
 function updatePayGrand(){
@@ -1755,7 +1824,7 @@ function renderBida(){
     const st = bidaState[tbl.id];
     let cls='free', statusTxt='● Trống', statusCls='free';
     if(st.running && !st.paused){cls='busy';statusTxt='● Đang chạy';statusCls='busy';busy++;}
-    else if(st.running && st.paused){cls='paused';statusTxt='⏸ Tạm dừng';statusCls='paused';busy++;}
+    else if(st.running && st.paused){cls='paused';statusTxt='<svg class="ic"><use href="#i-pause"/></svg> Tạm dừng';statusCls='paused';busy++;}
     else free++;
     const rateInfo = `${fmtMoney(tbl.rateA)}/h → ${fmtMoney(tbl.rateB)}/h sau ${CUTOFF.h}:${String(CUTOFF.m).padStart(2,'0')}`;
     const ms = bidaElapsedMs(st);
@@ -1767,8 +1836,8 @@ function renderBida(){
       actHtml=`<button class="btn btn-p" onclick="startBida('${tbl.id}')">▶ Bắt đầu</button>`;
     } else if(!st.paused){
       actHtml=`
-        <button class="btn btn-y btn-sm" onclick="pauseBida('${tbl.id}')">⏸ Dừng</button>
-        <button class="btn btn-s btn-sm" onclick="orderBida('${tbl.id}')">🛒 Order</button>
+        <button class="btn btn-y btn-sm" onclick="pauseBida('${tbl.id}')"><svg class="ic"><use href="#i-pause"/></svg> Dừng</button>
+        <button class="btn btn-s btn-sm" onclick="orderBida('${tbl.id}')"><svg class="ic"><use href="#i-cart"/></svg> Order</button>
         <button class="btn btn-r btn-sm" onclick="openEndBida('${tbl.id}')">■ Kết thúc</button>`;
     } else {
       actHtml=`
@@ -1783,7 +1852,7 @@ function renderBida(){
       <div class="bc-price">${rateInfo}</div>
       ${st.running?`<div class="bc-timer" data-bid="${tbl.id}">${timeStr}</div>
       <div class="bc-cost" data-bid-cost="${tbl.id}">${fmtMoney(cost)}</div>`:'<div style="height:60px;display:flex;align-items:center;justify-content:center;color:var(--fa);font-size:13px">Trống</div>'}
-      ${cartStr?`<div class="bc-cart">🛒 ${cartStr}</div>`:''}
+      ${cartStr?`<div class="bc-cart"><svg class="ic"><use href="#i-cart"/></svg> ${cartStr}</div>`:''}
       <div class="bc-actions">${actHtml}</div>
     </div>`;
   }).join('');
@@ -1806,7 +1875,7 @@ async function pauseBida(bid){
   bidaState[bid]._pauseStart=Date.now();
   renderBida();
   await saveBida(bid);
-  toast('⏸ Đã tạm dừng');
+  toast('Đã tạm dừng');
 }
 async function resumeBida(bid){
   const st=bidaState[bid];
@@ -1824,7 +1893,7 @@ function orderBida(bid){
   returnCarts.bo={};
   activeProductCat='nuoc';
   const tname=TABLES.find(t=>t.id===bid).name;
-  document.getElementById('bo-title').textContent='🛒 Order — '+tname;
+  document.getElementById('bo-title').textContent='Order — '+tname;
   renderProdPicker(document.getElementById('bo-cats'),document.getElementById('bo-prods'),carts.bo,null);
   renderCart('bo');
   // show current cart items on the table
@@ -2089,9 +2158,9 @@ function renderHist(){
         <div class="hc-total mono">${fmtMoney(s.total)}</div>
       </div>
       <div class="hc-bot">
-        <span class="hc-staff">👤 ${s.staff}</span>
-        ${s.bida?`<span class="hc-chip chip-g">🎱 ${fmtMoney(s.bida)}</span>`:''}
-        ${s.cart?`<span class="hc-chip chip-b">🛒 ${fmtMoney(s.cart)}</span>`:''}
+        <span class="hc-staff"><svg class="ic"><use href="#i-user"/></svg> ${s.staff}</span>
+        ${s.bida?`<span class="hc-chip chip-g"><svg class="ic"><use href="#i-bida"/></svg> ${fmtMoney(s.bida)}</span>`:''}
+        ${s.cart?`<span class="hc-chip chip-b"><svg class="ic"><use href="#i-cart"/></svg> ${fmtMoney(s.cart)}</span>`:''}
       </div>
     </div>`).join('');
 }
@@ -2099,7 +2168,7 @@ function renderHist(){
 function openSessionDetail(sid){
   const s = sessions.find(x=>x.id===sid);
   if(!s) return;
-  document.getElementById('sd-title').textContent = `📋 ${s.tab}`;
+  document.getElementById('sd-title').textContent = `${s.tab}`;
   document.getElementById('sd-meta').textContent = `${s.time} · ${s.staff}`;
   document.getElementById('sd-total').textContent = fmtMoney(s.total);
 
@@ -2150,49 +2219,235 @@ function openSessionDetail(sid){
 /* ===============================================================
    PAGE: TỔNG KẾT
 =============================================================== */
+/* ── Đọc details: hỗ trợ CẢ 2 định dạng (cũ = mảng, mới = {bida,items}) ── */
+function detObj(det){
+  if(typeof det==='string'){ try{ return JSON.parse(det); }catch(e){ return null; } }
+  return det||null;
+}
+function detItems(det){
+  const d=detObj(det); if(!d) return [];
+  if(Array.isArray(d)) return d;                 // định dạng cũ
+  return Array.isArray(d.items)?d.items:[];      // định dạng mới
+}
+function detBida(det){
+  const d=detObj(det); if(!d||Array.isArray(d)) return 0;
+  return (d.bida&&d.bida.cost)||0;
+}
+function itemsValue(list){ return list.reduce((s,i)=>s+(i.qty||0)*(i.price||0),0); }
+
+/* ── Kỳ xem: ngày / tuần (T2→CN) / tháng ── */
+let sumMode='day';
+let sumAnchor=null;
+const ymd=d=>d.toLocaleDateString('sv-SE');
+function parseYmd(x){ const a=x.split('-').map(Number); return new Date(a[0],a[1]-1,a[2]); }
+function addDays(x,n){ const d=parseYmd(x); d.setDate(d.getDate()+n); return ymd(d); }
+
+function sumRange(){
+  const a=sumAnchor||ymd(new Date());
+  if(sumMode==='day') return {from:a,to:a,label:a.slice(8)+'/'+(+a.slice(5,7))+'/'+a.slice(0,4)};
+  if(sumMode==='week'){
+    const dow=(parseYmd(a).getDay()+6)%7;          // Thứ 2 = 0
+    const from=addDays(a,-dow), to=addDays(from,6);
+    return {from,to,label:from.slice(8)+'/'+(+from.slice(5,7))+' → '+to.slice(8)+'/'+(+to.slice(5,7))};
+  }
+  const from=a.slice(0,7)+'-01';
+  const d=parseYmd(from); d.setMonth(d.getMonth()+1); d.setDate(0);
+  return {from,to:ymd(d),label:'Tháng '+(+a.slice(5,7))+'/'+a.slice(0,4)};
+}
+function setSumMode(m){
+  sumMode=m;
+  ['day','week','month'].forEach(x=>{
+    const b=document.getElementById('sm-'+x); if(b) b.classList.toggle('on',x===m);
+  });
+  renderSum();
+}
+function shiftPeriod(n){
+  const a=sumAnchor||ymd(new Date());
+  if(sumMode==='day')       sumAnchor=addDays(a,n);
+  else if(sumMode==='week') sumAnchor=addDays(a,7*n);
+  else { const d=parseYmd(a.slice(0,7)+'-01'); d.setMonth(d.getMonth()+n); sumAnchor=ymd(d); }
+  document.getElementById('sum-date').value=sumAnchor;
+  renderSum();
+}
+function onSumDate(){ sumAnchor=document.getElementById('sum-date').value||ymd(new Date()); renderSum(); }
+function sumToday(){ sumAnchor=ymd(new Date()); document.getElementById('sum-date').value=sumAnchor; setSumMode('day'); }
+
+/* ── Gom số liệu của kỳ ── */
+const isPayDebt = a => /^thu nợ/i.test(a.desc||'');
+function sumData(){
+  const rg=sumRange(), inR=d=>!!d&&d>=rg.from&&d<=rg.to;
+  // Phiên ghi nợ kiểu CŨ: total=0 nhưng có tiêu dùng → giá trị đã nằm ở bảng nợ.
+  // Bỏ qua để không đếm 2 lần (giữ nguyên dữ liệu, chỉ loại khi tính).
+  const isOldDebtSess = s => (s.total||0)===0 && ((s.bida||0)+(s.cart||0))>0;
+  const sess=sessions.filter(s=>inR(s.date) && !isOldDebtSess(s));
+  const dbts=debts.filter(d=>inR(d.date));
+  const adjs=adjustments.filter(a=>inR(a.date));
+  const imps=invImports.filter(i=>inR(i.date));
+
+  // Sức bán = phiên đã thu + khoản ghi nợ mới (nợ mới không tạo phiên)
+  let bida=sess.reduce((s,x)=>s+(x.bida||0),0);
+  let sp  =sess.reduce((s,x)=>s+(x.cart||0),0);
+  // Dùng SỐ TIỀN NỢ thực tế (orig) để Tổng doanh thu − Ghi nợ = Thu bán hàng.
+  // Phần bida lấy theo chi tiết, phần còn lại tính vào vật phẩm.
+  dbts.forEach(d=>{ const b=detBida(d.details), o=d.orig||0;
+    bida+=b; sp+=Math.max(0,o-b); });
+
+  const ban   = sess.reduce((s,x)=>s+(x.total||0),0);
+  const thuno = adjs.filter(a=>a.amt>0 &&  isPayDebt(a)).reduce((s,a)=>s+a.amt,0);
+  const adjP  = adjs.filter(a=>a.amt>0 && !isPayDebt(a)).reduce((s,a)=>s+a.amt,0);
+  const adjM  = adjs.filter(a=>a.amt<0).reduce((s,a)=>s+Math.abs(a.amt),0);
+  const nhap  = imps.reduce((s,i)=>s+(i.cost||0),0);
+  const ghino = dbts.reduce((s,d)=>s+(d.orig||0),0);
+  const duno  = debts.reduce((s,d)=>s+(d.remaining||0),0);
+  return {rg,sess,dbts,adjs,imps,bida,sp,dt:bida+sp,ban,thuno,adjP,adjM,nhap,ghino,duno,
+          thucthu:ban+thuno+adjP, chi:nhap+adjM};
+}
+
 function renderSum(){
-  // Lọc theo ngày được chọn (YYYY-MM-DD), mặc định hôm nay
-  const todayISO = new Date().toLocaleDateString('sv-SE'); // "2026-06-12"
-  const selDate = document.getElementById('sum-date').value || todayISO;
-  if(!document.getElementById('sum-date').value)
-    document.getElementById('sum-date').value = todayISO;
+  if(!sumAnchor){ sumAnchor=ymd(new Date()); }
+  const el=document.getElementById('sum-date'); if(el&&!el.value) el.value=sumAnchor;
+  const r=sumData();
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  const setH=(id,v)=>{ const e=document.getElementById(id); if(e) e.innerHTML=v; };
+  set('sum-plabel', r.rg.label);
+  set('s-dt',  fmtMoney(r.dt));   set('s-dt2', fmtMoney(r.dt));
+  set('s-bida',fmtMoney(r.bida)); set('s-sp',  fmtMoney(r.sp));
+  set('s-ban', fmtMoney(r.ban));  set('s-thuno',fmtMoney(r.thuno)); set('s-adj-p',fmtMoney(r.adjP));
+  set('s-thucthu',fmtMoney(r.thucthu)); set('s-tt2',fmtMoney(r.thucthu));
+  set('s-nhap',fmtMoney(r.nhap)); set('s-adj-m',fmtMoney(r.adjM));
+  set('s-chi', fmtMoney(r.chi));  set('s-chi2',fmtMoney(r.chi));
+  set('s-ghino',fmtMoney(r.ghino)); set('s-duno',fmtMoney(r.duno));
+  set('s-conlai',fmtMoney(r.thucthu-r.chi));
+  setH('s-dt-s', '<svg class="ic"><use href="#i-bida"/></svg> '+fmtMoney(r.bida)+' · <svg class="ic"><use href="#i-cart"/></svg> '+fmtMoney(r.sp));
+  set('s-tt-s', r.sess.length+' giao dịch'+(r.ghino>0?' · còn nợ '+fmtMoney(r.ghino):''));
+  set('s-chi-s', r.imps.length+' lần nhập');
+  renderSumDaily(r); renderSumItems(r);
+}
 
-  const daySess = sessions.filter(s => s.date === selDate);
-  const dayAdjs = adjustments.filter(a => a.date === selDate);
-  const dayImps = invImports.filter(i => i.date === selDate);
+/* ── Phân rã theo ngày (chỉ khi xem tuần/tháng) ── */
+function renderSumDaily(r){
+  const wrap=document.getElementById('sum-daily-wrap');
+  if(!wrap) return;
+  if(sumMode==='day'){ wrap.style.display='none'; return; }
+  wrap.style.display='';
+  const by={}, touch=d=>{ if(!by[d]) by[d]={dt:0,tt:0,no:0}; return by[d]; };
+  r.sess.forEach(s=>{ const b=touch(s.date); b.dt+=(s.bida||0)+(s.cart||0); b.tt+=s.total||0; });
+  r.adjs.forEach(a=>{ if(a.amt>0) touch(a.date).tt+=a.amt; });
+  r.dbts.forEach(d=>{ const b=touch(d.date); b.no+=d.orig||0; b.dt+=detBida(d.details)+itemsValue(detItems(d.details)); });
+  const days=Object.keys(by).sort().reverse();
+  const G='display:grid;grid-template-columns:1fr 110px 110px 110px;';
+  document.getElementById('sum-daily-body').innerHTML =
+    '<div style="'+G+'padding:6px 14px;font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;background:var(--bg)">'
+    +'<span>Ngày</span><span class="mono">Doanh thu</span><span class="mono">Thực thu</span><span class="mono">Ghi nợ</span></div>'
+    + (days.map(d=>'<div style="'+G+'padding:9px 14px;border-bottom:1px solid var(--bd);font-size:12px;cursor:pointer" onclick="jumpDay(\''+d+'\')">'
+        +'<span>'+d.slice(8)+'/'+(+d.slice(5,7))+'</span>'
+        +'<span class="mono" style="color:var(--g)">'+fmtMoney(by[d].dt)+'</span>'
+        +'<span class="mono">'+fmtMoney(by[d].tt)+'</span>'
+        +'<span class="mono" style="color:var(--y)">'+(by[d].no?fmtMoney(by[d].no):'—')+'</span></div>').join('')
+      || '<div style="padding:16px;text-align:center;color:var(--fa);font-size:12px">Không có dữ liệu</div>');
+}
+function jumpDay(d){ sumAnchor=d; document.getElementById('sum-date').value=d; setSumMode('day'); }
 
-  const bidaSum = daySess.reduce((s,x)=>s+x.bida, 0);
-  const spSum   = daySess.reduce((s,x)=>s+(x.cart||0), 0);
-  const adjP    = dayAdjs.filter(a=>a.amt>0).reduce((s,a)=>s+a.amt, 0);
-  const adjM    = dayAdjs.filter(a=>a.amt<0).reduce((s,a)=>s+Math.abs(a.amt), 0);
-  const nhap    = dayImps.reduce((s,i)=>s+i.cost, 0);
-  const thu = bidaSum+spSum+adjP;
-  const chi = nhap+adjM;
-  const dt  = thu-chi;
-  document.getElementById('s-bida').textContent=fmtMoney(bidaSum);
-  document.getElementById('s-sp').textContent=fmtMoney(spSum);
-  document.getElementById('s-adj-p').textContent=fmtMoney(adjP);
-  document.getElementById('s-thu2').textContent=fmtMoney(thu);
-  document.getElementById('s-thu').textContent=fmtMoney(thu);
-  document.getElementById('s-nhap').textContent=fmtMoney(nhap);
-  document.getElementById('s-adj-m').textContent=fmtMoney(adjM);
-  document.getElementById('s-chi2').textContent=fmtMoney(chi);
-  document.getElementById('s-chi').textContent=fmtMoney(chi);
-  document.getElementById('s-dt').textContent=fmtMoney(dt);
-  // Items table: sold/imported per product
-  document.getElementById('sum-items-body').innerHTML=products.map(p=>{
-    const sold = daySess.reduce((s,x)=>{
-      const det = x.details||[];
-      return s+(Array.isArray(det)?det.filter(i=>i.name===p.name).reduce((a,i)=>a+i.qty,0):0);
-    },0);
-    const imp  = dayImps.filter(i=>i.name===p.name).reduce((s,i)=>s+i.qty,0);
-    return `<div style="display:grid;grid-template-columns:1fr 80px 80px 80px;padding:8px 14px;border-bottom:1px solid var(--bd);font-size:12px;background:var(--sf)">
-      <span>${p.name}</span>
-      <span class="mono">${p.stock}</span>
-      <span class="mono" style="color:var(--y)">${imp?'+'+imp:'-'}</span>
-      <span class="mono" style="color:var(--r)">${sold?'−'+sold:'-'}</span>
-    </div>`;
-  }).join('');
+/* ── Bảng vật phẩm trong kỳ ── */
+function renderSumItems(r){
+  const sold={}, imp={};
+  const addSold=list=>list.forEach(i=>{ if(i&&i.name) sold[i.name]=(sold[i.name]||0)+(i.qty||0); });
+  r.sess.forEach(s=>addSold(detItems(s.details)));
+  r.dbts.forEach(d=>addSold(detItems(d.details)));
+  r.imps.forEach(i=>{ imp[i.name]=(imp[i.name]||0)+(i.qty||0); });
+  const names=Object.keys(sold).concat(Object.keys(imp)).filter((v,i,a)=>a.indexOf(v)===i)
+                .sort((a,b)=>(sold[b]||0)-(sold[a]||0));
+  const G='display:grid;grid-template-columns:1fr 80px 80px 90px;';
+  document.getElementById('sum-items-body').innerHTML =
+    '<div style="'+G+'padding:6px 14px;font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;background:var(--bg)">'
+    +'<span>Mặt hàng</span><span class="mono">Bán</span><span class="mono">Nhập</span><span class="mono">Tồn</span></div>'
+    + (names.map(n=>{
+        const p=products.find(x=>x.name===n);
+        return '<div style="'+G+'padding:8px 14px;border-bottom:1px solid var(--bd);font-size:12px">'
+          +'<span>'+n+'</span>'
+          +'<span class="mono" style="color:var(--g)">'+(sold[n]||'—')+'</span>'
+          +'<span class="mono" style="color:var(--y)">'+(imp[n]?'+'+imp[n]:'—')+'</span>'
+          +'<span class="mono">'+(p?p.stock:'—')+'</span></div>';
+      }).join('') || '<div style="padding:16px;text-align:center;color:var(--fa);font-size:12px">Chưa có giao dịch</div>');
+}
+
+/* ── Dialog chi tiết ── */
+function dRow(title,sub,amt,color){
+  return '<div class="dtl-r"><div><div style="font-weight:600">'+title+'</div>'
+    +(sub?'<div class="dtl-s">'+sub+'</div>':'')+'</div>'
+    +'<span class="mono" style="font-weight:700;color:'+(color||'var(--tx)')+'">'+fmtMoney(amt)+'</span></div>';
+}
+function openSumDetail(type){
+  const r=sumData();
+  let title='', rows='', total=0, n=0;
+  const G='var(--g)', R='var(--r)', Y='var(--y)';
+
+  if(type==='bida'){
+    title='<svg class="ic"><use href="#i-bida"/></svg> Tiền bida';
+    const list=[];
+    r.sess.filter(s=>(s.bida||0)>0).forEach(s=>list.push([s.tab,(s.date+' '+(s.time||'')),s.bida,G]));
+    r.dbts.forEach(d=>{ const b=detBida(d.details); if(b>0) list.push([d.name+' (ghi nợ)',d.date,b,Y]); });
+    list.forEach(x=>{ rows+=dRow(x[0],x[1],x[2],x[3]); total+=x[2]; n++; });
+  }
+  else if(type==='item'){
+    title='<svg class="ic"><use href="#i-cart"/></svg> Tiền vật phẩm';
+    const agg={};
+    const add=list=>list.forEach(i=>{ if(!i||!i.name) return;
+      if(!agg[i.name]) agg[i.name]={q:0,v:0,p:i.price||0};
+      agg[i.name].q+=i.qty||0; agg[i.name].v+=(i.qty||0)*(i.price||0); });
+    r.sess.forEach(s=>add(detItems(s.details)));
+    r.dbts.forEach(d=>add(detItems(d.details)));
+    Object.keys(agg).sort((a,b)=>agg[b].v-agg[a].v).forEach(k=>{
+      rows+=dRow(k, agg[k].q+' × '+fmtMoney(agg[k].p), agg[k].v, G); total+=agg[k].v; n++; });
+  }
+  else if(type==='sale'){
+    title='<svg class="ic"><use href="#i-banknote"/></svg> Thu từ bán hàng';
+    r.sess.forEach(s=>{ rows+=dRow(s.tab,(s.date+' '+(s.time||'')+' · '+(s.staff||'')
+      +' · <svg class="ic"><use href="#i-bida"/></svg>'+fmtMoney(s.bida||0)+' <svg class="ic"><use href="#i-cart"/></svg>'+fmtMoney(s.cart||0)), s.total||0, G); total+=s.total||0; n++; });
+  }
+  else if(type==='paydebt'){
+    title='<svg class="ic"><use href="#i-undo"/></svg> Thu nợ';
+    r.adjs.filter(a=>a.amt>0&&isPayDebt(a)).forEach(a=>{ rows+=dRow(a.desc,a.date,a.amt,G); total+=a.amt; n++; });
+  }
+  else if(type==='adjp'){
+    title='<svg class="ic"><use href="#i-plus"/></svg> Điều chỉnh cộng';
+    r.adjs.filter(a=>a.amt>0&&!isPayDebt(a)).forEach(a=>{ rows+=dRow(a.desc,a.date,a.amt,G); total+=a.amt; n++; });
+  }
+  else if(type==='adjm'){
+    title='<svg class="ic"><use href="#i-minus"/></svg> Điều chỉnh trừ';
+    r.adjs.filter(a=>a.amt<0).forEach(a=>{ rows+=dRow(a.desc,a.date,Math.abs(a.amt),R); total+=Math.abs(a.amt); n++; });
+  }
+  else if(type==='import'){
+    title='<svg class="ic"><use href="#i-package"/></svg> Nhập hàng';
+    r.imps.forEach(i=>{ rows+=dRow(i.name+' × '+i.qty, (i.date+' '+(i.time||'')+(i.note?' · '+i.note:'')), i.cost||0, R);
+      total+=i.cost||0; n++; });
+  }
+  else if(type==='newdebt'){
+    title='<svg class="ic"><use href="#i-receipt"/></svg> Ghi nợ trong kỳ';
+    r.dbts.forEach(d=>{ const it=detItems(d.details).map(i=>i.name+'×'+i.qty).join(', ');
+      rows+=dRow(d.name+(d.phone?' · '+d.phone:''), d.date+(it?' · '+it:'')+' · còn '+fmtMoney(d.remaining||0), d.orig||0, Y);
+      total+=d.orig||0; n++; });
+  }
+  else if(type==='alldebt'){
+    title='Khách đang nợ (toàn bộ)';
+    const by={};
+    debts.filter(d=>(d.remaining||0)>0).forEach(d=>{
+      const k=(d.name||'?').trim().toLowerCase();
+      if(!by[k]) by[k]={name:(d.name||'?').trim(),amt:0,c:0,first:d.date};
+      by[k].amt+=d.remaining; by[k].c++;
+      if(d.date&&d.date<by[k].first) by[k].first=d.date;
+    });
+    Object.keys(by).sort((a,b)=>by[b].amt-by[a].amt).forEach(k=>{
+      const o=by[k], days=o.first?Math.floor((new Date()-parseYmd(o.first))/86400000):0;
+      rows+=dRow(o.name, o.c+' khoản · nợ từ '+(o.first||'—')+(days>30?' <svg class="ic"><use href="#i-alert"/></svg> '+days+' ngày':''), o.amt, R);
+      total+=o.amt; n++;
+    });
+  }
+
+  document.getElementById('sdt-title').innerHTML=title+' — '+r.rg.label;
+  document.getElementById('sdt-head').innerHTML='<span>'+n+' bản ghi</span><span class="mono">'+fmtMoney(total)+'</span>';
+  document.getElementById('sdt-body').innerHTML=rows||'<div style="padding:20px;text-align:center;color:var(--fa);font-size:13px">Không có dữ liệu</div>';
+  openModal('mo-sum-detail');
 }
 
 /* ===============================================================
@@ -2215,7 +2470,20 @@ function renderDebts(){
     if(q&&!d.name.toLowerCase().includes(q)) return false;
     return true;
   });
-  if(!filtered.length){list.innerHTML='<div style="color:var(--fa);font-size:13px;padding:20px">Không có dữ liệu</div>';return;}
+  // Tổng luôn khớp với các khoản ĐANG hiển thị (theo bộ lọc + từ khoá tìm)
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const totRem = filtered.reduce((s,d)=>s+(d.remaining||0),0);
+  const totOrig= filtered.reduce((s,d)=>s+(d.orig||0),0);
+  const nCust  = new Set(filtered.map(d=>(d.name||'').trim().toLowerCase())).size;
+  const sumEl  = document.getElementById('debt-sum');
+  if(sumEl) sumEl.innerHTML =
+      '<div><div class="dsum-l">Còn nợ</div><div class="dsum-v" style="color:var(--r)">'+fmtMoney(totRem)+'</div></div>'
+    + '<div><div class="dsum-l">Tổng gốc</div><div class="dsum-v">'+fmtMoney(totOrig)+'</div></div>'
+    + '<div><div class="dsum-l">Đã trả</div><div class="dsum-v" style="color:var(--g)">'+fmtMoney(totOrig-totRem)+'</div></div>'
+    + '<div class="dsum-n">'+filtered.length+' khoản · '+nCust+' khách'
+      + (debtFilter==='pending'?' · chưa trả xong':debtFilter==='paid'?' · đã trả xong':'')
+      + (q?' · tìm "'+esc(q)+'"':'')+'</div>';
+  if(!filtered.length){list.innerHTML='<div style="color:var(--fa);font-size:13px;padding:20px">Không có khoản nợ nào khớp</div>';return;}
   list.innerHTML=filtered.map(d=>{
     const cls=d.status==='paid'?'bg-g':d.status==='partial'?'bg-y':'bg-r';
     const stLab=d.status==='paid'?'Đã trả':d.status==='partial'?'Trả một phần':'Chưa trả';
@@ -2233,6 +2501,46 @@ function renderDebts(){
       </div>
     </div>`;
   }).join('');
+}
+
+/* ── Danh sách khách đang nợ (gộp nhiều khoản của cùng một người) ── */
+let _debtCustList=[];
+function openDebtByCustomer(){
+  const by={};
+  debts.filter(d=>(d.remaining||0)>0).forEach(d=>{
+    const k=(d.name||'?').trim().toLowerCase();
+    if(!by[k]) by[k]={name:(d.name||'?').trim(), phone:d.phone||'', amt:0, orig:0, c:0, first:d.date||''};
+    const o=by[k];
+    o.amt+=d.remaining||0; o.orig+=d.orig||0; o.c++;
+    if(!o.phone && d.phone) o.phone=d.phone;
+    if(d.date && (!o.first || d.date<o.first)) o.first=d.date;
+  });
+  _debtCustList = Object.keys(by).map(k=>by[k]).sort((a,b)=>b.amt-a.amt);
+  const tot=_debtCustList.reduce((s,o)=>s+o.amt,0);
+
+  document.getElementById('dcu-head').innerHTML =
+      '<div><div class="dsum-l">Tổng còn nợ</div><div class="dsum-v" style="color:var(--r)">'+fmtMoney(tot)+'</div></div>'
+    + '<div><div class="dsum-l">Số khách</div><div class="dsum-v">'+_debtCustList.length+'</div></div>';
+
+  document.getElementById('dcu-body').innerHTML = _debtCustList.length
+    ? _debtCustList.map((o,i)=>{
+        const days = o.first ? Math.floor((new Date() - parseYmd(o.first))/86400000) : 0;
+        const warn = days>30;
+        return '<div class="dtl-r" style="cursor:pointer" onclick="pickDebtCustomer('+i+')">'
+          + '<div><div style="font-weight:600">'+o.name+(o.phone?' <span style="font-size:11px;color:var(--mu)">'+o.phone+'</span>':'')+'</div>'
+          + '<div class="dtl-s">'+o.c+' khoản · nợ '+days+' ngày'
+          + (warn?' <span style="color:var(--r);font-weight:600">· quá hạn</span>':'')+'</div></div>'
+          + '<span class="mono" style="font-weight:700;color:var(--r)">'+fmtMoney(o.amt)+'</span></div>';
+      }).join('')
+    : '<div style="padding:20px;text-align:center;color:var(--fa);font-size:13px">Không có ai đang nợ</div>';
+
+  openModal('mo-debt-cust');
+}
+function pickDebtCustomer(i){
+  const o=_debtCustList[i]; if(!o) return;
+  document.getElementById('debt-search').value=o.name;
+  closeModal('mo-debt-cust');
+  renderDebts();
 }
 
 function openDebtDetail(did){
@@ -2345,7 +2653,7 @@ async function submitPayDebt(){
 =============================================================== */
 function openAdj(type){
   adjType=type;
-  document.getElementById('adj-modal-title').textContent=type>0?'➕ Cộng tiền':'➖ Chi phí vận hành';
+  document.getElementById('adj-modal-title').textContent=type>0?'Cộng tiền':'Chi phí vận hành';
   document.getElementById('adj-type-hint').textContent=type>0?'Sẽ cộng vào doanh thu ngày':'Sẽ trừ khỏi doanh thu ngày';
   document.getElementById('adj-submit-btn').className='btn '+(type>0?'btn-p':'btn-r');
   document.getElementById('adj-desc').value='';
@@ -2373,7 +2681,7 @@ function renderAdj(){
 function adjRow(a){
   const plus=a.amt>0;
   return `<div class="adj-row">
-    <div class="adj-ic" style="background:${plus?'var(--gbg)':'var(--rbg)'}">${plus?'➕':'➖'}</div>
+    <div class="adj-ic" style="background:${plus?'var(--gbg)':'var(--rbg)'}">${plus?'<svg class="ic"><use href="#i-plus"/></svg>':'<svg class="ic"><use href="#i-minus"/></svg>'}</div>
     <div class="adj-main">
       <div class="adj-title">${a.desc}</div>
       <div class="adj-sub">${a.date}</div>
@@ -2402,7 +2710,7 @@ function openNewTab(){
   activeTabId=null;
   carts.nt={};
   activeProductCat='nuoc';
-  document.getElementById('newtab-title').textContent='🎯 Tạo tab mới';
+  document.getElementById('newtab-title').textContent='Tạo tab mới';
   document.getElementById('newtab-name').value='';
   document.getElementById('newtab-name-fg').style.display='';
   document.getElementById('newtab-submit-btn').textContent='✓ Tạo tab';

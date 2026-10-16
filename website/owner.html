@@ -7,6 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+.ic{width:16px;height:16px;flex:none;vertical-align:-3px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ni-ic .ic,.mn-ic .ic,.mn-item .ic{width:19px;height:19px;vertical-align:0}
+.sum-hd .ic,.mh .ic{width:17px;height:17px}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --green:#16a34a;--green-d:#15803d;--green-bg:#f0fdf4;--green-border:#bbf7d0;--green-light:#dcfce7;
@@ -231,13 +235,15 @@ select.fi{cursor:pointer}
 </style>
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="i-bida" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/></symbol><symbol id="i-cart" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol><symbol id="i-package" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol><symbol id="i-card" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></symbol><symbol id="i-clipboard" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol><symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></symbol><symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol><symbol id="i-banknote" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V5a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v3h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1"/><path d="M3 6v13a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></symbol><symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 4.1 12.9a1 1 0 0 0 .8 1.6H11l-1 7.5 8.9-10.9a1 1 0 0 0-.8-1.6H13z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-qr" viewBox="0 0 24 24"><rect width="6" height="6" x="3" y="3" rx="1"/><rect width="6" height="6" x="15" y="3" rx="1"/><rect width="6" height="6" x="3" y="15" rx="1"/><path d="M15 15h2v2h-2zM19 15h2M15 19h2M19 19h2"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4.5M12 16h.01"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol><symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol><symbol id="i-trend" viewBox="0 0 24 24"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></symbol><symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="7" rx="1"/><rect x="12" y="7" width="3" height="11" rx="1"/><rect x="17" y="4" width="3" height="14" rx="1"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol><symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol><symbol id="i-crown" viewBox="0 0 24 24"><path d="M11.56 3.69a.5.5 0 0 1 .88 0l2.3 4.2 4.4-1.9a.5.5 0 0 1 .68.6L18 15H6L4.18 6.59a.5.5 0 0 1 .68-.6l4.4 1.9z"/><path d="M6 18h12"/></symbol></svg>
+
 <div class="layout">
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="s-logo">
     <div class="s-logomark">
-      <div class="s-icon">👑</div>
+      <div class="s-icon"><svg class="ic"><use href="#i-crown"/></svg></div>
       <div>
         <div class="s-name">Bida Manager</div>
         <div class="s-branch">Chủ quán</div>
@@ -247,23 +253,23 @@ select.fi{cursor:pointer}
   <nav class="s-nav">
     <div class="s-section-label">Tổng quan</div>
     <button class="nav-item active" onclick="showPage('dashboard',this)">
-      <span class="ni-icon">📊</span> Dashboard
+      <span class="ni-icon"><svg class="ic"><use href="#i-chart"/></svg></span> Dashboard
     </button>
     <button class="nav-item" onclick="showPage('loinhuan',this)">
-      <span class="ni-icon">💹</span> Lợi nhuận
+      <span class="ni-icon"><svg class="ic"><use href="#i-trend"/></svg></span> Lợi nhuận
     </button>
     <div class="s-section-label">Quản lý</div>
     <button class="nav-item" onclick="showPage('lichsu',this)">
-      <span class="ni-icon">📋</span> Lịch sử
+      <span class="ni-icon"><svg class="ic"><use href="#i-clipboard"/></svg></span> Lịch sử
     </button>
     <button class="nav-item" onclick="showPage('taichinh',this)">
-      <span class="ni-icon">💰</span> Tài chính
+      <span class="ni-icon"><svg class="ic"><use href="#i-wallet"/></svg></span> Tài chính
     </button>
     <button class="nav-item" onclick="showPage('quy',this)">
-      <span class="ni-icon">🏦</span> Quỹ
+      <span class="ni-icon"><svg class="ic"><use href="#i-wallet"/></svg></span> Quỹ
     </button>
     <button class="nav-item" onclick="showPage('settings',this)">
-      <span class="ni-icon">⚙️</span> Cài đặt
+      <span class="ni-icon"></span> Cài đặt
     </button>
   </nav>
   <div class="s-footer">
@@ -345,7 +351,7 @@ select.fi{cursor:pointer}
 
         <div class="card" style="margin:0">
           <div class="card-head">
-            <span class="card-title">🏆 Vật phẩm bán nhiều — Tháng này</span>
+            <span class="card-title">Vật phẩm bán nhiều — Tháng này</span>
           </div>
           <div id="dash-top-items"><div style="color:var(--muted);font-size:13px;padding:12px 0">Đang tải...</div></div>
         </div>
@@ -353,7 +359,7 @@ select.fi{cursor:pointer}
         <div style="display:flex;flex-direction:column;gap:16px">
           <div class="card" style="margin:0">
             <div class="card-head">
-              <span class="card-title">📦 Nhập hàng tháng này</span>
+              <span class="card-title"><svg class="ic"><use href="#i-package"/></svg> Nhập hàng tháng này</span>
               <span class="badge badge-yellow" id="dash-import-badge"></span>
             </div>
             <div class="metric-row m2" style="margin:0;gap:10px">
@@ -371,7 +377,7 @@ select.fi{cursor:pointer}
 
           <div class="card" style="margin:0">
             <div class="card-head">
-              <span class="card-title">🏆 Vật phẩm bán nhiều — Tháng trước</span>
+              <span class="card-title">Vật phẩm bán nhiều — Tháng trước</span>
               <span class="badge badge-gray" id="dash-top-prev-badge"></span>
             </div>
             <div id="dash-top-prev"><div style="color:var(--muted);font-size:13px;padding:12px 0">Đang tải...</div></div>
@@ -386,7 +392,7 @@ select.fi{cursor:pointer}
     <!-- ============================================================ -->
     <div id="page-loinhuan" style="display:none">
       <div style="background:var(--purple-bg);border:1.5px solid var(--purple-border);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--purple)">
-        💡 <strong>Lợi nhuận</strong> = Doanh thu (bida + vật phẩm) + Điều chỉnh − Nhập hàng
+        <svg class="ic"><use href="#i-bulb"/></svg> <strong>Lợi nhuận</strong> = Doanh thu (bida + vật phẩm) + Điều chỉnh − Nhập hàng
       </div>
 
       <div class="metric-row m3" style="margin-bottom:14px">
@@ -427,7 +433,7 @@ select.fi{cursor:pointer}
 
       <div class="card">
         <div class="card-head">
-          <span class="card-title">💹 Tổng lợi nhuận tích lũy</span>
+          <span class="card-title"><svg class="ic"><use href="#i-trend"/></svg> Tổng lợi nhuận tích lũy</span>
           <span class="badge badge-purple">Từ khi khai trương</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">
@@ -480,7 +486,7 @@ select.fi{cursor:pointer}
             <label class="fl">Năm</label>
             <input class="fi" type="number" id="hist-year" style="width:90px">
           </div>
-          <button class="btn btn-yellow" onclick="searchHistory()">🔍 Tìm</button>
+          <button class="btn btn-yellow" onclick="searchHistory()"><svg class="ic"><use href="#i-search"/></svg> Tìm</button>
           <div id="hist-mode-hint" style="font-size:12px;color:var(--muted);padding-bottom:2px">
             Nhập cả ngày + tháng + năm để xem ngày cụ thể, hoặc chỉ tháng + năm để xem cả tháng.
           </div>
@@ -491,7 +497,7 @@ select.fi{cursor:pointer}
       <div id="hist-result-day" style="display:none">
         <div class="card" style="margin-bottom:14px">
           <div class="card-head">
-            <span class="card-title" id="hist-day-title">📅 Tổng kết ngày</span>
+            <span class="card-title" id="hist-day-title"><svg class="ic"><use href="#i-calendar"/></svg> Tổng kết ngày</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
             <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:9px;padding:14px;text-align:center">
@@ -509,11 +515,11 @@ select.fi{cursor:pointer}
           </div>
           <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:13px">
             <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
-              <div style="color:var(--muted);font-size:11px">🎱 Tiền bida</div>
+              <div style="color:var(--muted);font-size:11px"><svg class="ic"><use href="#i-bida"/></svg> Tiền bida</div>
               <div class="mono" style="font-weight:600;color:var(--green)" id="hist-day-bida">—</div>
             </div>
             <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
-              <div style="color:var(--muted);font-size:11px">🛒 Vật phẩm</div>
+              <div style="color:var(--muted);font-size:11px"><svg class="ic"><use href="#i-cart"/></svg> Vật phẩm</div>
               <div class="mono" style="font-weight:600;color:var(--blue)" id="hist-day-items">—</div>
             </div>
             <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
@@ -531,7 +537,7 @@ select.fi{cursor:pointer}
       <div id="hist-result-month" style="display:none">
         <div class="card">
           <div class="card-head">
-            <span class="card-title" id="hist-month-title">📅 Lịch sử</span>
+            <span class="card-title" id="hist-month-title"><svg class="ic"><use href="#i-calendar"/></svg> Lịch sử</span>
             <span class="badge badge-yellow" id="hist-month-badge"></span>
           </div>
           <div class="scroll-x">
@@ -593,7 +599,7 @@ select.fi{cursor:pointer}
       <!-- PHÂN PHỐI LỢI NHUẬN -->
       <div class="card">
         <div class="card-head">
-          <span class="card-title">💹 Phân phối lợi nhuận</span>
+          <span class="card-title"><svg class="ic"><use href="#i-trend"/></svg> Phân phối lợi nhuận</span>
           <button class="btn btn-secondary btn-sm" onclick="openModal('modal-shareholders')">⚙ Chỉnh tỉ lệ</button>
         </div>
 
@@ -614,7 +620,7 @@ select.fi{cursor:pointer}
         <!-- Quỹ quản lý 5% -->
         <div style="background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
           <div>
-            <div style="font-size:13px;font-weight:700">🏦 Quỹ quản lý</div>
+            <div style="font-size:13px;font-weight:700"><svg class="ic"><use href="#i-wallet"/></svg> Quỹ quản lý</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px">5% lợi nhuận — dùng cho chi phí phát sinh</div>
           </div>
           <div class="mono" style="font-size:18px;font-weight:700;color:var(--yellow)" id="pp-fund">—</div>
@@ -640,7 +646,7 @@ select.fi{cursor:pointer}
 
       <!-- PHÂN TÍCH CHI PHÍ -->
       <div class="card">
-        <div class="card-head"><span class="card-title">📊 Cơ cấu chi phí</span></div>
+        <div class="card-head"><span class="card-title"><svg class="ic"><use href="#i-chart"/></svg> Cơ cấu chi phí</span></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div id="fin-bars">
             <div style="color:var(--faint);font-size:12px">Đang tải...</div>
@@ -696,7 +702,7 @@ select.fi{cursor:pointer}
       <!-- GIÁ BÀN THEO GIỜ -->
       <div class="card" style="margin-bottom:14px">
         <div class="card-head">
-          <span class="card-title">🎱 Giá bàn theo giờ</span>
+          <span class="card-title"><svg class="ic"><use href="#i-bida"/></svg> Giá bàn theo giờ</span>
           <button class="btn btn-yellow btn-sm" onclick="saveRates()">✓ Lưu giá</button>
         </div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
@@ -739,7 +745,7 @@ select.fi{cursor:pointer}
       <!-- QUẢN LÝ MẶT HÀNG -->
       <div class="card">
         <div class="card-head">
-          <span class="card-title">📦 Quản lý mặt hàng</span>
+          <span class="card-title"><svg class="ic"><use href="#i-package"/></svg> Quản lý mặt hàng</span>
           <button class="btn btn-yellow btn-sm" onclick="openProductModal()">+ Thêm mặt hàng</button>
         </div>
         <div id="prod-list"></div>
@@ -756,27 +762,27 @@ select.fi{cursor:pointer}
 <nav class="mobile-nav">
   <div class="mobile-nav-inner">
     <button class="mnav-item active" id="mnav-dashboard" onclick="showPage('dashboard',null,'dashboard')">
-      <span class="mnav-icon">📊</span>
+      <span class="mnav-icon"><svg class="ic"><use href="#i-chart"/></svg></span>
       <span class="mnav-label">Dashboard</span>
     </button>
     <button class="mnav-item" id="mnav-loinhuan" onclick="showPage('loinhuan',null,'loinhuan')">
-      <span class="mnav-icon">💹</span>
+      <span class="mnav-icon"><svg class="ic"><use href="#i-trend"/></svg></span>
       <span class="mnav-label">Lợi nhuận</span>
     </button>
     <button class="mnav-item" id="mnav-lichsu" onclick="showPage('lichsu',null,'lichsu')">
-      <span class="mnav-icon">📋</span>
+      <span class="mnav-icon"><svg class="ic"><use href="#i-clipboard"/></svg></span>
       <span class="mnav-label">Lịch sử</span>
     </button>
     <button class="mnav-item" id="mnav-taichinh" onclick="showPage('taichinh',null,'taichinh')">
-      <span class="mnav-icon">💰</span>
+      <span class="mnav-icon"><svg class="ic"><use href="#i-wallet"/></svg></span>
       <span class="mnav-label">Tài chính</span>
     </button>
     <button class="mnav-item" id="mnav-quy" onclick="showPage('quy',null,'quy')">
-      <span class="mnav-icon">🏦</span>
+      <span class="mnav-icon"><svg class="ic"><use href="#i-wallet"/></svg></span>
       <span class="mnav-label">Quỹ</span>
     </button>
     <button class="mnav-item" id="mnav-settings" onclick="showPage('settings',null,'settings')">
-      <span class="mnav-icon">⚙️</span>
+      <span class="mnav-icon"></span>
       <span class="mnav-label">Cài đặt</span>
     </button>
   </div>
@@ -786,7 +792,7 @@ select.fi{cursor:pointer}
 <div class="overlay" id="modal-finance">
   <div class="mbox">
     <div class="mhead">
-      <h2>💰 Thêm khoản thu/chi</h2>
+      <h2><svg class="ic"><use href="#i-wallet"/></svg> Thêm khoản thu/chi</h2>
       <button class="mclose" onclick="closeModal('modal-finance')">✕</button>
     </div>
     <div class="mbody">
@@ -837,7 +843,7 @@ select.fi{cursor:pointer}
 <div class="overlay" id="modal-fund">
   <div class="mbox" style="width:440px">
     <div class="mhead">
-      <h2>🏦 Thêm quỹ mới</h2>
+      <h2><svg class="ic"><use href="#i-wallet"/></svg> Thêm quỹ mới</h2>
       <button class="mclose" onclick="closeModal('modal-fund')">✕</button>
     </div>
     <div class="mbody">
@@ -866,7 +872,7 @@ select.fi{cursor:pointer}
 <div class="overlay" id="modal-fund-txns">
   <div class="mbox" style="width:480px">
     <div class="mhead">
-      <h2>🏦 <span id="ft-fund-name"></span></h2>
+      <h2><svg class="ic"><use href="#i-wallet"/></svg> <span id="ft-fund-name"></span></h2>
       <button class="mclose" onclick="closeModal('modal-fund-txns')">✕</button>
     </div>
     <div class="mbody">
@@ -878,8 +884,8 @@ select.fi{cursor:pointer}
         <div class="fg" style="margin:0">
           <label class="fl">Loại</label>
           <select class="fi" id="ft-type">
-            <option value="in">⬆ Nạp vào</option>
-            <option value="out">⬇ Rút ra</option>
+            <option value="in">Nạp vào</option>
+            <option value="out">Rút ra</option>
           </select>
         </div>
         <div class="fg" style="margin:0">
@@ -902,7 +908,7 @@ select.fi{cursor:pointer}
 <div class="overlay" id="modal-product">
   <div class="mbox" style="width:460px">
     <div class="mhead">
-      <h2 id="prod-modal-title">📦 Thêm mặt hàng</h2>
+      <h2 id="prod-modal-title"><svg class="ic"><use href="#i-package"/></svg> Thêm mặt hàng</h2>
       <button class="mclose" onclick="closeModal('modal-product')">✕</button>
     </div>
     <div class="mbody">
@@ -925,10 +931,10 @@ select.fi{cursor:pointer}
         <div class="fg">
           <label class="fl">Danh mục</label>
           <select class="fi" id="prod-cat">
-            <option value="nuoc">🥤 Nước</option>
-            <option value="thuoc">🚬 Thuốc</option>
-            <option value="an">🍜 Đồ ăn</option>
-            <option value="khac">📦 Khác</option>
+            <option value="nuoc">Nước</option>
+            <option value="thuoc">Thuốc</option>
+            <option value="an">Đồ ăn</option>
+            <option value="khac"><svg class="ic"><use href="#i-package"/></svg> Khác</option>
           </select>
         </div>
         <div class="fg">
@@ -1177,7 +1183,7 @@ function renderDashboard(){
   // Today card
   set('dash-today-val', fmtM(todayS.rev));
   const todaySub=document.getElementById('dash-today-sub');
-  if(todaySub) todaySub.innerHTML=`<span class="msub-chip g">🎱 ${fmtM(todayS.bida)}</span><span class="msub-chip y">🛒 ${fmtM(todayS.items)}</span>`;
+  if(todaySub) todaySub.innerHTML=`<span class="msub-chip g"><svg class="ic"><use href="#i-bida"/></svg> ${fmtM(todayS.bida)}</span><span class="msub-chip y"><svg class="ic"><use href="#i-cart"/></svg> ${fmtM(todayS.items)}</span>`;
 
   // Week card
   set('dash-week-val', fmtM(weekS.rev));
@@ -1187,7 +1193,7 @@ function renderDashboard(){
   // Month card
   set('dash-month-val', fmtM(thisMNet));
   const monSub=document.getElementById('dash-month-sub');
-  if(monSub) monSub.innerHTML=`<span class="msub-chip g">🎱 ${fmtM(thisMBida)}</span><span class="msub-chip y">🛒 ${fmtM(thisMItems)}</span>`;
+  if(monSub) monSub.innerHTML=`<span class="msub-chip g"><svg class="ic"><use href="#i-bida"/></svg> ${fmtM(thisMBida)}</span><span class="msub-chip y"><svg class="ic"><use href="#i-cart"/></svg> ${fmtM(thisMItems)}</span>`;
 
   // Count card
   set('dash-count-val', todayS.count);
@@ -1199,7 +1205,7 @@ function renderDashboard(){
   set('dash-yesterday-label', `Hôm qua (${ylabel})`);
   set('dash-yesterday-val', fmtM(yestS.rev));
   const ySub=document.getElementById('dash-yesterday-sub');
-  if(ySub) ySub.innerHTML=`<span class="msub-chip g">🎱 ${fmtM(yestS.bida)}</span><span class="msub-chip y">🛒 ${fmtM(yestS.items)}</span>`;
+  if(ySub) ySub.innerHTML=`<span class="msub-chip g"><svg class="ic"><use href="#i-bida"/></svg> ${fmtM(yestS.bida)}</span><span class="msub-chip y"><svg class="ic"><use href="#i-cart"/></svg> ${fmtM(yestS.items)}</span>`;
 
   // Last week
   set('dash-lastweek-val', fmtM(lastWS.rev));
@@ -1289,7 +1295,7 @@ function searchHistory(){
     el.style.display='block';
     document.getElementById('hist-result-month').style.display='none';
     const dayLabel = `${+fullDay.slice(8)}/${+fullDay.slice(5,7)}/${fullDay.slice(0,4)}`;
-    set('hist-day-title', `📅 Tổng kết ngày ${dayLabel}`);
+    set('hist-day-title', `<svg class="ic"><use href="#i-calendar"/></svg> Tổng kết ngày ${dayLabel}`);
     document.getElementById('hist-day-total').textContent = fmtM(thu);
     document.getElementById('hist-day-imp').textContent   = chi>0 ? fmtM(chi) : '0đ';
     document.getElementById('hist-day-net').textContent   = fmtM(net);
@@ -1341,7 +1347,7 @@ function searchHistory(){
     days.forEach(d=>{ if(!byDay[d]) byDay[d]={total:0,bida:0,items:0,count:0}; });
 
     const label=`${+month.slice(5,7)}/${month.slice(0,4)}`;
-    set('hist-month-title', `📅 Lịch sử tháng ${label}`);
+    set('hist-month-title', `<svg class="ic"><use href="#i-calendar"/></svg> Lịch sử tháng ${label}`);
     const sorted=Object.keys(byDay).sort((a,b)=>b.localeCompare(a));
     set('hist-month-badge', `${sorted.length} ngày có dữ liệu`);
 
@@ -1501,7 +1507,7 @@ function renderLoiNhuan(){
 
   // Render helpers
   function subHtml(r){
-    return `<span class="msub-chip g">📈 ${fmtM(r.rev+r.adj)} DT</span><span class="msub-chip r">📦 −${fmtM(r.imp)} nhập</span>`;
+    return `<span class="msub-chip g"><svg class="ic"><use href="#i-trend"/></svg> ${fmtM(r.rev+r.adj)} DT</span><span class="msub-chip r"><svg class="ic"><use href="#i-package"/></svg> −${fmtM(r.imp)} nhập</span>`;
   }
 
   set('ln-today-val', fmtM(todayR.profit));
@@ -1619,7 +1625,7 @@ function renderFunds(){
   const sub=document.getElementById('fund-count-sub');
   if(sub) sub.innerHTML=`<span style="color:var(--faint)">${funds.map(f=>f.name).join(', ')||'Chưa có quỹ'}</span>`;
 
-  const ICONS=['💵','🛡️','🎯','📦','💡','🔧'];
+  const ICONS=['<svg class="ic"><use href="#i-banknote"/></svg>','<svg class="ic"><use href="#i-shield"/></svg>','<svg class="ic"><use href="#i-target"/></svg>','<svg class="ic"><use href="#i-package"/></svg>','<svg class="ic"><use href="#i-bulb"/></svg>',''];
   const COLORS=['var(--green)','var(--yellow-mid)','var(--blue)','var(--purple)','var(--green)','var(--red)'];
   const BG=['var(--green-bg)','var(--yellow-bg)','var(--blue-bg)','var(--purple-bg)','var(--green-bg)','var(--red-bg)'];
   const el=document.getElementById('fund-list');
@@ -1660,10 +1666,10 @@ function openFundModal(id){
       document.getElementById('fund-desc').value=f.desc||'';
     }
     if(amtFg) amtFg.style.display='none';
-    document.querySelector('#modal-fund .mhead h2').textContent='🏦 Sửa quỹ';
+    document.querySelector('#modal-fund .mhead h2').textContent='Sửa quỹ';
   } else {
     if(amtFg) amtFg.style.display='';
-    document.querySelector('#modal-fund .mhead h2').textContent='🏦 Thêm quỹ mới';
+    document.querySelector('#modal-fund .mhead h2').textContent='Thêm quỹ mới';
   }
   openModal('modal-fund');
 }
@@ -1726,7 +1732,7 @@ async function renderFundTxns(){
     const isIn=t.amount>=0;
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px">
       <div>
-        <div style="font-weight:600">${isIn?'⬆ Nạp':'⬇ Rút'}${t.note?' · '+t.note:''}</div>
+        <div style="font-weight:600">${isIn?'Nạp':'Rút'}${t.note?' · '+t.note:''}</div>
         <div style="font-size:11px;color:var(--muted)">${t.date||''} ${t.time||''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -1811,7 +1817,7 @@ function checkShTotal(){
   const el = document.getElementById('sh-total-check');
   if(el) el.innerHTML = total===100
     ? '<span style="color:var(--green)">✓ Tổng = 100%</span>'
-    : `<span style="color:var(--red)">⚠ Tổng = ${total}% (cần = 100%)</span>`;
+    : `<span style="color:var(--red)"><svg class="ic"><use href="#i-alert"/></svg> Tổng = ${total}% (cần = 100%)</span>`;
 }
 
 function addShareholder(){
@@ -1918,7 +1924,7 @@ function updateHistMode(){
 /* ============================================================
    CÀI ĐẶT: GIÁ BÀN + MẶT HÀNG
 ============================================================ */
-const PROD_CATLAB = {nuoc:'🥤 Nước', thuoc:'🚬 Thuốc', an:'🍜 Đồ ăn', khac:'📦 Khác'};
+const PROD_CATLAB = {nuoc:'Nước', thuoc:'Thuốc', an:'Đồ ăn', khac:'Khác'};
 
 function renderSettings(){
   const s = ownerData.settings || {};
@@ -1980,7 +1986,7 @@ function renderProducts(){
 
 function openProductModal(id){
   const p = id ? (ownerData.inventory||[]).find(x=>x.id===id) : null;
-  document.getElementById('prod-modal-title').textContent = p ? '📦 Sửa mặt hàng' : '📦 Thêm mặt hàng';
+  document.getElementById('prod-modal-title').textContent = p ? 'Sửa mặt hàng' : 'Thêm mặt hàng';
   document.getElementById('prod-id').value    = p?.id || '';
   document.getElementById('prod-name').value  = p?.name || '';
   document.getElementById('prod-price').value = p?.price ?? '';
