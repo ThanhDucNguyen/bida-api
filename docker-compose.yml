@@ -43,6 +43,7 @@ services:
       - "3000:3000"
     networks:
       - bida-net
+      - opmeta_default   # để Caddy (site khác trên VPS) gọi được bida-app:3000
 
 volumes:
   pgdata:
@@ -50,3 +51,5 @@ volumes:
 networks:
   bida-net:
     driver: bridge
+  opmeta_default:        # network có sẵn của hệ thống khác — KHÔNG tạo/xoá, chỉ tham gia
+    external: true

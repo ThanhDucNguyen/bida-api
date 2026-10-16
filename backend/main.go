@@ -162,20 +162,20 @@ type FundTxn struct {
 // ─────────────────────────────────────────────────────────────
 
 type Claims struct {
-	UserID   int    `json:"user_id"`
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	Role     string `json:"role"`
+	UserID    int    `json:"user_id"`
+	Username  string `json:"username"`
+	Name      string `json:"name"`
+	Role      string `json:"role"`
 	SessionID string `json:"sid,omitempty"` // phiên đăng nhập duy nhất (staff)
 	jwt.RegisteredClaims
 }
 
 func generateToken(u User, sid string) (string, error) {
 	claims := Claims{
-		UserID:   u.ID,
-		Username: u.Username,
-		Name:     u.Name,
-		Role:     u.Role,
+		UserID:    u.ID,
+		Username:  u.Username,
+		Name:      u.Name,
+		Role:      u.Role,
 		SessionID: sid,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
@@ -303,11 +303,11 @@ type WSMsg struct {
 }
 
 type Hub struct {
-	clients  map[*wsClient]bool
-	bcast    chan []byte
-	reg      chan *wsClient
-	unreg    chan *wsClient
-	mu       sync.Mutex
+	clients map[*wsClient]bool
+	bcast   chan []byte
+	reg     chan *wsClient
+	unreg   chan *wsClient
+	mu      sync.Mutex
 }
 
 type wsClient struct {
@@ -896,6 +896,43 @@ func hCreateDebt(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		jsonErr(w, err.Error(), 500)
 		return
+	}
+	broadcast("debt_update", d)
+	jsonOK(w, d)
+}
+
+// Sửa thông tin khoản nợ: chỉ tên / SĐT / ghi chú.
+// KHÔNG cho sửa số tiền qua đây — số tiền chỉ đổi khi thu nợ, tránh sai lệch sổ sách.
+func hUpdateDebt(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	var req struct {
+		Name  string `json:"name"`
+		Phone string `json:"phone"`
+		Note  string `json:"note"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, "Invalid request", 400)
+		return
+	}
+	if strings.TrimSpace(req.Name) == "" {
+		jsonErr(w, "Tên không được để trống", 400)
+		return
+	}
+	var d Debt
+	var createdAt time.Time
+	var detB []byte
+	err := db.QueryRow(r.Context(),
+		`UPDATE debts SET name=$2, phone=$3, note=$4, updated_at=NOW() WHERE id=$1
+		 RETURNING id,name,phone,orig_amount,remaining,note,status,created_at,details`,
+		id, strings.TrimSpace(req.Name), req.Phone, req.Note,
+	).Scan(&d.ID, &d.Name, &d.Phone, &d.Orig, &d.Remaining, &d.Note, &d.Status, &createdAt, &detB)
+	if err != nil {
+		jsonErr(w, err.Error(), 500)
+		return
+	}
+	d.Date = vDate(createdAt)
+	if len(detB) > 0 {
+		d.Details = detB
 	}
 	broadcast("debt_update", d)
 	jsonOK(w, d)
@@ -1527,6 +1564,7 @@ func main() {
 		r.Get("/api/debts", hGetDebts)
 		r.Post("/api/debts", hCreateDebt)
 		r.Post("/api/debts/{id}/pay", hPayDebt)
+		r.Put("/api/debts/{id}", hUpdateDebt)
 
 		r.Get("/api/adjustments", hGetAdjustments)
 		r.Post("/api/adjustments", hCreateAdjustment)
