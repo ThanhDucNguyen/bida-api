@@ -747,16 +747,34 @@ select.fi{cursor:pointer}
   <div class="mbox" style="width:400px">
     <div class="mh"><h2><svg class="ic"><use href="#i-clipboard"/></svg> Ghi nợ</h2><button class="mcl" onclick="closeModal('mo-debt-form')">✕</button></div>
     <div class="mb">
-      <div class="fg"><label class="fl">Tên khách</label><input class="fi" id="df-name" type="text" placeholder="Nhập tên..."></div>
-      <div class="fg"><label class="fl">Số điện thoại (tùy chọn)</label><input class="fi" id="df-phone" type="tel" placeholder="0..."></div>
-      <div class="fg">
-        <label class="fl">Số tiền nợ</label>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input class="fi" id="df-amount" type="number" placeholder="0" min="0" style="flex:1">
-          <span style="font-size:13px;color:var(--mu)">đ</span>
+      <div class="seg" style="margin-bottom:12px;width:100%">
+        <button class="seg-b on" id="dm-one" style="flex:1" onclick="setDebtMode('one')">Một người</button>
+        <button class="seg-b" id="dm-split" style="flex:1" onclick="setDebtMode('split')">Tách nhiều người</button>
+      </div>
+
+      <div id="df-one">
+        <div class="fg"><label class="fl">Tên khách</label><input class="fi" id="df-name" type="text" placeholder="Nhập tên..."></div>
+        <div class="fg"><label class="fl">Số điện thoại (tùy chọn)</label><input class="fi" id="df-phone" type="tel" placeholder="0..."></div>
+        <div class="fg">
+          <label class="fl">Số tiền nợ</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input class="fi" id="df-amount" type="number" placeholder="0" min="0" style="flex:1">
+            <span style="font-size:13px;color:var(--mu)">đ</span>
+          </div>
         </div>
       </div>
-      <div class="fg"><label class="fl">Ghi chú</label><input class="fi" id="df-note" type="text" placeholder="Lý do nợ..."></div>
+
+      <div id="df-split" style="display:none">
+        <div class="fl" style="margin-bottom:6px">Người nợ</div>
+        <div id="df-rows"></div>
+        <div style="display:flex;gap:6px;margin:8px 0 12px">
+          <button class="btn btn-s btn-sm" onclick="addDebtRow()"><svg class="ic"><use href="#i-plus"/></svg> Thêm người</button>
+          <button class="btn btn-s btn-sm" onclick="splitEven()">Chia đều</button>
+        </div>
+        <div id="df-split-sum" class="dsum" style="grid-template-columns:1fr 1fr 1fr"></div>
+      </div>
+
+      <div class="fg" style="margin-top:12px"><label class="fl">Ghi chú</label><input class="fi" id="df-note" type="text" placeholder="Lý do nợ..."></div>
     </div>
     <div class="mf">
       <button class="btn btn-s" onclick="closeModal('mo-debt-form')">Hủy</button>
@@ -1781,26 +1799,140 @@ function openDebtForm(){
   const tab = tabs.find(t=>t.id===payTabId);
   if(tab) document.getElementById('df-name').value = tab.name;
   document.getElementById('df-amount').value = payGrand || '';
+  prepDebtForm(payGrand||0);
   document.getElementById('df-phone').value = '';
   document.getElementById('df-note').value = '';
   closeModal('mo-pay');
   openModal('mo-debt-form');
 }
 
+/* ── Ghi nợ: chế độ một người / tách nhiều người ──────────── */
+let debtMode='one';
+let _debtRows=[];          // [{name, amt}]
+let _debtGrand=0;          // tổng tiền của bill đang ghi nợ
+
+function prepDebtForm(grand){
+  _debtGrand = grand||0;
+  _debtRows  = [{name:'', amt:0},{name:'', amt:0}];
+  setDebtMode('one');
+}
+function setDebtMode(m){
+  debtMode=m;
+  document.getElementById('dm-one').classList.toggle('on', m==='one');
+  document.getElementById('dm-split').classList.toggle('on', m==='split');
+  document.getElementById('df-one').style.display   = m==='one'   ? '' : 'none';
+  document.getElementById('df-split').style.display = m==='split' ? '' : 'none';
+  if(m==='split'){ if(_debtRows.every(r=>!r.amt)) splitEven(); else renderDebtRows(); }
+}
+function addDebtRow(){ _debtRows.push({name:'', amt:0}); renderDebtRows(); }
+function delDebtRow(i){ _debtRows.splice(i,1); if(!_debtRows.length) _debtRows=[{name:'',amt:0}]; renderDebtRows(); }
+function setDebtRow(i,f,v){ if(_debtRows[i]){ _debtRows[i][f] = f==='amt' ? (parseInt(v)||0) : v; } updateSplitSum(); }
+
+// Chia đều theo nghìn, phần lẻ dồn vào người đầu
+function splitEven(){
+  const k=_debtRows.length; if(!k) return;
+  const base=Math.floor(_debtGrand/k/1000)*1000;
+  _debtRows.forEach(r=>r.amt=base);
+  _debtRows[0].amt = _debtGrand - base*(k-1);
+  renderDebtRows();
+}
+function renderDebtRows(){
+  document.getElementById('df-rows').innerHTML = _debtRows.map((r,i)=>
+    '<div style="display:flex;gap:6px;margin-bottom:6px">'
+    + '<input class="fi" style="flex:1" placeholder="Tên người '+(i+1)+'" value="'+(r.name||'').replace(/"/g,'&quot;')+'" oninput="setDebtRow('+i+',\'name\',this.value)">'
+    + '<input class="fi" style="width:110px" type="number" min="0" placeholder="0" value="'+(r.amt||'')+'" oninput="setDebtRow('+i+',\'amt\',this.value)">'
+    + '<button class="btn btn-s btn-sm" onclick="delDebtRow('+i+')">✕</button></div>').join('');
+  updateSplitSum();
+}
+function updateSplitSum(){
+  const tot=_debtRows.reduce((s,r)=>s+(r.amt||0),0);
+  const paid=_debtGrand-tot;
+  const el=document.getElementById('df-split-sum'); if(!el) return;
+  el.innerHTML =
+      '<div><div class="dsum-l">Tổng bill</div><div class="dsum-v">'+fmtMoney(_debtGrand)+'</div></div>'
+    + '<div><div class="dsum-l">Tổng nợ</div><div class="dsum-v" style="color:var(--r)">'+fmtMoney(tot)+'</div></div>'
+    + '<div><div class="dsum-l">Trả ngay</div><div class="dsum-v" style="color:'+(paid<0?'var(--r)':'var(--g)')+'">'+fmtMoney(paid)+'</div></div>'
+    + (paid<0 ? '<div class="dsum-n" style="color:var(--r)">Tổng nợ đang vượt quá tiền bill</div>' : '');
+}
+
+/* Tạo nhiều khoản nợ + 1 phiên cho phần trả ngay.
+   Tiền bida được phân bổ theo tỉ lệ, phần dư dồn vào phần cuối để tổng khớp tuyệt đối. */
+async function createDebtSplits({rows, grand, bidaCost, tblName, items, note, phone}){
+  const paidNow = grand - rows.reduce((s,r)=>s+r.amt,0);
+  const parts = rows.map(r=>({type:'debt', name:r.name, amt:r.amt}));
+  if(paidNow>0) parts.push({type:'paid', amt:paidNow});
+
+  let bidaLeft = bidaCost;
+  parts.forEach((pt,i)=>{
+    pt.bida = (i===parts.length-1) ? bidaLeft
+            : Math.min(bidaLeft, Math.round(bidaCost * pt.amt / (grand||1)));
+    bidaLeft -= pt.bida;
+  });
+
+  const hasPaid = paidNow>0;
+  let itemsUsed = false;
+  for(let i=0;i<parts.length;i++){
+    const pt=parts[i];
+    const bd = pt.bida>0 ? {table:tblName||'', duration:'—', cost:pt.bida} : null;
+    if(pt.type==='paid'){
+      itemsUsed = true;
+      await apiPost('/api/sessions',{
+        tab: tblName||'Khách lẻ', staff: currentUser.name,
+        bida: pt.bida, cart: pt.amt-pt.bida, total: pt.amt,
+        details:{bida:bd, items, note:(note||'')+' (trả ngay phần chia)'}
+      });
+    } else {
+      // Gắn danh sách món vào đúng MỘT bản ghi để bảng vật phẩm không đếm trùng
+      const myItems = (!hasPaid && !itemsUsed) ? items : [];
+      if(myItems.length) itemsUsed = true;
+      await apiPost('/api/debts',{
+        name: pt.name, phone: phone||'', orig: pt.amt,
+        note: (note?note+' · ':'')+'Tách '+(i+1)+'/'+rows.length,
+        details:{bida:bd, items:myItems, adjustments:[]}
+      });
+    }
+  }
+  return {paidNow, count:rows.length};
+}
+
+// Kiểm tra dữ liệu chế độ tách; trả null nếu hợp lệ
+function validateSplit(){
+  const rows=_debtRows.filter(r=>(r.amt||0)>0);
+  if(!rows.length) return 'Chưa nhập số tiền cho người nào';
+  if(rows.some(r=>!r.name.trim())) return 'Còn người chưa nhập tên';
+  const tot=rows.reduce((s,r)=>s+r.amt,0);
+  if(tot>_debtGrand) return 'Tổng nợ vượt quá tiền bill';
+  return null;
+}
+
 async function submitDebt(){
   const name=document.getElementById('df-name').value.trim();
   const amt =parseInt(document.getElementById('df-amount').value)||0;
   const note=document.getElementById('df-note').value;
-  if(!name||amt<=0){toast('Điền đủ thông tin!','tr');return;}
+  if(debtMode==='one' && (!name||amt<=0)){toast('Điền đủ thông tin!','tr');return;}
 
   if(_pendingBidaDebt){
     const {bid,cost,cartItems,cartCost,grand}=_pendingBidaDebt;
     const t=TABLES.find(x=>x.id===bid);
+    const itemsB=cartItems.map(i=>({name:i.name,qty:i.qty,price:i.price}));
+    if(debtMode==='split'){
+      const err=validateSplit(); if(err){toast(err,'tr');return;}
+      const rows=_debtRows.filter(r=>(r.amt||0)>0);
+      const r=await createDebtSplits({rows, grand, bidaCost:cost, tblName:t.name, items:itemsB, note,
+                                      phone:document.getElementById('df-phone').value});
+      bidaState[bid]={running:false,paused:false,startTime:null,pausedMs:0,cart:[]};
+      await saveBida(bid);
+      carts.be={}; activeBidaId=null; _pendingBidaDebt=null;
+      closeModal('mo-debt-form'); renderBida();
+      if(currentPage==='tabs') renderTabs();
+      toast('✓ Đã tách nợ cho '+r.count+' người'+(r.paidNow>0?' · thu ngay '+fmtMoney(r.paidNow):''),'tg');
+      return;
+    }
     // Chỉ tạo bản ghi nợ — KHÔNG tạo session doanh thu.
     // Doanh thu chỉ được tính khi thu nợ (backend tạo adjustment "Thu nợ").
     await apiPost('/api/debts',{
       name, phone:document.getElementById('df-phone').value,
-      orig:amt, note, details:{bida:{table:t.name,duration:'—',cost},items:cartItems.map(i=>({name:i.name,qty:i.qty,price:i.price})),adjustments:[]}
+      orig:amt, note, details:{bida:{table:t.name,duration:'—',cost},items:itemsB,adjustments:[]}
     });
     // Reset bida
     bidaState[bid]={running:false,paused:false,startTime:null,pausedMs:0,cart:[]};
@@ -1818,6 +1950,27 @@ async function submitDebt(){
     const allItems=[...(tab?.items||[]).map(i=>({...i})), ...Object.values(carts.pay).map(i=>({...i}))];
     Object.values(returnCarts.pay).forEach(ri=>{ const ex=allItems.find(i=>i.pid===ri.pid); if(ex) ex.qty-=ri.qty; });
     const items=allItems.filter(i=>i.qty>0).map(i=>({name:i.name,qty:i.qty,price:i.price}));
+    if(debtMode==='split'){
+      const err=validateSplit(); if(err){toast(err,'tr');return;}
+      const rows=_debtRows.filter(r=>(r.amt||0)>0);
+      const r=await createDebtSplits({rows, grand:_debtGrand, bidaCost, tblName:tblName||tab?.name, items, note,
+                                      phone:document.getElementById('df-phone').value||''});
+      await Promise.all([
+        syncStock(Object.values(carts.pay), -1),
+        syncStock(Object.values(returnCarts.pay), +1),
+      ]);
+      if(tab?.bidaId){
+        bidaState[tab.bidaId]={running:false,paused:false,startTime:null,pausedMs:0,cart:[]};
+        await saveBida(tab.bidaId);
+      }
+      await apiDelete('/api/tabs/'+payTabId);
+      tabs=tabs.filter(t=>t.id!==payTabId);
+      carts.pay={}; returnCarts.pay={}; payTabId=null;
+      closeModal('mo-debt-form'); renderTabs();
+      if(currentPage==='bida') renderBida();
+      toast('✓ Đã tách nợ cho '+r.count+' người'+(r.paidNow>0?' · thu ngay '+fmtMoney(r.paidNow):''),'tg');
+      return;
+    }
     // Chỉ tạo bản ghi nợ — KHÔNG tạo session doanh thu (tránh tính 2 lần khi thu nợ).
     await apiPost('/api/debts',{
       name, phone:document.getElementById('df-phone').value||'',
@@ -2016,6 +2169,7 @@ async function endBida(method){
     document.getElementById('df-name').value = tbl.name;
     document.getElementById('df-phone').value = '';
     document.getElementById('df-amount').value = grand;
+    prepDebtForm(grand);
     document.getElementById('df-note').value = `${tbl.name}${cartItems.length?' + đồ uống':''}`;
     // Store context để submitDebtFromBida biết cần kết thúc bàn
     _pendingBidaDebt = {bid, cost, cartItems, cartCost, grand};
