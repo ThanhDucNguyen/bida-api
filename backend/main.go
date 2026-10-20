@@ -887,6 +887,13 @@ func hCreateDebt(w http.ResponseWriter, r *http.Request) {
 	d.Status = "pending"
 	d.Remaining = d.Orig
 	now := time.Now()
+	// Cho phép giữ nguyên ngày nợ gốc (dùng khi tách một khoản nợ cũ thành
+	// nhiều khoản nhỏ — tuổi nợ phải tính từ ngày nợ thật, không phải ngày tách)
+	if d.Date != "" {
+		if t, err := time.ParseInLocation("2006-01-02", d.Date, vietLoc); err == nil {
+			now = t.Add(12 * time.Hour)
+		}
+	}
 	d.Date = vDate(now)
 	detB, _ := json.Marshal(d.Details)
 	_, err := db.Exec(r.Context(),

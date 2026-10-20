@@ -2834,6 +2834,7 @@ async function saveSplitExisting(){
     bidaLeft -= bd;
     const res=await apiPost('/api/debts',{
       name:r.name.trim(), phone:d.phone||'', orig:r.amt,
+      date: d.date||'',   // giữ nguyên ngày nợ gốc, không lấy ngày tách
       note:(d.note?d.note+' · ':'')+'Tách '+(i+1)+'/'+rows.length,
       details:{bida: bd>0?{table:tbl,duration:'—',cost:bd}:null, items: i===0?allItems:[], adjustments:[]}
     });
