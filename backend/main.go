@@ -901,6 +901,23 @@ func hCreateDebt(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, d)
 }
 
+// Xoá hẳn một khoản nợ. Dùng khi nhập nhầm, hoặc khi tách một khoản
+// thành nhiều khoản nhỏ (khoản gốc bị thay thế).
+func hDeleteDebt(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	ct, err := db.Exec(r.Context(), `DELETE FROM debts WHERE id=$1`, id)
+	if err != nil {
+		jsonErr(w, err.Error(), 500)
+		return
+	}
+	if ct.RowsAffected() == 0 {
+		jsonErr(w, "Không tìm thấy khoản nợ", 404)
+		return
+	}
+	broadcast("debt_remove", id)
+	jsonOK(w, map[string]bool{"ok": true})
+}
+
 // Sửa thông tin khoản nợ: chỉ tên / SĐT / ghi chú.
 // KHÔNG cho sửa số tiền qua đây — số tiền chỉ đổi khi thu nợ, tránh sai lệch sổ sách.
 func hUpdateDebt(w http.ResponseWriter, r *http.Request) {
@@ -1565,6 +1582,7 @@ func main() {
 		r.Post("/api/debts", hCreateDebt)
 		r.Post("/api/debts/{id}/pay", hPayDebt)
 		r.Put("/api/debts/{id}", hUpdateDebt)
+		r.Delete("/api/debts/{id}", hDeleteDebt)
 
 		r.Get("/api/adjustments", hGetAdjustments)
 		r.Post("/api/adjustments", hCreateAdjustment)
